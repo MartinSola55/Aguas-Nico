@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('FailedJob', function (Blueprint $table) {
+        Schema::create('Rol', function (Blueprint $table) {
             $table->id();
-            $table->string('Uuid')->unique();
-            $table->text('Connection');
-            $table->text('Queue');
-            $table->longText('Payload');
-            $table->longText('Exception');
-            $table->timestamp('FailedAt')->useCurrent();
+            $table->string('Name');
         });
     }
 
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('FailedJob');
+        Schema::dropIfExists('Rol');
     }
 };
