@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('PersonalAccessToken', function (Blueprint $table) {
+        Schema::create('Cart', function (Blueprint $table) {
             $table->id();
-            $table->morphs('Tokenable');
-            $table->string('Name');
-            $table->string('Token', 64)->unique();
-            $table->text('Abilities')->nullable();
-            $table->timestamp('LastUsedAt')->nullable();
-            $table->timestamp('ExpiresAt')->nullable();
+            $table->foreignId('RouteId')->constrained('Route');
+            $table->foreignId('ClientId')->constrained('Client');
+            $table->boolean('Delivered');
+            $table->dateTime('StartDate');
+            $table->dateTime('EndDate');
             $table->dateTime('CreatedAt');
             $table->dateTime('UpdatedAt');
         });
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('PersonalAccessToken');
+        Schema::dropIfExists('Cart');
     }
 };
