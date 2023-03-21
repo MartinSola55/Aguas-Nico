@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('Route', function (Blueprint $table) {
+        Schema::create('products_carts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('UserId')->constrained('User');
-            $table->string('DayOfWeek');
-            $table->dateTime('StartTime');
-            $table->dateTime('EndTime');
-            $table->dateTime('CreatedAt');
-            $table->dateTime('UpdatedAt');
+            $table->foreignId('product_id')->constrained('products');
+            $table->foreignId('cart_id')->constrained('carts');
+            $table->integer('quantity');
+            $table->integer('quantity_sent');
+            $table->timestamps();
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('Route');
+        Schema::dropIfExists('products_carts');
     }
 };
