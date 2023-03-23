@@ -22,7 +22,6 @@ File: scss
 @import url(icons/weather-icons/css/weather-icons.min.css);
 @import url(icons/linea-icons/linea.css);
 @import url(icons/themify-icons/themify-icons.css);
-@import url(icons/flag-icon-css/flag-icon.min.css);
 @import url(icons/material-design-iconic-font/css/materialdesignicons.min.css);
 @import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700");
 @import url(spinners.css);
@@ -2303,7 +2302,7 @@ File: scss
 }
 
 .mini-sidebar .top-navbar .navbar-header {
-  width: 60px;
+  width: 240px;
   text-align: center;
 }
 
