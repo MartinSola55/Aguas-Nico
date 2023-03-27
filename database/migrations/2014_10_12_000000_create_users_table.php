@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('User', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('RolId')->constrained('Rol');
-            $table->string('Name');
-            $table->string('Email')->unique();
-            $table->string('Password');
-            $table->string('TruckNumber');
+            $table->foreignId('rol_id')->nullable();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->string('truck_number')->nullable();
             $table->rememberToken();
-            $table->dateTime('CreatedAt');
-            $table->dateTime('UpdatedAt');
+            $table->timestamps();
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('User');
+        Schema::dropIfExists('users');
     }
 };
