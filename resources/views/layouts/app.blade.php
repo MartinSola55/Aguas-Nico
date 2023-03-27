@@ -15,7 +15,6 @@
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
-
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon.png') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <!-- Bootstrap Core CSS -->
@@ -26,6 +25,8 @@
     <link rel="stylesheet" href="{{ asset('css/colors/default-dark.css') }}">
     <!-- Bootstrap icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <!-- Popup CSS -->
+    <link href="{{ asset('plugins/Magnific-Popup-master/dist/magnific-popup.css') }}" rel="stylesheet">
 
     <!-- Scripts -->
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
@@ -47,6 +48,11 @@
     <!-- Style switcher -->
     <!-- ============================================================== -->
     <script src="{{ asset('plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
+    <!-- Notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Magnific popup JavaScript -->
+    <script src="{{ asset('plugins/Magnific-Popup-master/dist/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ asset('plugins/Magnific-Popup-master/dist/jquery.magnific-popup-init.js') }}"></script>
 </head>
 
 <body class="fix-header fix-sidebar card-no-border mini-sidebar">
@@ -251,7 +257,7 @@
         </header>
 
         @auth
-        <aside class="left-sidebar" style="overflow: visible;">
+        <aside class="left-sidebar">
             <!-- Sidebar scroll-->
             <div class="slimScrollDiv" style="position: relative; overflow: visible; width: auto; height: 100%;">
                 <div class="scroll-sidebar" style="overflow: visible hidden; width: auto; height: 100%;">
@@ -500,6 +506,10 @@
         <main class="@auth page-wrapper @endauth">
             @yield('content')
         </main>
+
+        <footer class="footer">
+            © 2023 Aguas Nico
+        </footer>
     </div>
 </body>
 

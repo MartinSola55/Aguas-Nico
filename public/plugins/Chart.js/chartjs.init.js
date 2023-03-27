@@ -3,7 +3,7 @@ $(function() {
     /*<!-- ============================================================== -->*/
     /*<!-- Line Chart -->*/
     /*<!-- ============================================================== -->*/
-    new Chart(document.getElementById("chart1"),
+    /*new Chart(document.getElementById("chart1"),
         {
             "type":"line",
             "data":{"labels":["January","February","March","April","May","June","July"],
@@ -14,21 +14,21 @@ $(function() {
                             "borderColor":"rgb(38, 198, 218)",
                             "lineTension":0.1
                         }]
-        },"options":{}});
+        },"options":{}});*/
     
     /*<!-- ============================================================== -->*/
     /*<!-- Bar Chart -->*/
     /*<!-- ============================================================== -->*/
-    new Chart(document.getElementById("chart2"),
+    new Chart(document.getElementById("barChart"),
         {
             "type":"bar",
-            "data":{"labels":["January","February","March","April","May","June","July"],
+            "data":{"labels":["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
             "datasets":[{
-                            "label":"My First Dataset",
-                            "data":[65,59,80,81,56,55,40],
+                            "label":"Ventas del mes",
+                            "data":[65,59,80,81,56,55,40,23,35,60,33,57],
                             "fill":false,
-                            "backgroundColor":["rgba(255, 99, 132, 0.2)","rgba(255, 159, 64, 0.2)","rgba(255, 205, 86, 0.2)","rgba(75, 192, 192, 0.2)","rgba(54, 162, 235, 0.2)","rgba(153, 102, 255, 0.2)","rgba(201, 203, 207, 0.2)"],
-                            "borderColor":["rgb(252, 75, 108)","rgb(255, 159, 64)","rgb(255, 178, 43)","rgb(38, 198, 218)","rgb(54, 162, 235)","rgb(153, 102, 255)","rgb(201, 203, 207)"],
+                            "backgroundColor":["rgba(255, 99, 132, 0.2)","rgba(255, 159, 64, 0.2)","rgba(255, 205, 86, 0.2)","rgba(75, 192, 192, 0.2)","rgba(54, 162, 235, 0.2)","rgba(153, 102, 255, 0.2)","rgba(201, 203, 207, 0.2)","rgba(255, 159, 64, 0.2)","rgba(255, 205, 86, 0.2)","rgba(75, 192, 192, 0.2)","rgba(54, 162, 235, 0.2)","rgba(153, 102, 255, 0.2)","rgba(201, 203, 207, 0.2)"],
+                            "borderColor":["rgb(252, 75, 108)","rgb(255, 159, 64)","rgb(255, 178, 43)","rgb(38, 198, 218)","rgb(54, 162, 235)","rgb(153, 102, 255)","rgb(201, 203, 207)","rgb(255, 159, 64)","rgb(255, 178, 43)","rgb(38, 198, 218)","rgb(54, 162, 235)","rgb(153, 102, 255)","rgb(201, 203, 207)"],
                             "borderWidth":1}
                         ]},
             "options":{
@@ -39,7 +39,7 @@ $(function() {
     /*<!-- ============================================================== -->*/
     /*<!-- Pie Chart -->*/
     /*<!-- ============================================================== -->*/
-    new Chart(document.getElementById("chart3"),
+    /*new Chart(document.getElementById("chart3"),
         {
             "type":"pie",
             "data":{"labels":["Red","Blue","Yellow"],
@@ -48,12 +48,12 @@ $(function() {
                 "data":[300,50,100],
                 "backgroundColor":["rgb(252, 75, 108)","rgb(30, 136, 229)","rgb(255, 178, 43)"]}
             ]}
-        });
+        });*/
 
     /*<!-- ============================================================== -->*/
     /*<!-- Doughnut Chart -->*/
     /*<!-- ============================================================== -->*/
-    new Chart(document.getElementById("chart4"),
+    /*new Chart(document.getElementById("chart4"),
         {
             "type":"doughnut",
             "data":{"labels":["Red","Blue","Yellow"],
@@ -62,12 +62,12 @@ $(function() {
                 "data":[300,50,100],
                 "backgroundColor":["rgb(252, 75, 108)","rgb(30, 136, 229)","rgb(255, 178, 43)"]}
             ]}
-        });
+        });*/
 
     /*<!-- ============================================================== -->*/
     /*<!-- PolarArea Chart -->*/
     /*<!-- ============================================================== -->*/
-    new Chart(document.getElementById("chart5"),
+    /*new Chart(document.getElementById("chart5"),
         {
             "type":"polarArea",
             "data":{"labels":["Red","Green","Yellow","Grey","Blue"],
@@ -77,12 +77,12 @@ $(function() {
                 "backgroundColor":["rgb(252, 75, 108)","rgb(75, 192, 192)","rgb(255, 178, 43)","rgb(201, 203, 207)","rgb(30, 136, 229)"
                 ]}
             ]}
-        });
+        });*/
 
     /*<!-- ============================================================== -->*/
     /*<!-- Radar Chart -->*/
     /*<!-- ============================================================== -->*/
-    new Chart(document.getElementById("chart6"),
+    /*new Chart(document.getElementById("chart6"),
         {
             "type":"radar",
             "data":{"labels":["Eating","Drinking","Sleeping","Designing","Coding","Cycling","Running"],
@@ -106,6 +106,6 @@ $(function() {
                     }
                 }
             }
-        });
+        });*/
     
 });
