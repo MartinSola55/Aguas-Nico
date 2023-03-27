@@ -27,6 +27,7 @@
                 <div class="card-body">
                     <h4 class="card-title">Nuevo producto</h4>
                     <form role="form" class="needs-validation" method="POST" action="{{ url('/product/create') }}" id="form_create" autocomplete="off" novalidate>
+                        @csrf
                         <div class="form-row">
                             <div class="col-md-4 mb-3">
                                 <label for="productName">Nombre</label>
@@ -115,7 +116,7 @@
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
-                        title: errorThrown,
+                        title: errorThrown.responseJSON.message,
                     })
                 }
             });

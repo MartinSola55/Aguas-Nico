@@ -29,8 +29,8 @@ class ProductCreateRequest extends BaseFormRequest
 
        return [
             'name',
-            'email',
-            'password',
+            'stock',
+            'price',
         ];
     }
 }

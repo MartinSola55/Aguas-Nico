@@ -28,9 +28,9 @@ class ProductUpdateRequest extends BaseFormRequest
         ]);
 
        return [
-            'name',
-            'email',
-            'password',
+            //'name',
+            //'email',
+            //'password',
         ];
     }
 }
