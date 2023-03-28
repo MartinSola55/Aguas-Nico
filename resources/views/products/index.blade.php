@@ -17,7 +17,7 @@
             <div class="d-flex m-t-10 justify-content-end">
                 <div class="d-flex m-r-20 m-l-10 hidden-md-down">
                     <div>
-                    <a class="btn btn-primary waves-effect waves-light" href="{{ url('/products/create') }}">
+                    <a class="btn btn-primary waves-effect waves-light" href="{{ url('/product/create') }}">
                         <i class="bi bi-plus-lg"></i>
                     </a>
                     </div>
@@ -32,58 +32,21 @@
     <!-- Start Page Content -->
     <!-- ============================================================== -->
     <div class="row el-element-overlay">
-        <div class="col-lg-3 col-md-6">
-            <div class="card">
-                <div class="el-card-item">
-                    <div class="el-card-avatar el-overlay-1"> <img src="{{ asset('images/botella.jpg') }}" alt="user" />
-                        <a class="el-overlay" href="{{ url('/products/stats') }}"></a>
-                    </div>
-                    <div class="el-card-content">
-                        <h3 class="box-title">Botella de agua</h3> <small>1 litro</small>
-                        <br />
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card">
-                <div class="el-card-item">
-                    <div class="el-card-avatar el-overlay-1"> <img src="{{ asset('images/botella grande.jpg') }}" alt="user" />
-                        <a class="el-overlay" href="{{ url('/products/stats') }}"></a>
-                    </div>
-                    <div class="el-card-content">
-                    <h3 class="box-title">Botella de agua</h3> <small>3 litros</small>
-                        <br />
+        @foreach ($products as $product)
+            <div class="col-lg-3 col-md-6">
+                <div class="card">
+                    <div class="el-card-item">
+                        <div class="el-card-avatar el-overlay-1"> <img src="{{ asset('images/botella.jpg') }}" alt="user" />
+                            <a class="el-overlay" href="{{ url('/products/stats') }}"></a>
+                        </div>
+                        <div class="el-card-content">
+                            <h3 class="box-title">{{$product->name}}</h3> <small>1 litro</small>
+                            <br />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card">
-                <div class="el-card-item">
-                    <div class="el-card-avatar el-overlay-1"> <img src="{{ asset('images/bidon.jpg') }}" alt="user" />
-                        <a class="el-overlay" href="{{ url('/products/stats') }}"></a>
-                    </div>
-                    <div class="el-card-content">
-                        <h3 class="box-title">Bidón de agua</h3> <small>15 litros</small>
-                        <br />
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card">
-                <div class="el-card-item">
-                    <div class="el-card-avatar el-overlay-1"> <img src="{{ asset('images/botella.jpg') }}" alt="user" />
-                        <a class="el-overlay" href="{{ url('/products/stats') }}"></a>
-                    </div>
-                    <div class="el-card-content">
-                    <h3 class="box-title">Botella de agua</h3> <small>1 litro</small>
-                        <br />
-                    </div>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 </div>
 <!-- ============================================================== -->

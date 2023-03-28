@@ -10,7 +10,7 @@
             <h3 class="text-themecolor m-b-0 m-t-0">Productos</h3>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                <li class="breadcrumb-item"><a href="{{ url('/products/index') }}">Productos</a></li>
+                <li class="breadcrumb-item"><a href="{{ url('/product/index') }}">Productos</a></li>
                 <li class="breadcrumb-item active">Editar</li>
             </ol>
         </div>
