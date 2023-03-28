@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Product\ProductCreateRequest;
+use App\Http\Requests\Product\ProductUpdateRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -69,9 +70,27 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ProductUpdateRequest $request)
     {
-        //
+        $product = Product::find($request->input('id'));
+        try {
+            $product->update([
+                'name' => $request->input('name'),
+                'stock' => $request->input('stock'),
+                'price' => $request->input('price'),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product edited successfully.',
+                'data' => $product
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product edition failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 
     /**
