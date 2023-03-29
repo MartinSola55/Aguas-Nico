@@ -1961,13 +1961,6 @@ dropdown-item
 }
 
 /*******************
-Custom-select
-******************/
-.custom-select {
-  background: url(../../assets/images/custom-select.png) right 0.75rem center no-repeat;
-}
-
-/*******************
 textarea
 ******************/
 textarea {
@@ -4989,6 +4982,17 @@ User card page
 }
 
 .el-element-overlay .el-card-item .el-overlay-1 .el-info>li a:hover {
+  background: #009efb;
+  border-color: #009efb;
+}
+
+.el-element-overlay .el-card-item .el-overlay-1 .el-info>li button {
+  border-color: #ffffff;
+  color: #ffffff;
+  padding: 12px 15px 10px;
+}
+
+.el-element-overlay .el-card-item .el-overlay-1 .el-info>li button:hover {
   background: #009efb;
   border-color: #009efb;
 }
