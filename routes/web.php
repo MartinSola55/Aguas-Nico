@@ -12,23 +12,18 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
-
 
 Auth::routes();
 
-
-
-Route::view('/products/stats', 'products.stats');
-Route::view('/dealers/details', 'dealers.details');
-Route::view('/dealers/edit', 'dealers.edit');
-Route::view('/routes/details', 'routes.details');
-
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    Route::view('/products/stats', 'products.stats');
+    Route::view('/dealers/details', 'dealers.details');
+    Route::view('/dealers/edit', 'dealers.edit');
+    Route::view('/routes/details', 'routes.details');
 
     Route::view('/products/create', 'products.create');
     Route::view('/products/edit', 'products.edit');
@@ -38,4 +33,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 });
 
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+});
 
