@@ -4986,6 +4986,17 @@ User card page
   border-color: #009efb;
 }
 
+.el-element-overlay .el-card-item .el-overlay-1 .el-info>li button {
+  border-color: #ffffff;
+  color: #ffffff;
+  padding: 12px 15px 10px;
+}
+
+.el-element-overlay .el-card-item .el-overlay-1 .el-info>li button:hover {
+  background: #009efb;
+  border-color: #009efb;
+}
+
 .el-element-overlay .el-card-item .el-overlay {
   width: 100%;
   height: 100%;

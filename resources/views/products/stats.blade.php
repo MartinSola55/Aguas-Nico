@@ -19,17 +19,6 @@
                 <li class="breadcrumb-item active">Estadísticas</li>
             </ol>
         </div>
-        <div class="col-md-7 col-4 align-self-center">
-            <div class="d-flex m-t-10 justify-content-end">
-                <div class="d-flex m-r-20 m-l-10 hidden-md-down">
-                    <div>
-                    <a class="btn btn-primary waves-effect waves-light" href="{{ url('/products/edit') }}">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
     <!-- ============================================================== -->
     <!-- End Bread crumb and right sidebar toggle -->
