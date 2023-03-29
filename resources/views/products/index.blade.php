@@ -118,7 +118,7 @@
                                 </div>
                             </div>
                             <div class="el-card-content">
-                                <h3 class="box-title">{{ $product->name }}</h3> <small>1 litro</small>
+                                <h3 class="box-title">{{ $product->name }}</h3> <small>{{ $product->stock }} en stock</small>
                                 <br />
                             </div>
                         </div>

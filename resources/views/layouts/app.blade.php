@@ -271,20 +271,24 @@
                     <nav class="sidebar-nav">
                         <ul id="sidebarnav">
                             <li class="nav-small-cap">PERSONAL</li>
-                            <li class=""> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard </span></a>
+                            <li class=""><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
                                 <ul aria-expanded="false" class="collapse" style="height: 10px;">
-                                    <li><a href="index.html">Dashboard 1</a></li>
-                                    <li><a href="index2.html">Dashboard 2</a></li>
-                                    <li><a href="index3.html">Dashboard 3</a></li>
+                                    <li><a href="{{ url('/product/index') }}">Inicio</a></li>
+                                    <li><a href="{{ url('/products/create') }}">Nuevo</a></li>
+                                </ul>
+                            </li>
+                            <li class=""><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
+                                <ul aria-expanded="false" class="collapse" style="height: 10px;">
+                                    <li><a href="{{ url('/clients/index') }}">Inicio</a></li>
                                 </ul>
                             </li>
                             <li class="nav-devider"></li>
                             <li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
-                            <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-file"></i><span class="hide-menu">Forms</span></a>
+                            <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartos</span></a>
                                 <ul aria-expanded="false" class="collapse">
-                                    <li><a href="form-basic.html">Basic Forms</a></li>
-                                    <li><a href="form-layout.html">Form Layouts</a></li>
-                                    <li><a href="form-addons.html">Form Addons</a></li>
+                                    <li><a href="#">Basic Forms</a></li>
+                                    <li><a href="#">Form Layouts</a></li>
+                                    <li><a href="#">Form Addons</a></li>
                                 </ul>
                             </li>
                         </ul>
