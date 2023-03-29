@@ -1,26 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Chartist CSS -->
-<link href="{{ asset('plugins/chartist-js/dist/chartist.min.css') }}" rel="stylesheet">
-<link href="{{ asset('plugins/chartist-js/dist/chartist-init.css') }}" rel="stylesheet">
-<link href="{{ asset('plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css') }}" rel="stylesheet">
 <link href="{{ asset('plugins/css-chart/css-chart.css') }}" rel="stylesheet">
 <!--This page css - Morris CSS -->
 <link href="{{ asset('plugins/c3-master/c3.min.css') }}" rel="stylesheet">
 <!-- Vector CSS -->
 <link href="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet">
 
-<!-- chartist chart -->
-<script src="{{ asset('plugins/chartist-js/dist/chartist.min.js') }}"></script>
-<script src="{{ asset('plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min.js') }}"></script>
 <!--c3 JavaScript -->
 <script src="{{ asset('plugins/d3/d3.min.js') }}"></script>
 <script src="{{ asset('plugins/c3-master/c3.min.js') }}"></script>
 <!-- Vector map JavaScript -->
 <script src="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
 <script src="{{ asset('plugins/vectormap/jquery-jvectormap-us-aea-en.js') }}"></script>
-<script src="{{ asset('js/dashboard2.js') }}"></script>
 
 
 <div class="container-fluid">
@@ -131,7 +123,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <tr class="clickable">
                                     <td style="width:50px;"><span class="round">JP</span></td>
                                     <td>
                                         <h6>Juan Pérez</h6><small class="text-muted">Camión 1</small>
@@ -140,7 +132,7 @@
                                     <td><span class="label label-danger">En calle</span></td>
                                     <td>$3.9K</td>
                                 </tr>
-                                <tr class="active">
+                                <tr class="clickable" /*class="active"*/>
                                     <td><span class="round">MS</span></td>
                                     <td>
                                         <h6>Martín Sola</h6><small class="text-muted">Camión 2</small>
@@ -149,7 +141,7 @@
                                     <td><span class="label label-primary">Completado</span></td>
                                     <td>$23.9K</td>
                                 </tr>
-                                <tr>
+                                <tr class="clickable">
                                     <td><span class="round round-success">PB</span></td>
                                     <td>
                                         <h6>Peter Bettig</h6><small class="text-muted">Camión 3</small>
@@ -158,7 +150,7 @@
                                     <td><span class="label label-danger">En calle</span></td>
                                     <td>$12.9K</td>
                                 </tr>
-                                <tr>
+                                <tr class="clickable">
                                     <td><span class="round round-primary">SL</span></td>
                                     <td>
                                         <h6>Samuelson Leiva</h6><small class="text-muted">Camión 4</small>
@@ -167,7 +159,7 @@
                                     <td><span class="label label-danger">En calle</span></td>
                                     <td>$10.9K</td>
                                 </tr>
-                                <tr>
+                                <tr class="clickable">
                                     <td><span class="round round-warning">NB</span></td>
                                     <td>
                                         <h6>Nachito Bettig</h6><small class="text-muted">Camión 5</small>
@@ -176,7 +168,7 @@
                                     <td><span class="label label-primary">Completado</span></td>
                                     <td>$12.9K</td>
                                 </tr>
-                                <tr>
+                                <tr class="clickable">
                                     <td><span class="round round-danger">J</span></td>
                                     <td>
                                         <h6>Johny</h6><small class="text-muted">Camión 6</small>
@@ -193,4 +185,10 @@
         </div>
     </div>
 </div>
+
+<style>
+    .clickable {
+        cursor: pointer;
+    }
+</style>
 @endsection
