@@ -109,7 +109,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <h3 class="card-header">Lunes 27/03/2023</h1>
+                    <h3 class="card-header">Lunes 27/03/2023 - Martín Sola</h1>
                         <div class="card-body">
                             <ul class="timeline">
                                 <li>
@@ -158,9 +158,7 @@
                                                 elit. Deserunt obcaecati, quaerat tempore officia.</p>
                                             <hr>
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-danger btn-sm dropdown-toggle"
-                                                    data-toggle="dropdown"> <i class="fa fa-gear"></i> <span
-                                                        class="caret"></span> </button>
+                                                <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                 <div class="dropdown-menu">
                                                     <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal()"><b>Confirmar</b></button>
                                                     <div class="dropdown-divider"></div>
@@ -218,9 +216,7 @@
                                                 elit. Deserunt obcaecati, quaerat tempore officia.</p>
                                             <hr>
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-danger btn-sm dropdown-toggle"
-                                                    data-toggle="dropdown"> <i class="fa fa-gear"></i> <span
-                                                        class="caret"></span> </button>
+                                                <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                 <div class="dropdown-menu">
                                                     <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal()"><b>Confirmar</b></button>
                                                     <div class="dropdown-divider"></div>
@@ -259,7 +255,11 @@
             $("#debtCheckbox").prop("checked", false);
             $("#paymentInput").css("display", "none");
             $("#paymentInput input").prop("disabled", true);
+            $('#modalTable select').each(function() {
+                $(this).val($(this).find('option:first').val());
+            });
         }
+
         $("#debtCheckbox").change(function() {
             if ($(this).prop("checked")) {
                 $("#paymentInput").css("display", "flex");
