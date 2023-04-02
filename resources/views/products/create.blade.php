@@ -27,7 +27,7 @@
                     <div class="card-body">
                         <h4 class="card-title">Nuevo producto</h4>
                         <form role="form" class="needs-validation" method="POST" action="{{ url('/product/create') }}"
-                            id="form_create" autocomplete="off" novalidate>
+                            id="form-create" autocomplete="off" novalidate>
                             @csrf
                             <div class="form-row">
                                 <div class="col-md-4 mb-3">
@@ -91,41 +91,40 @@
                         if (form.checkValidity() === false) {
                             event.preventDefault();
                             event.stopPropagation();
+                        } else {
+                            event.preventDefault();
+                            sendForm();
                         }
                         form.classList.add('was-validated');
                     }, false);
                 });
             }, false);
         })();
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('#form_create').on('submit', function(event) {
-                event.preventDefault(); // Prevenir la acción predeterminada del formulario
-
+        function sendForm() {
                 // Enviar solicitud AJAX
                 $.ajax({
-                    url: $(this).attr('action'), // Utiliza la ruta del formulario
-                    method: $(this).attr('method'), // Utiliza el método del formulario
-                    data: $(this).serialize(), // Utiliza los datos del formulario
+                    url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
+                    method: $("#form-create").attr('method'), // Utiliza el método del formulario
+                    data: $("#form-create").serialize(), // Utiliza los datos del formulario
                     success: function(response) {
+                        $("#btnCloseModal").click();
                         Swal.fire(
                             'Todo piola gato',
                             'Se agregó correctamente',
                             'success'
-                        )
+                        );
                     },
                     error: function(errorThrown) {
                         Swal.fire({
                             icon: 'error',
                             title: errorThrown.responseJSON.message,
-                        })
+                        });
                     }
                 });
-            });
-        });
+            }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @endsection

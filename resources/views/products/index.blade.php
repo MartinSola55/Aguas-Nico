@@ -95,6 +95,32 @@
         <!-- ============================================================== -->
         <!-- Start Page Content -->
         <!-- ============================================================== -->
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    @foreach ($products as $product)
+                        <div class="col-lg-4 col-md-8 col-xlg-3 col-xs-12">
+                            <div class="ribbon-wrapper card">
+                                <div class="ribbon ribbon-default" id="productName{{ $product->id }}">{{ $product->name }}</div>
+                                <div class="my-4">
+                                    <p class="ribbon-content" id="productStock{{ $product->id }}">Stock: {{ $product->stock }} u.</p>
+                                    <p class="ribbon-content" id="productPrice{{ $product->id }}">Precio: ${{ $product->price }}</p>
+                                </div>
+                                <div class="d-flex flex-direction-row justify-content-between">
+                                    <button type="button" class="btn btn-danger btn-rounded mr-4" onclick="openModal({{ $product->id }}, '{{ $product->name }}', {{ $product->stock }}, {{ $product->price }})" data-toggle="modal" data-target="#modalConfirmation">
+                                        Editar <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <a class="btn btn-danger btn-rounded" href="{{ url('/products/stats') }}">
+                                        Estadísticas <i class="bi bi-graph-up"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        {{-- 
         <div class="row el-element-overlay">
             @foreach ($products as $product)
                 <div class="col-lg-3 col-md-6">
@@ -125,7 +151,8 @@
                     </div>
                 </div>
             @endforeach
-        </div>
+        </div>    
+        --}}
     </div>
     <!-- ============================================================== -->
     <!-- End Container fluid  -->
@@ -170,42 +197,50 @@
                         if (form.checkValidity() === false) {
                             event.preventDefault();
                             event.stopPropagation();
+                        } else {
+                            event.preventDefault();
+                            sendForm();
                         }
                         form.classList.add('was-validated');
                     }, false);
                 });
             }, false);
         })();
+
+        function sendForm() {
+            // Enviar solicitud AJAX
+            $.ajax({
+                url: $("#form-edit").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-edit").attr('method'), // Utiliza el método del formulario
+                data: $("#form-edit").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    updatedSuccess(response);
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                    });
+                }
+            });
+        }
+
+        function updatedSuccess(response) {
+            $("#btnCloseModal").click();
+
+            let id = $("#productID").val();
+            $("#productName" + id).html($("#productName").val());
+            $("#productStock" + id).html("Stock: " + $("#productStock").val() + " u.");
+            $("#productPrice" + id).html("Precio: $" + $("#productPrice").val());
+
+            Swal.fire(
+                'Todo piola gato',
+                'Se agregó correctamente',
+                'success'
+            );
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        $(document).ready(function() {
-            $('#form-edit').on('submit', function(event) {
-                event.preventDefault(); // Prevenir la acción predeterminada del formulario
-
-                // Enviar solicitud AJAX
-                $.ajax({
-                    url: $(this).attr('action'), // Utiliza la ruta del formulario
-                    method: $(this).attr('method'), // Utiliza el método del formulario
-                    data: $(this).serialize(), // Utiliza los datos del formulario
-                    success: function(response) {
-                        $("#btnCloseModal").click();
-                        Swal.fire(
-                            'Todo piola gato',
-                            'Se agregó correctamente',
-                            'success'
-                        );
-                    },
-                    error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                        });
-                    }
-                });
-            });
-        });
-    </script>
 @endsection

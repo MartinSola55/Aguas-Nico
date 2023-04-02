@@ -52,7 +52,6 @@
                                         <div class="row">
                                             <div class="col-lg-12">
                                                 @csrf
-                                                <input type="hidden" name="id" id="productID">
                                                 <div class="form-column">
                                                     <div class="col-12 mb-3">
                                                         <label for="clientName" class="mb-0">Nombre</label>
@@ -109,7 +108,7 @@
                                                             <div class="valid-feedback">
                                                             </div>
                                                             <div class="invalid-feedback">
-                                                                Por favor, ingrese un precio
+                                                                Por favor, ingrese un monto
                                                             </div>
                                                         </div>
                                                     </div>
@@ -139,8 +138,7 @@
                     </div>
                     <!-- End Modal -->
                         <div class="table-responsive">
-                            <table id="demo-foo-addrow" class="table table-bordered m-t-30 table-hover contact-list"
-                                data-paging="true" data-paging-size="7">
+                            <table class="table table-bordered m-t-30 table-hover contact-list" data-paging="true" data-paging-size="7">
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
@@ -156,7 +154,7 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <a href="javascript:void(0)">Martín Sola</a>
+                                            <a href="{{ url('/clients/details') }}">Martín Sola</a>
                                         </td>
                                         <td>Rivadavia 1097</td>
                                         <td>3404437748</td>
@@ -164,23 +162,10 @@
                                         <td>42559237</td>
                                         <td class="text-center">
                                             <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                            {{-- <i class="bi bi-x-lg" style="font-size: 1.3rem"></i> --}}
                                         </td>
                                         <td>$12500</td>
                                         <td>Salame</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <a href="javascript:void(0)">Franco Pinciroli</a>
-                                        </td>
-                                        <td>Rosario 123</td>
-                                        <td>342589452</td>
-                                        <td>francop12@gmail.com</td>
-                                        <td>42587413</td>
-                                        <td class="text-center">
-                                            <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
-                                        </td>
-                                        <td>$37560</td>
-                                        <td>Pajerito</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -204,26 +189,22 @@
                         if (form.checkValidity() === false) {
                             event.preventDefault();
                             event.stopPropagation();
+                        } else {
+                            event.preventDefault();
+                            sendForm();
                         }
                         form.classList.add('was-validated');
                     }, false);
                 });
             }, false);
         })();
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('#form-create').on('submit', function(event) {
-                event.preventDefault(); // Prevenir la acción predeterminada del formulario
-
+        function sendForm() {
                 // Enviar solicitud AJAX
                 $.ajax({
-                    url: $(this).attr('action'), // Utiliza la ruta del formulario
-                    method: $(this).attr('method'), // Utiliza el método del formulario
-                    data: $(this).serialize(), // Utiliza los datos del formulario
+                    url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
+                    method: $("#form-create").attr('method'), // Utiliza el método del formulario
+                    data: $("#form-create").serialize(), // Utiliza los datos del formulario
                     success: function(response) {
                         $("#btnCloseModal").click();
                         Swal.fire(
@@ -239,8 +220,9 @@
                         });
                     }
                 });
-            });
-        });
+            }
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 @endsection
