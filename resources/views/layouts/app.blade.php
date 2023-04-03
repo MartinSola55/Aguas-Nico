@@ -286,6 +286,7 @@
                             <li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
                             <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartos</span></a>
                                 <ul aria-expanded="false" class="collapse">
+                                    <li><a href="{{ url('/routes/index') }}">Inicio</a></li>
                                     <li><a href="{{ url('/routes/create') }}">Nuevo</a></li>
                                 </ul>
                             </li>
@@ -312,7 +313,7 @@
         </main>
 
         <footer class="footer">
-            © 2023 Aguas Nico
+            © 2023 - Aguas Nico
         </footer>
     </div>
 </body>

@@ -20,17 +20,6 @@
                     <li class="breadcrumb-item active">Detalles</li>
                 </ol>
             </div>
-            <div class="col-md-7 col-4 align-self-center">
-                <div class="d-flex m-t-10 justify-content-end">
-                    <div class="d-flex m-r-20 m-l-10 hidden-md-down">
-                        <div>
-                            <a class="btn btn-primary waves-effect waves-light" href="{{ url('/product/create') }}">
-                                <i class="bi bi-plus-lg"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
         <!-- ============================================================== -->
         <!-- End Bread crumb and right sidebar toggle -->
@@ -54,7 +43,7 @@
                     <div class="col-lg-4 col-md-6 col-xlg-4 col-xs-12">
                         <div class="ribbon-wrapper card">
                             <div class="ribbon ribbon-default">Facturación</div>
-                            <button type="button" class="btn btn-danger btn-rounded m-t-10 float-right">Generar PDF</button>
+                            <a href="{{ url('/clients/invoice') }}" class="btn btn-danger btn-rounded m-t-10 float-right">Ir</a>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 col-xlg-4 col-xs-12">
@@ -159,10 +148,23 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group focused">
+                                    <div class="col-md-6 d-flex flex-column justify-content-center">
+                                        <div>
                                             <input disabled type="checkbox" id="clientInvoice" name="invoice" checked />
-                                            <label for="clientInvoice">¿Quiere factura?</label>
+                                            <label class="m-0" for="clientInvoice">¿Quiere factura?</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group focused">
+                                            <label class="form-control-label" for="clientDebt">Observación</label>
+                                            <div class="input-group">
+                                                <textarea disabled type="text" class="form-control form-control-alternative" id="clientObservation" name="observation"></textarea>
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese una descripción
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
