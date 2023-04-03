@@ -56,8 +56,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientName" class="mb-0">Nombre</label>
                                                         <input type="text" class="form-control" id="clientName" name="name" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese un nombre
                                                         </div>
@@ -65,8 +63,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientAdress" class="mb-0">Dirección</label>
                                                         <input type="text" class="form-control" id="clientAdress" name="adress" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese una dirección
                                                         </div>
@@ -74,8 +70,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientPhone" class="mb-0">Teléfono</label>
                                                         <input type="tel" class="form-control" id="clientPhone" name="phone" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese un teléfono
                                                         </div>
@@ -83,8 +77,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientEmail" class="mb-0">Email</label>
                                                         <input type="email" class="form-control" id="clientEmail" name="email" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese un email
                                                         </div>
@@ -92,8 +84,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientDNI" class="mb-0">DNI</label>
                                                         <input type="number" min="0" class="form-control" id="clientDNI" name="dni" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese un DNI
                                                         </div>
@@ -105,8 +95,6 @@
                                                                 <span class="input-group-text">$</span>
                                                             </div>
                                                             <input type="number" step="0.01" min="0" max="1000000" class="form-control" id="clientDebt" name="debt" placearia-describedby="inputGroupPrepend" required>
-                                                            <div class="valid-feedback">
-                                                            </div>
                                                             <div class="invalid-feedback">
                                                                 Por favor, ingrese un monto
                                                             </div>
@@ -115,8 +103,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientObservation" class="mb-0">Observación</label>
                                                         <textarea type="text" class="form-control" id="clientObservation" name="observation"></textarea>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                     </div>
                                                     <div class="col-12 mb-3">
                                                         <div>

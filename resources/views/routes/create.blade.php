@@ -8,7 +8,6 @@
     <!-- Datepicker -->
     <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
 
-
     <!-- Footable -->
     <script src="{{ asset('plugins/moment/moment.js') }}"></script>
     <script src="{{ asset('plugins/footable/js/footable.min.js') }}"></script>
@@ -19,7 +18,6 @@
     <!-- Datepicker -->
     <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
     <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
-
 
     <!-- Modal -->
     <div id="modalConfirmation" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -55,10 +53,8 @@
                                         </div>
                                     </div>
                                     <div class="col-12 mb-3">
-                                        <label for="min-date" class="mb-0">Día y hora de inicio</label>
-                                        <input type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" id="min-date" name="date" required>
-                                        <div class="valid-feedback">
-                                        </div>
+                                        <label for="datePicker" class="mb-0">Día y hora de inicio</label>
+                                        <input type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" id="datePicker" name="date" required>
                                         <div class="invalid-feedback">
                                             Por favor, ingrese un día y horario
                                         </div>
@@ -86,7 +82,7 @@
                 <h3 class="text-themecolor m-b-0 m-t-0">Repartos</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('home') }}">Repartos</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url('/routes/index') }}">Repartos</a></li>
                     <li class="breadcrumb-item active">Nuevo</li>
                 </ol>
             </div>
@@ -175,9 +171,11 @@
 
     <script>
         moment.locale('es');
-        $('#min-date').bootstrapMaterialDatePicker({
+        $('#datePicker').bootstrapMaterialDatePicker({
             format: 'DD/MM/YYYY - HH:mm',
-            minDate: new Date()
+            minDate: new Date(),
+            cancelText: "Cancelar",
+            weekStart: 1,
         });
     </script>
 
