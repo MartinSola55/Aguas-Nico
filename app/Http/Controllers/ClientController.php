@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Client;
+use Illuminate\Http\Request;
+
+class ClientController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $products = Client::all();
+        return view('clients.index', compact('clients'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        try {
+            $client = Client::create([
+                'name' => $request->input('name'),
+                'adress' => $request->input('adress'),
+                'phone' => $request->input('phone'),
+                'email' => $request->input('email'),
+                'debt' => $request->input('debt'),
+                'dni' => $request->input('dni'),
+                'invoice' => $request->input('invoice'),
+                'observation' => $request->input('observation'),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Client created successfully.',
+                'data' => $client
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Client creation failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Client $client)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Client $client)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Client $client)
+    {
+        $client = Client::find($request->input('id'));
+        try {
+            $client->update([
+                'name' => $request->input('name'),
+                'adress' => $request->input('adress'),
+                'phone' => $request->input('phone'),
+                'email' => $request->input('email'),
+                'debt' => $request->input('debt'),
+                'dni' => $request->input('dni'),
+                'invoice' => $request->input('invoice'),
+                'observation' => $request->input('observation'),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Client edited successfully.',
+                'data' => $client
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Client edition failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Client $client)
+    {
+        //
+    }
+}
