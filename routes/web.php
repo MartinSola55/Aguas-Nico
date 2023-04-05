@@ -35,6 +35,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/client/create', [App\Http\Controllers\ClientController::class, 'store']);
     Route::post('/client/edit', [App\Http\Controllers\ClientController::class, 'update']);
 
+    Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
+    Route::post('/route/create', [App\Http\Controllers\RouteController::class, 'store']);
+    Route::post('/route/edit', [App\Http\Controllers\RouteController::class, 'update']);
+
+    Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
+    Route::post('/cart/create', [App\Http\Controllers\CartController::class, 'store']);
+    Route::post('/cart/edit', [App\Http\Controllers\CartController::class, 'update']);
+
 });
 
 Route::middleware(['auth'])->group(function () {

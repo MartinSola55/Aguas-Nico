@@ -14,7 +14,8 @@ class RouteController extends Controller
      */
     public function index()
     {
-        //
+        $routes = Route::all();
+        return view('routes.index', compact('routes'));
     }
 
     /**
