@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Client\ClientCreateRequest;
+use App\Http\Requests\Client\ClientUpdateRequest;
 use App\Models\Client;
 use Illuminate\Http\Request;
 
@@ -27,7 +29,7 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ClientCreateRequest $request)
     {
         try {
             $client = Client::create([
@@ -73,7 +75,7 @@ class ClientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Client $client)
+    public function update(ClientUpdateRequest $request)
     {
         $client = Client::find($request->input('id'));
         try {
