@@ -52,13 +52,10 @@
                                         <div class="row">
                                             <div class="col-lg-12">
                                                 @csrf
-                                                <input type="hidden" name="id" id="productID">
                                                 <div class="form-column">
                                                     <div class="col-12 mb-3">
                                                         <label for="clientName" class="mb-0">Nombre</label>
                                                         <input type="text" class="form-control" id="clientName" name="name" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese un nombre
                                                         </div>
@@ -66,8 +63,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientAdress" class="mb-0">Dirección</label>
                                                         <input type="text" class="form-control" id="clientAdress" name="adress" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese una dirección
                                                         </div>
@@ -75,8 +70,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientPhone" class="mb-0">Teléfono</label>
                                                         <input type="tel" class="form-control" id="clientPhone" name="phone" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese un teléfono
                                                         </div>
@@ -84,8 +77,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientEmail" class="mb-0">Email</label>
                                                         <input type="email" class="form-control" id="clientEmail" name="email" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese un email
                                                         </div>
@@ -93,8 +84,6 @@
                                                     <div class="col-12 mb-3">
                                                         <label for="clientDNI" class="mb-0">DNI</label>
                                                         <input type="number" min="0" class="form-control" id="clientDNI" name="dni" required>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                         <div class="invalid-feedback">
                                                             Por favor, ingrese un DNI
                                                         </div>
@@ -106,18 +95,14 @@
                                                                 <span class="input-group-text">$</span>
                                                             </div>
                                                             <input type="number" step="0.01" min="0" max="1000000" class="form-control" id="clientDebt" name="debt" placearia-describedby="inputGroupPrepend" required>
-                                                            <div class="valid-feedback">
-                                                            </div>
                                                             <div class="invalid-feedback">
-                                                                Por favor, ingrese un precio
+                                                                Por favor, ingrese un monto
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 mb-3">
                                                         <label for="clientObservation" class="mb-0">Observación</label>
                                                         <textarea type="text" class="form-control" id="clientObservation" name="observation"></textarea>
-                                                        <div class="valid-feedback">
-                                                        </div>
                                                     </div>
                                                     <div class="col-12 mb-3">
                                                         <div>
@@ -139,8 +124,7 @@
                     </div>
                     <!-- End Modal -->
                         <div class="table-responsive">
-                            <table id="demo-foo-addrow" class="table table-bordered m-t-30 table-hover contact-list"
-                                data-paging="true" data-paging-size="7">
+                            <table class="table table-bordered m-t-30 table-hover contact-list" data-paging="true" data-paging-size="7">
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
@@ -156,7 +140,7 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <a href="javascript:void(0)">Martín Sola</a>
+                                            <a href="{{ url('/clients/details') }}">Martín Sola</a>
                                         </td>
                                         <td>Rivadavia 1097</td>
                                         <td>3404437748</td>
@@ -164,23 +148,10 @@
                                         <td>42559237</td>
                                         <td class="text-center">
                                             <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                            {{-- <i class="bi bi-x-lg" style="font-size: 1.3rem"></i> --}}
                                         </td>
                                         <td>$12500</td>
                                         <td>Salame</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <a href="javascript:void(0)">Franco Pinciroli</a>
-                                        </td>
-                                        <td>Rosario 123</td>
-                                        <td>342589452</td>
-                                        <td>francop12@gmail.com</td>
-                                        <td>42587413</td>
-                                        <td class="text-center">
-                                            <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
-                                        </td>
-                                        <td>$37560</td>
-                                        <td>Pajerito</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -204,26 +175,22 @@
                         if (form.checkValidity() === false) {
                             event.preventDefault();
                             event.stopPropagation();
+                        } else {
+                            event.preventDefault();
+                            sendForm();
                         }
                         form.classList.add('was-validated');
                     }, false);
                 });
             }, false);
         })();
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('#form-create').on('submit', function(event) {
-                event.preventDefault(); // Prevenir la acción predeterminada del formulario
-
+        function sendForm() {
                 // Enviar solicitud AJAX
                 $.ajax({
-                    url: $(this).attr('action'), // Utiliza la ruta del formulario
-                    method: $(this).attr('method'), // Utiliza el método del formulario
-                    data: $(this).serialize(), // Utiliza los datos del formulario
+                    url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
+                    method: $("#form-create").attr('method'), // Utiliza el método del formulario
+                    data: $("#form-create").serialize(), // Utiliza los datos del formulario
                     success: function(response) {
                         $("#btnCloseModal").click();
                         Swal.fire(
@@ -239,8 +206,9 @@
                         });
                     }
                 });
-            });
-        });
+            }
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 @endsection

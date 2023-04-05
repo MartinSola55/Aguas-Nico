@@ -73,7 +73,7 @@
                 <!-- Logo -->
                 <!-- ============================================================== -->
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="index.html">
+                    <a class="navbar-brand" href="{{ url('home') }}">
                         <!-- Logo icon -->
                         <b>
                             <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
@@ -286,9 +286,8 @@
                             <li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
                             <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartos</span></a>
                                 <ul aria-expanded="false" class="collapse">
-                                    <li><a href="#">Basic Forms</a></li>
-                                    <li><a href="#">Form Layouts</a></li>
-                                    <li><a href="#">Form Addons</a></li>
+                                    <li><a href="{{ url('/routes/index') }}">Inicio</a></li>
+                                    <li><a href="{{ url('/routes/create') }}">Nuevo</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -314,7 +313,7 @@
         </main>
 
         <footer class="footer">
-            © 2023 Aguas Nico
+            © 2023 - Aguas Nico
         </footer>
     </div>
 </body>

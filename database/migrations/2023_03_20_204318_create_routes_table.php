@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('routes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->string('day_of_week');
-            $table->dateTime('start_time');
-            $table->dateTime('end_time');
+            $table->dateTime('start_daytime');
+            $table->dateTime('end_daytime');
             $table->timestamps();
         });
     }

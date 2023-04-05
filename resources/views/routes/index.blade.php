@@ -1,19 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <link href="{{ asset('plugins/css-chart/css-chart.css') }}" rel="stylesheet">
-    <!--This page css - Morris CSS -->
-    <link href="{{ asset('plugins/c3-master/c3.min.css') }}" rel="stylesheet">
-    <!-- Vector CSS -->
-    <link href="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet">
+    <!-- Datepicker -->
+    <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
 
-    <!--c3 JavaScript -->
-    <script src="{{ asset('plugins/d3/d3.min.js') }}"></script>
-    <script src="{{ asset('plugins/c3-master/c3.min.js') }}"></script>
-    <!-- Vector map JavaScript -->
-    <script src="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
-    <script src="{{ asset('plugins/vectormap/jquery-jvectormap-us-aea-en.js') }}"></script>
-
+    <!-- Datepicker -->
+    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
+    <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
 
     <div class="container-fluid">
         <!-- ============================================================== -->
@@ -21,9 +14,10 @@
         <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Inicio</h3>
+                <h3 class="text-themecolor m-b-0 m-t-0">Repartos</h3>
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item active">Inicio</li>
+                    <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
+                    <li class="breadcrumb-item active">Repartos</li>
                 </ol>
             </div>
         </div>
@@ -34,72 +28,16 @@
         <!-- Start Page Content -->
         <!-- ============================================================== -->
         <div class="row">
-            <!-- Column -->
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex flex-row">
-                            <div class="round round-lg align-self-center round-info"><i class="ti-wallet"></i></div>
-                            <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-light">$3249</h3>
-                                <h5 class="text-muted m-b-0">Ganancias del día</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Column -->
-            <!-- Column -->
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex flex-row">
-                            <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-cellphone-link"></i></div>
-                            <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">2</h3>
-                                <h5 class="text-muted m-b-0">Repartos completados</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Column -->
-            <!-- Column -->
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex flex-row">
-                            <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-cart-outline"></i></div>
-                            <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">4</h3>
-                                <h5 class="text-muted m-b-0">Repartos en curso</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Column -->
-            <!-- Column -->
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex flex-row">
-                            <div class="round round-lg align-self-center round-danger"><i class="mdi mdi-bullseye"></i></div>
-                            <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">1</h3>
-                                <h5 class="text-muted m-b-0">Algo más</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Column -->
-        </div>
-        <div class="row">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Repartos de hoy</h4>
+                        <div class="d-flex no-block">
+                            <h4 class="card-title">Repartos</h4>
+                            <div class="ml-auto">
+                                <label for="datePicker" class="mb-0">Día</label>
+                                <input type="text" class="form-control" placeholder="dd/mm/aaaa" id="datePicker" name="date">
+                            </div>
+                        </div>
                         <div class="table-responsive m-t-20">
                             <table class="table stylish-table">
                                 <thead>
@@ -190,4 +128,16 @@
             });
         });
     </script>
+
+    <script>
+        moment.locale('es');
+        $('#datePicker').bootstrapMaterialDatePicker({
+            currentDate: new Date(),
+            time: false,
+            format: 'DD/MM/YYYY',
+            cancelText: "Cancelar",
+            weekStart: 1,
+        });
+    </script>
+
 @endsection
