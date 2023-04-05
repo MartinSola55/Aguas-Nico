@@ -1,3 +1,8 @@
+@php
+    use Carbon\Carbon;
+    $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+@endphp
+
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -313,7 +318,7 @@
         </main>
 
         <footer class="footer">
-            © 2023 - Aguas Nico
+            © {{ $today->format('Y') }} - Aguas Nico
         </footer>
     </div>
 </body>
