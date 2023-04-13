@@ -24,7 +24,7 @@
                 <h3 class="text-themecolor m-b-0 m-t-0">Clientes</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('/clients/index') }}">Clientes</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url('/client/index') }}">Clientes</a></li>
                     <li class="breadcrumb-item active">Facturación</li>
                 </ol>
             </div>
@@ -35,8 +35,12 @@
         <!-- ============================================================== -->
         <!-- Start Page Content -->
         <!-- ============================================================== -->
+        <div class="text-center">
+            <h1>{{ $client->name }}</h1>
+            <hr>
+        </div>
         <div class="row">
-            <div id="datesContainer" class="col-lg-5">
+            <div id="datesContainer" class="col-xlg-6 col-lg-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Intervalo de facturación</h4>
@@ -51,8 +55,49 @@
                                     <input id="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa">
                                 </div>
                             </div>
-                            <div id="buttonContainer" class="col-lg-12 d-flex flex-direction-row justify-content-end" style="display: none !important">
-                                <button type="button" class="btn btn-danger">Confirmar</button>
+                            <div id="buttonDatesContainer" class="col-lg-12 d-flex flex-direction-row justify-content-end" style="display: none !important">
+                                <button type="button" class="btn btn-danger">Buscar ventas</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id="InvoiceDataContainer" class="col-xlg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Datos de facturación</h4>
+                        <form class="form-material m-t-30">
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label for="invoiceType">Tipo factura</label>
+                                    <select id="invoiceType" class="form-control">
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="invoiceName">Nombre y Apellido / Razón Social</label>
+                                    <input id="invoiceName" type="text" class="form-control">
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="invoiceCUIT">CUIT</label>
+                                    <input id="invoiceCUIT" type="number" class="form-control">
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="invoiceCondition">Condición frente al IVA</label>
+                                    <select id="invoiceCondition" class="form-control">
+                                        <option value="Responsable inscripto">Responsable inscripto</option>
+                                        <option value="Monotributista">Monotributista</option>
+                                        <option value="Excento">Excento</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="invoiceAdress">Domicilio</label>
+                                    <input id="invoiceAdress" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 d-flex flex-direction-row justify-content-end">
+                                <button id="buttonInvoiceData" type="button" class="btn btn-danger">Confirmar</button>
                             </div>
                         </form>
                     </div>
@@ -63,7 +108,7 @@
             <div class="col-md-12">
                 <div class="card card-body printableArea">
                     <div class="d-flex flex-row justify-content-between">
-                        <h3><b>FACTURA B</b> <span class="pull-right">#5669626</span></h3>
+                        <h3><b name="invoiceType">FACTURA -</b> <span class="pull-right">#5669626</span></h3>
                         <h3 class="pull-right m-0"><b>ORIGINAL</b></h3>
                     </div>
                     <hr>
@@ -91,12 +136,11 @@
                             <div class="text-left">
                                 <address>
                                     <h3><b>Hacia,</b></h3>
-                                    <p class="text-muted m-l-30">
-                                        <b>Apellido y Nombre / Razón Social: </b>Martín Sola<br/>
-                                        <b>CUIT: </b>20425592379<br/>
-                                        <b>Condición frente al IVA: </b>IVA Sujeto Exento<br/>
-                                        <b>Condición de venta: </b>Cuenta Corriente<br/>
-                                        <b>Domicilio: </b>Rivadavia 1097 - San Carlos Centro, Santa Fe</p>
+                                    <p class="text-muted m-l-30 mb-0" name="invoiceName"><b>Apellido y Nombre / Razón Social: </b></p>
+                                    <p class="text-muted m-l-30 mb-0" name="invoiceCUIT"><b>CUIT: </b></p>
+                                    <p class="text-muted m-l-30 mb-0" name="invoiceCondition"><b>Condición frente al IVA: </b></p>
+                                    <p class="text-muted m-l-30 mb-0" name="invoice"><b>Condición de venta: </b>HAY QUE VER (Cuenta Corriente)</p>
+                                    <p class="text-muted m-l-30 mb-0" name="invoiceAdress"><b>Domicilio: </b></p>
                                     <hr>
                                     <p id="dateFromInvoice" class="m-t-30"><i class="fa fa-calendar"></i><b> Fecha desde : </b></p>
                                     <p id="dateToInvoice"><i class="fa fa-calendar"></i><b> Fecha hasta : </b></p>
@@ -219,9 +263,20 @@
             $("#dateFromInvoice").html(`<i class="fa fa-calendar"></i><b> Fecha desde : </b>` + $(this).val())
         });
         $("#dateTo").on("change", function() {
-            $("#buttonContainer").css("display", "flex");
+            $("#buttonDatesContainer").css("display", "flex");
             $("#dateToInvoice").html(`<i class="fa fa-calendar"></i><b> Fecha hasta : </b>` + $(this).val())
         });
+    </script>
+
+    <script>
+        $("#buttonInvoiceData").on("click", function() {
+            $('b[name="invoiceType"]').html("FACTURA " + $("#invoiceType").val())
+            $('p[name="invoiceName"]').html("<b>Apellido y Nombre / Razón Social: </b>" + $("#invoiceName").val())
+            $('p[name="invoiceCUIT"]').html("<b>CUIT: </b>" + $("#invoiceCUIT").val())
+            $('p[name="invoiceCondition"]').html("<b>Condición frente al IVA: </b>" + $("#invoiceCondition").val())
+            // $('p[name="invoice"]').html($("#invoice").val())
+            $('p[name="invoiceAdress"]').html("<b>Domicilio: </b>" + $("#invoiceAdress").val())
+        })
     </script>
 
 @endsection

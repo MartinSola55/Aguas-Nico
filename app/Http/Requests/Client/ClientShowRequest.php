@@ -4,7 +4,7 @@ namespace App\Http\Requests\Client;
 
 use App\Http\Requests\BaseFormRequest;
 
-class ClientCreateRequest extends BaseFormRequest
+class ClientShowRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,14 +22,7 @@ class ClientCreateRequest extends BaseFormRequest
     public function rules(): array
     {
         $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'adress' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'debt' => ['required', 'numeric'],
-            'dni' => ['required', 'string', 'max:255'],
-            'invoice' => ['boolean'],
-            'observation' => ['nullable', 'string'],
+            'id' => ['required', 'exists:users,id'],
         ]);
 
        return [
