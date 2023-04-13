@@ -40,6 +40,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/route/create', [App\Http\Controllers\RouteController::class, 'store']);
     Route::post('/route/edit', [App\Http\Controllers\RouteController::class, 'update']);
     Route::view('/route/details', 'routes.details');
+    Route::view('/route/new', 'routes.new');
     Route::view('/routes/cart', 'routes.cart');
     Route::view('/routes/details', 'routes.details');
 

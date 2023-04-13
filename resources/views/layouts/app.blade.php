@@ -284,7 +284,7 @@
                             </li>
                             <li class=""><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
                                 <ul aria-expanded="false" class="collapse" style="height: 10px;">
-                                    <li><a href="{{ url('/clients/index') }}">Inicio</a></li>
+                                    <li><a href="{{ url('/client/index') }}">Inicio</a></li>
                                 </ul>
                             </li>
                             <li class="nav-devider"></li>
@@ -292,7 +292,7 @@
                             <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartos</span></a>
                                 <ul aria-expanded="false" class="collapse">
                                     <li><a href="{{ url('/routes/index') }}">Inicio</a></li>
-                                    <li><a href="{{ url('/routes/create') }}">Nuevo</a></li>
+                                    <li><a href="{{ url('/routes/new') }}">Nuevo</a></li>
                                 </ul>
                             </li>
                         </ul>
