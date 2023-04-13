@@ -16,7 +16,7 @@
                 <h3 class="text-themecolor m-b-0 m-t-0">Clientes</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('/clients/index') }}">Clientes</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url('/client/index') }}">Clientes</a></li>
                     <li class="breadcrumb-item active">Detalles</li>
                 </ol>
             </div>
@@ -43,13 +43,13 @@
                     <div class="col-lg-4 col-md-6 col-xlg-4 col-xs-12">
                         <div class="ribbon-wrapper card">
                             <div class="ribbon ribbon-default">Facturación</div>
-                            <a href="{{ url('/clients/invoice') }}" class="btn btn-danger btn-rounded m-t-10 float-right">Ir</a>
+                            <a href="{{ route('client.invoice', ['id' => $client->id]) }}" class="btn btn-danger btn-rounded m-t-10 float-right">Ir</a>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 col-xlg-4 col-xs-12">
                         <div class="ribbon-wrapper card">
                             <div class="ribbon ribbon-default">Deuda</div>
-                            <p class="ribbon-content">$12500</p>
+                            <p class="ribbon-content">${{ $client->debt }}</p>
                         </div>
                     </div>
                 </div>
@@ -70,11 +70,13 @@
                         <form role="form" class="needs-validation" method="POST" action="{{ url('/client/edit') }}" id="form-edit" autocomplete="off" novalidate>
                             <h6 class="heading-small text-muted mb-4">Datos personales</h6>
                             <div class="pl-lg-4">
+                                <input type="hidden" required value="{{ $client->id }}" name="id">
+                                @csrf
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="clientName">Nombre</label>
-                                            <input disabled required type="text" id="clientName" name="name" class="form-control form-control-alternative">
+                                            <input disabled required type="text" id="clientName" name="name" class="form-control form-control-alternative" value="{{ $client->name }}">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un nombre
                                             </div>
@@ -83,7 +85,7 @@
                                     <div class="col-lg-6">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="clientDNI">DNI</label>
-                                            <input disabled required type="number" id="clientDNI" name="dni" class="form-control form-control-alternative">
+                                            <input disabled required type="number" id="clientDNI" name="dni" class="form-control form-control-alternative" value="{{ $client->dni }}">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un DNI
                                             </div>
@@ -94,7 +96,7 @@
                                     <div class="col-lg-12">
                                         <div class="form-group">
                                             <label class="form-control-label" for="clientAdress">Dirección</label>
-                                            <input disabled required type="text" id="clientAdress" name="adress" class="form-control form-control-alternative">
+                                            <input disabled required type="text" id="clientAdress" name="adress" class="form-control form-control-alternative" value="{{ $client->adress }}">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese una dirección
                                             </div>
@@ -110,7 +112,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="clientPhone">Teléfono</label>
-                                            <input disabled required type="tel" id="clientPhone" name="phone" class="form-control form-control-alternative">
+                                            <input disabled required type="tel" id="clientPhone" name="phone" class="form-control form-control-alternative" value="{{ $client->phone }}">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un teléfono
                                             </div>
@@ -121,7 +123,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="clientEmail">Email</label>
-                                            <input disabled required type="email" id="clientEmail" name="email" class="form-control form-control-alternative">
+                                            <input disabled required type="email" id="clientEmail" name="email" class="form-control form-control-alternative" value="{{ $client->email }}">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un email
                                             </div>
@@ -141,7 +143,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">$</span>
                                                 </div>
-                                                <input disabled required type="number" step="0.01" min="0" max="1000000" class="form-control form-control-alternative" id="clientDebt" name="debt">
+                                                <input disabled required type="number" step="0.01" min="0" max="1000000" class="form-control form-control-alternative" id="clientDebt" name="debt" value="{{ $client->debt }}">
                                                 <div class="invalid-feedback">
                                                     Por favor, ingrese un monto
                                                 </div>
@@ -150,7 +152,7 @@
                                     </div>
                                     <div class="col-md-6 d-flex flex-column justify-content-center">
                                         <div>
-                                            <input disabled type="checkbox" id="clientInvoice" name="invoice" checked />
+                                            <input disabled type="checkbox" id="clientInvoice" name="invoice" value="1" {{ $client->invoice ? 'checked' : '' }} />
                                             <label class="m-0" for="clientInvoice">¿Quiere factura?</label>
                                         </div>
                                     </div>
@@ -160,7 +162,7 @@
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="clientDebt">Observación</label>
                                             <div class="input-group">
-                                                <textarea disabled type="text" class="form-control form-control-alternative" id="clientObservation" name="observation"></textarea>
+                                                <textarea disabled type="text" class="form-control form-control-alternative" id="clientObservation" name="observation" value="{{ $client->observation }}"></textarea>
                                                 <div class="invalid-feedback">
                                                     Por favor, ingrese una descripción
                                                 </div>
@@ -231,7 +233,7 @@
     <script>
         $("#btnEditInputs").on("click", function() {
             $("#form-edit :input:not(:button)").prop('disabled', function(i, val) {
-                return !val;    
+                return $(this).attr('name') === 'id' || $(this).attr('name') === '_token' ? false : !val;
             });
             $("#divSaveClient").toggle();
         });

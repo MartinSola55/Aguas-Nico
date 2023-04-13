@@ -106,7 +106,7 @@
                                                     </div>
                                                     <div class="col-12 mb-3">
                                                         <div>
-                                                            <input type="checkbox" id="clientInvoice" name="invoice" />
+                                                            <input type="checkbox" id="clientInvoice" name="invoice" value="1"/>
                                                             <label for="clientInvoice">¿Quiere factura?</label>
                                                         </div>
                                                     </div>
@@ -138,21 +138,26 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <a href="{{ url('/clients/details') }}">Martín Sola</a>
-                                        </td>
-                                        <td>Rivadavia 1097</td>
-                                        <td>3404437748</td>
-                                        <td>martinrsola55@gmail.com</td>
-                                        <td>42559237</td>
-                                        <td class="text-center">
-                                            <i class="bi bi-check2" style="font-size: 1.5rem"></i>
-                                            {{-- <i class="bi bi-x-lg" style="font-size: 1.3rem"></i> --}}
-                                        </td>
-                                        <td>$12500</td>
-                                        <td>Salame</td>
-                                    </tr>
+                                    @foreach ($clients as $client)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('client.details', ['id' => $client->id]) }}">{{ $client->name }}</a>
+                                            </td>
+                                            <td>{{ $client->adress }}</td>
+                                            <td>{{ $client->phone }}</td>
+                                            <td>{{ $client->email }}</td>
+                                            <td>{{ $client->dni }}</td>
+                                            <td class="text-center">
+                                                @if ( $client->invoice == true)
+                                                    <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                                @else
+                                                    <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
+                                                @endif
+                                            </td>
+                                            <td>${{ $client->debt }}</td>
+                                            <td>{{ $client->observation }}</td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
