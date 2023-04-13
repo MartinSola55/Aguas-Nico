@@ -1,3 +1,7 @@
+@php
+    use Carbon\Carbon;
+    $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -58,71 +62,83 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-body printableArea">
-                    <h3><b>FACTURA</b> <span class="pull-right">#5669626</span></h3>
+                    <div class="d-flex flex-row justify-content-between">
+                        <h3><b>FACTURA B</b> <span class="pull-right">#5669626</span></h3>
+                        <h3 class="pull-right m-0"><b>ORIGINAL</b></h3>
+                    </div>
                     <hr>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="pull-left">
                                 <address>
-                                    <h3> &nbsp;<b class="text-danger">Aguas Nico</b></h3>
-                                    <p class="text-muted m-l-5">Lorenza Aguilera 415
-                                        <br/>Neuquén, Neuquén
-                                        <br/>CP: 8300
-                                        <br/>(0299) 4467078 / 4450365</p>
+                                    <h3> &nbsp;<b class="text-danger">Sodería La Nueva S.A.</b></h3>
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <p class="text-muted m-l-5">
+                                            <b>Razón Social:</b> Sodería La Nueva S.A.<br/>
+                                            <b>Domicilio Comercial:</b> Lorenza Aguilera 415 - Neuquén, Neuquén<br/>
+                                            <b>Condición frente al IVA:</b> IVA Responsable Inscripto<br/>
+                                        </p>
+                                        <p class="text-muted m-l-5 text-right">
+                                            <b>Fecha de Emisión:</b> {{ $today->format('d/m/Y') }}<br/>
+                                            <b>CUIT: </b>30707808698<br/>
+                                            <b>Ingresos Brutos: </b>915-720884-0<br/>
+                                            <b>Fecha de Inicio de Actividades: </b>01/11/2001<br/>
+                                        </p>
+                                    </div>
                                 </address>
                             </div>
-                            <div class="pull-right text-right">
+                            <hr>
+                            <div class="text-left">
                                 <address>
-                                    <h3>Hacia,</h3>
-                                    <h4 class="font-bold">Martín Sola,</h4>
-                                    <p class="text-muted m-l-30">Rivadavia 1097
-                                        <br/>San Carlos Centro, Santa Fe
-                                        <br/>CP: 3013</p>
-                                    <p class="m-t-30"><i class="fa fa-calendar"></i><b> Fecha desde :</b> 01 de Mayo de 2023</p>
-                                    <p><i class="fa fa-calendar"></i><b> Fecha hasta :</b> 03 de Abril de 2023</p>
+                                    <h3><b>Hacia,</b></h3>
+                                    <p class="text-muted m-l-30">
+                                        <b>Apellido y Nombre / Razón Social: </b>Martín Sola<br/>
+                                        <b>CUIT: </b>20425592379<br/>
+                                        <b>Condición frente al IVA: </b>IVA Sujeto Exento<br/>
+                                        <b>Condición de venta: </b>Cuenta Corriente<br/>
+                                        <b>Domicilio: </b>Rivadavia 1097 - San Carlos Centro, Santa Fe</p>
+                                    <hr>
+                                    <p id="dateFromInvoice" class="m-t-30"><i class="fa fa-calendar"></i><b> Fecha desde : </b></p>
+                                    <p id="dateToInvoice"><i class="fa fa-calendar"></i><b> Fecha hasta : </b></p>
                                 </address>
                             </div>
                         </div>
                         <div class="col-md-12">
+                            <hr>
                             <div class="table-responsive m-t-40" style="clear: both;">
-                                <table class="table table-hover">
+                                <table id="invoiceProducts" class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">#</th>
-                                            <th>Description</th>
-                                            <th class="text-right">Quantity</th>
-                                            <th class="text-right">Unit Cost</th>
+                                            <th>Descripción</th>
+                                            <th class="text-right">Cantidad</th>
+                                            <th class="text-right">Precio Unitario</th>
                                             <th class="text-right">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td class="text-center">1</td>
                                             <td>Milk Powder</td>
-                                            <td class="text-right">2 </td>
-                                            <td class="text-right"> $24 </td>
-                                            <td class="text-right"> $48 </td>
+                                            <td class="text-right">2</td>
+                                            <td class="text-right">$24</td>
+                                            <td class="text-right productTotal">$48</td>
                                         </tr>
                                         <tr>
-                                            <td class="text-center">2</td>
                                             <td>Air Conditioner</td>
-                                            <td class="text-right"> 3 </td>
-                                            <td class="text-right"> $500 </td>
-                                            <td class="text-right"> $1500 </td>
+                                            <td class="text-right">3</td>
+                                            <td class="text-right">$500</td>
+                                            <td class="text-right productTotal">$1500</td>
                                         </tr>
                                         <tr>
-                                            <td class="text-center">3</td>
                                             <td>RC Cars</td>
-                                            <td class="text-right"> 20 </td>
-                                            <td class="text-right"> %600 </td>
-                                            <td class="text-right"> $12000 </td>
+                                            <td class="text-right">20</td>
+                                            <td class="text-right">$600</td>
+                                            <td class="text-right productTotal">$12000</td>
                                         </tr>
                                         <tr>
-                                            <td class="text-center">4</td>
                                             <td>Down Coat</td>
-                                            <td class="text-right"> 60 </td>
-                                            <td class="text-right">$5 </td>
-                                            <td class="text-right"> $300 </td>
+                                            <td class="text-right">60</td>
+                                            <td class="text-right">$5</td>
+                                            <td class="text-right productTotal">$300</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -130,10 +146,10 @@
                         </div>
                         <div class="col-md-12">
                             <div class="pull-right m-t-30 text-right">
-                                <p>Subtotal: $13,848</p>
-                                <p>IVA (10%) : $138 </p>
+                                <p id="subtotalAmount">Subtotal: $13,848</p>
+                                <p id="IVAAmount">IVA (21%) : $138</p>
                                 <hr>
-                                <h3><b>Total :</b> $13,986</h3>
+                                <h3 id="totalAmount"><b>Total: </b>$13,986</h3>
                             </div>
                             <div class="clearfix"></div>
                             <hr>
@@ -147,6 +163,22 @@
             </div>
         </div>
     </div>
+
+    {{-- Script para calcular el subtotal, iva y total automáticamente --}}
+    <script>
+        const formattedNumber = (number) => {
+            return number.toLocaleString('es-AR', { minimumFractionDigits: 2 });
+        }
+        let subtotal = 0;
+        $('#invoiceProducts .productTotal').each(function() {
+            const valor = $(this).text().replace('$', '').trim();
+            subtotal += parseFloat(valor);
+        });
+        $('#subtotalAmount').text("Subtotal: $" + formattedNumber(subtotal));
+        $("#IVAAmount").html("IVA (21%) : $" + formattedNumber(subtotal*0.21))
+        let iva = subtotal*0.21;
+        $("#totalAmount").html("<b>Total: </b>$" + formattedNumber(subtotal+iva))
+    </script>
     
     <script>
     $(document).ready(function() {
@@ -184,9 +216,11 @@
                 cancelText: "Cancelar",
                 weekStart: 1,
             });
+            $("#dateFromInvoice").html(`<i class="fa fa-calendar"></i><b> Fecha desde : </b>` + $(this).val())
         });
         $("#dateTo").on("change", function() {
             $("#buttonContainer").css("display", "flex");
+            $("#dateToInvoice").html(`<i class="fa fa-calendar"></i><b> Fecha hasta : </b>` + $(this).val())
         });
     </script>
 
