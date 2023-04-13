@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Client\ClientCreateRequest;
+use App\Http\Requests\Client\ClientShowRequest;
 use App\Http\Requests\Client\ClientUpdateRequest;
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $products = Client::all();
+        $clients = Client::all();
         return view('clients.index', compact('clients'));
     }
 
@@ -59,9 +60,16 @@ class ClientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Client $client)
+    public function show(ClientShowRequest $id)
     {
-        //
+        $client = Client::find($id);
+        return view('clients.details', compact('client'));
+    }
+
+    public function show_invoice(ClientShowRequest $id)
+    {
+        $client = Client::find($id);
+        return view('clients.invoice', compact('client'));
     }
 
     /**
