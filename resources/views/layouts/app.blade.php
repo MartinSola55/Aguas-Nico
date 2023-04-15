@@ -276,10 +276,13 @@
                     <nav class="sidebar-nav">
                         <ul id="sidebarnav">
                             <li class="nav-small-cap">PERSONAL</li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
+                            </li>
                             <li class=""><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
                                 <ul aria-expanded="false" class="collapse" style="height: 10px;">
                                     <li><a href="{{ url('/product/index') }}">Inicio</a></li>
-                                    <li><a href="{{ url('/products/create') }}">Nuevo</a></li>
+                                    <li><a href="{{ url('/product/new') }}">Nuevo</a></li>
                                 </ul>
                             </li>
                             <li class=""><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
@@ -291,8 +294,8 @@
                             <li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
                             <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartos</span></a>
                                 <ul aria-expanded="false" class="collapse">
-                                    <li><a href="{{ url('/routes/index') }}">Inicio</a></li>
-                                    <li><a href="{{ url('/routes/new') }}">Nuevo</a></li>
+                                    <li><a href="{{ url('/route/index') }}">Inicio</a></li>
+                                    <li><a href="{{ url('/route/new') }}">Nuevo</a></li>
                                 </ul>
                             </li>
                         </ul>

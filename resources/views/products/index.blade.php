@@ -56,8 +56,14 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-danger waves-effect waves-light">Actualizar</button>
+                        <div class="d-flex flex-row justify-content-between w-100">
+                            <div class="d-flex">
+                                <button type="button" id="btnDeleteProduct" class="btn btn-primary waves-effect waves-light">Eliminar</button>
+                            </div>
+                            <div class="d-flex">
+                                <button type="submit" class="btn btn-danger waves-effect waves-light">Actualizar</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -81,7 +87,7 @@
                 <div class="d-flex m-t-10 justify-content-end">
                     <div class="d-flex m-r-20 m-l-10 hidden-md-down">
                         <div>
-                            <a class="btn btn-primary waves-effect waves-light" href="{{ url('/product/create') }}">
+                            <a class="btn btn-danger waves-effect waves-light" href="{{ url('/product/new') }}">
                                 <i class="bi bi-plus-lg"></i>
                             </a>
                         </div>
@@ -110,7 +116,7 @@
                                     <button type="button" class="btn btn-danger btn-rounded mr-4" onclick="openModal({{ $product->id }}, '{{ $product->name }}', {{ $product->stock }}, {{ $product->price }})" data-toggle="modal" data-target="#modalConfirmation">
                                         Editar <i class="bi bi-pencil"></i>
                                     </button>
-                                    <a class="btn btn-danger btn-rounded" href="{{ url('/products/stats') }}">
+                                    <a class="btn btn-danger btn-rounded" href="{{ route('product.stats', ['id' => $product->id]) }}">
                                         Estadísticas <i class="bi bi-graph-up"></i>
                                     </a>
                                 </div>
@@ -120,6 +126,11 @@
                 </div>
             </div>
         </div>
+
+        <form id="formDeleteProduct" action="{{ url('/product/delete') }}" method="POST">
+            @csrf
+            <input type="hidden" id="product-id" name="id" value="">
+        </form>
         {{-- 
         <div class="row el-element-overlay">
             @foreach ($products as $product)
@@ -159,28 +170,51 @@
     <!-- ============================================================= -->
 
     <script>
+        $("#btnDeleteProduct").on("click", function() {
+            Swal.fire({
+                title: 'Seguro deseas eliminar el producto?',
+                text: "Esta acción no se puede revertir",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Eliminar'
+                })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: $("#formDeleteProduct").attr('action'), // Utiliza la ruta del formulario
+                        method: $("#formDeleteProduct").attr('method'), // Utiliza el método del formulario
+                        data: $("#formDeleteProduct").serialize(), // Utiliza los datos del formulario
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Producto eliminado correctamente',
+                            });
+                        },
+                        error: function(errorThrown) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: errorThrown.responseJSON.message,
+                            });
+                        }
+                    });
+                }
+            })
+        });
+    </script>
+
+    <script>
         function openModal(id, name, stock, price) {
+            //Delete product
+            $("#product-id").val(id);
+
+            //Edit product
             $("#productID").val(id);
             $("#productName").val(name);
             $("#productStock").val(stock);
             $("#productPrice").val(price);
             $("#form-edit").removeClass("was-validated");
-            /*$.ajax({
-                url: "/product/getOne",
-                method: "GET",
-                data: id, 
-                success: function(response) {
-                    $("#productName").val(response.name);
-                    $("#productStock").val(response.stock);
-                    $("#productPrice").val(response.price);
-                },
-                error: function(errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: errorThrown.responseJSON.message,
-                    });
-                }
-            });*/
         }
     </script>
 
@@ -215,6 +249,7 @@
                 data: $("#form-edit").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     updatedSuccess(response);
+                    console.log(response)
                 },
                 error: function(errorThrown) {
                     Swal.fire({

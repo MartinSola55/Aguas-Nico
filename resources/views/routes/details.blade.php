@@ -95,7 +95,7 @@
                 <h3 class="text-themecolor m-b-0 m-t-0">Repartos</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('/routes/index') }}">Repartos</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url('/route/index') }}">Repartos</a></li>
                     <li class="breadcrumb-item active">Detalles</li>
                 </ol>
             </div>
