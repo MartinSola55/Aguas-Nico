@@ -44,19 +44,19 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Intervalo de facturación</h4>
-                        <form class="form-material m-t-30">
+                        <form method="POST" action="{{ url('/client/searchSales') }}" id="form-sales" class="form-material m-t-30">
                             <div class="row">
                                 <div class="form-group col-lg-6">
                                     <label for="dateFrom">Fecha inicio</label>
-                                    <input id="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                                    <input id="dateFrom" name="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa">
                                 </div>
                                 <div id="dateToContainer" class="form-group col-lg-6" style="display: none">
                                     <label for="dateTo">Fecha fin</label>
-                                    <input id="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                                    <input id="dateTo" name="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa">
                                 </div>
                             </div>
                             <div id="buttonDatesContainer" class="col-lg-12 d-flex flex-direction-row justify-content-end" style="display: none !important">
-                                <button type="button" class="btn btn-danger">Buscar ventas</button>
+                                <button id="btnSearchSale" type="button" class="btn btn-danger">Buscar ventas</button>
                             </div>
                         </form>
                     </div>
@@ -160,30 +160,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Milk Powder</td>
-                                            <td class="text-right">2</td>
-                                            <td class="text-right">$24</td>
-                                            <td class="text-right productTotal">$48</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Air Conditioner</td>
-                                            <td class="text-right">3</td>
-                                            <td class="text-right">$500</td>
-                                            <td class="text-right productTotal">$1500</td>
-                                        </tr>
-                                        <tr>
-                                            <td>RC Cars</td>
-                                            <td class="text-right">20</td>
-                                            <td class="text-right">$600</td>
-                                            <td class="text-right productTotal">$12000</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Down Coat</td>
-                                            <td class="text-right">60</td>
-                                            <td class="text-right">$5</td>
-                                            <td class="text-right productTotal">$300</td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -277,6 +253,35 @@
             // $('p[name="invoice"]').html($("#invoice").val())
             $('p[name="invoiceAdress"]').html("<b>Domicilio: </b>" + $("#invoiceAdress").val())
         })
+    </script>
+
+    {{-- Buscar ventas para la facturación --}}
+    <script>
+        $("#btnSearchSale").on("click", function() {
+            $.ajax({
+                url: $("#form-sales").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-sales").attr('method'), // Utiliza el método del formulario
+                data: $("#form-sales").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    let content = "";
+                    response.forEach(item => {
+                        content += "<tr>";
+                            content += "<td>" + item.name + "</td>";
+                            content += "<td class='text-right'>" + item.quantity + "</td>";
+                            content += "<td class='text-right'>" + item.price + "</td>";
+                            content += "<td class='text-right productTotal'>" + (item.quantity * item.price) + "</td>";
+                            content += "</tr>";
+                    });
+                    $("#invoiceProducts tbody").html(content);
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                    });
+                }
+            });
+        });
     </script>
 
 @endsection

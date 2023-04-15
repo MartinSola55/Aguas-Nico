@@ -1,5 +1,9 @@
-@extends('layouts.app')
+@php
+    use Carbon\Carbon;
+    $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+@endphp
 
+@extends('layouts.app')
 
 @section('content')
 <!-- Chart JS -->
@@ -31,8 +35,8 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex flex-column no-block align-items-start">
-                        <h3 class="card-title">Botella de agua 1 litro</h3>
-                        <h6 class="card-subtitle">2023</h6>
+                        <h3 class="card-title">{{ $product->name }}</h3>
+                        <h6 class="card-subtitle">{{ $today->format('Y') }}</h6>
                     </div>
                     <div>
                         <canvas id="barChart" height="150"></canvas>
@@ -43,7 +47,7 @@
                             <h6 class="text-muted">Ganancias totales</h6>
                         </div>
                         <div class="col-md-6 m-b-30 m-t-20 text-center">
-                            <h1 class="m-b-0 font-light">893</h1>
+                            <h1 class="m-b-0 font-light">{{ $product->stock }}</h1>
                             <h6 class="text-muted">En stock</h6>
                         </div>
                     </div>

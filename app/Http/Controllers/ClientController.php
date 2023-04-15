@@ -60,13 +60,13 @@ class ClientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ClientShowRequest $id)
+    public function show($id)
     {
         $client = Client::find($id);
         return view('clients.details', compact('client'));
     }
 
-    public function show_invoice(ClientShowRequest $id)
+    public function show_invoice($id)
     {
         $client = Client::find($id);
         return view('clients.invoice', compact('client'));

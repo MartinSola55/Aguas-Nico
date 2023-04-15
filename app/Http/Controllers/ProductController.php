@@ -58,6 +58,13 @@ class ProductController extends Controller
     {
         //
     }
+    
+    
+    public function stats($id)
+    {
+        $product = Product::find($id);
+        return view('products.stats', compact('product'));
+    }
 
     /**
      * Show the form for editing the specified resource.

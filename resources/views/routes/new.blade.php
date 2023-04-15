@@ -1,19 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Footable CSS -->
-    <link href="{{ asset('plugins/footable/css/footable.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('plugins/bootstrap-select/bootstrap-select.min.css') }}" rel="stylesheet">
+    <!-- Data table -->
+    <link href="{{ asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
 
     <!-- Datepicker -->
     <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
-
-    <!-- Footable -->
-    <script src="{{ asset('plugins/moment/moment.js') }}"></script>
-    <script src="{{ asset('plugins/footable/js/footable.min.js') }}"></script>
-    <script src="{{ asset('plugins/bootstrap-select/bootstrap-select.min.js') }}" type="text/javascript"></script>
-    <!--FooTable init-->
-    <script src="{{ asset('js/footable-init.js') }}"></script>
+    
+    
+    <!-- This is data table -->
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
     
     <!-- Datepicker -->
     <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
@@ -25,36 +21,25 @@
             <form role="form" class="needs-validation" method="POST" action="{{ url('/route/create') }}" id="form-create" autocomplete="off" novalidate>
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Crear reparto</h4>
+                        <h4 class="modal-title"></h4>
                         <button type="button" class="close" id="btnCloseModal" data-dismiss="modal" aria-hidden="true">×</button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-lg-12">
                                 @csrf
-                                <input type="hidden" name="id" id="dealerID">
+                                <input type="hidden" name="user_id" id="dealerID">
                                 <div class="form-column">
-                                    <div class="col-12 mb-3">
-                                        <label for="routeDay" class="mb-0">Día</label>
-                                        <select class="form-control" id="routeDay" name="day_of_week" required>
-                                            <option value="" selected disabled>Seleccione un día</option>
-                                            <option value="0">Lunes</option>
-                                            <option value="1">Martes</option>
-                                            <option value="2">Miércoles</option>
-                                            <option value="3">Jueves</option>
-                                            <option value="4">Viernes</option>
-                                            <option value="5">Sábado</option>
-                                            <option value="6">Domingo</option>
-                                        </select>
-                                        <div class="valid-feedback">
-                                        </div>
+                                    <div id="dateFromContainer" class="col-12 mb-3">
+                                        <label for="dateFrom" class="mb-0">Día y hora de inicio</label>
+                                        <input id="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" name="start_daytime" required>
                                         <div class="invalid-feedback">
-                                            Por favor, seleccione un día
+                                            Por favor, ingrese un día y horario
                                         </div>
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <label for="datePicker" class="mb-0">Día y hora de inicio</label>
-                                        <input type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" id="datePicker" name="date" required>
+                                    <div id="dateToContainer" class="form-group col-12 mb-3" style="display: none">
+                                        <label for="dateTo" class="mb-0">Día y hora de finalización</label>
+                                        <input id="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" name="end_daytime" required>
                                         <div class="invalid-feedback">
                                             Por favor, ingrese un día y horario
                                         </div>
@@ -82,7 +67,7 @@
                 <h3 class="text-themecolor m-b-0 m-t-0">Repartos</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('/routes/index') }}">Repartos</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url('/route/index') }}">Repartos</a></li>
                     <li class="breadcrumb-item active">Nuevo</li>
                 </ol>
             </div>
@@ -98,8 +83,8 @@
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Seleccionar un repartidor</h4>
-                        <div class="table-responsive">
-                            <table class="table table-bordered m-t-30 table-hover contact-list" data-paging="true" data-paging-size="7">
+                        <div class="table-responsive m-t-40">
+                            <table id="dealersTable" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
@@ -108,11 +93,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr style="cursor: pointer" data-toggle="modal" data-target="#modalConfirmation">
-                                        <td>Martín Sola</td>
-                                        <td>martinrsola55@gmail.com</td>
-                                        <td>3</td>
-                                    </tr>
+                                    @foreach ($users as $user)
+                                        <tr>
+                                            <td>
+                                                <p class="m-0" style="cursor: pointer; color: #009efb" data-toggle="modal" data-target="#modalConfirmation" onclick="openModal({{ $user->id }}, '{{ $user->name }}')">{{ $user->name }}</p>
+                                            </td>
+                                            <td>{{ $user->email }}</td>
+                                            <td>{{ $user->truck_number }}</td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -171,12 +160,59 @@
 
     <script>
         moment.locale('es');
-        $('#datePicker').bootstrapMaterialDatePicker({
+        $('#dateFrom').bootstrapMaterialDatePicker({
             format: 'DD/MM/YYYY - HH:mm',
             minDate: new Date(),
             cancelText: "Cancelar",
             weekStart: 1,
         });
+
+        $("#dateFrom").on("change", function() {
+            $("#dateToContainer").css("display", "block");
+            $('#dateTo').bootstrapMaterialDatePicker({
+                minDate: moment($("#dateFrom").val(), 'DD/MM/YYYY - HH:mm'),
+                format: 'DD/MM/YYYY - HH:mm',
+                cancelText: "Cancelar",
+                weekStart: 1,
+            });
+        });
     </script>
+
+    <script>
+        $('#dealersTable').DataTable({
+            "language": {
+                // "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json" // La url reemplaza todo al español
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                "sLengthMenu": "Mostrar _MENU_ clientes",
+                "sSearch": "Buscar:",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior",
+                },
+            },
+        });
+    </script>
+
+    <script>
+        function openModal(id, name) {
+            $("#dealerID").val(id);
+            $(".modal-title").html("Crear reparto para " + name);
+            $("#dateToContainer").css("display", "none");
+            $("#dateTo").val("");
+        }
+    </script>
+
+<style>
+    #dealersTable_paginate > ul > li.paginate_button.page-item.active > a,
+    #dealersTable_paginate > ul > li.paginate_button.page-item.active > a:hover
+    {
+        background-color: #fc4b6c;
+        border-color: #ff0030;
+    }
+</style>
 
 @endsection

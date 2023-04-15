@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Route;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class RouteController extends Controller
@@ -16,6 +17,12 @@ class RouteController extends Controller
     {
         $routes = Route::all();
         return view('routes.index', compact('routes'));
+    }
+    
+    public function new()
+    {
+        $users = User::all();
+        return view('routes.new', compact('users'));
     }
 
     /**

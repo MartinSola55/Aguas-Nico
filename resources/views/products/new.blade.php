@@ -34,9 +34,6 @@
                                     <label for="productName">Nombre</label>
                                     <input type="text" class="form-control" id="productName" name="name"
                                         placeholder="Nombre del producto" required>
-                                    <div class="valid-feedback">
-                                        Válido!
-                                    </div>
                                     <div class="invalid-feedback">
                                         Por favor, ingrese un nombre
                                     </div>
@@ -45,9 +42,6 @@
                                     <label for="productStock">Stock</label>
                                     <input type="number" class="form-control" min="0" max="1000000"
                                         id="productStock" name="stock" placeholder="X" required>
-                                    <div class="valid-feedback">
-                                        Válido!
-                                    </div>
                                     <div class="invalid-feedback">
                                         Por favor, ingrese un stock
                                     </div>
@@ -61,16 +55,15 @@
                                         <input type="number" step="0.01" min="0" max="1000000"
                                             class="form-control" id="productPrice" name="price" place
                                             aria-describedby="inputGroupPrepend" required>
-                                        <div class="valid-feedback">
-                                            Válido!
-                                        </div>
                                         <div class="invalid-feedback">
                                             Por favor, ingrese un precio
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn btn-primary" type="submit">Agregar</button>
+                            <div class="d-flex flex-row justify-content-end">
+                                <button class="btn btn-danger" type="submit">Agregar</button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -102,27 +95,32 @@
         })();
 
         function sendForm() {
-                // Enviar solicitud AJAX
-                $.ajax({
-                    url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
-                    method: $("#form-create").attr('method'), // Utiliza el método del formulario
-                    data: $("#form-create").serialize(), // Utiliza los datos del formulario
-                    success: function(response) {
-                        $("#btnCloseModal").click();
-                        Swal.fire(
-                            'Todo piola gato',
-                            'Se agregó correctamente',
-                            'success'
-                        );
-                    },
-                    error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                        });
-                    }
-                });
-            }
+            // Enviar solicitud AJAX
+            $.ajax({
+                url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-create").attr('method'), // Utiliza el método del formulario
+                data: $("#form-create").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnCloseModal").click();
+                    Swal.fire(
+                        'Todo piola gato',
+                        'Se agregó correctamente',
+                        'success'
+                    );
+                    limpiarCampos();
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                    });
+                }
+            });
+        }
+        function limpiarCampos() {
+            $("form").removeClass("was-validated");
+            $("form input").val("");
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

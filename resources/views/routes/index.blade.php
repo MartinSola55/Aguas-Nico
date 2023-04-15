@@ -20,6 +20,17 @@
                     <li class="breadcrumb-item active">Repartos</li>
                 </ol>
             </div>
+            <div class="col-md-7 col-4 align-self-center">
+                <div class="d-flex m-t-10 justify-content-end">
+                    <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                        <div>
+                            <a class="btn btn-danger waves-effect waves-light" href="{{ url('/route/new') }}">
+                                <i class="bi bi-plus-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- ============================================================== -->
         <!-- End Bread crumb and right sidebar toggle -->
@@ -49,6 +60,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    
                                     {{-- <tr class="clickable" data-url="{{ route('/routes/details', ['id' => $user->id]) }}"> --}}
                                     <tr class="clickable" data-url="{{ url('/routes/details') }}">
                                         <td style="width:50px;"><span class="round">JP</span></td>
