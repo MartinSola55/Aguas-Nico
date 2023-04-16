@@ -12,21 +12,38 @@ use Illuminate\Http\Request;
 
 class RouteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $routes = Route::all();
+        $routes = $this->getRoutesByDate(today()->toDateString());
         return view('routes.index', compact('routes'));
     }
-    
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Request $request)
+    {
+        $routes = $this->getRoutesByDate($request->input('start_time'));
+        return view('routes.index', compact('routes'));
+    }
+
+    /**
+     * Get routes by date.
+     *
+     * @param  string  $date
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getRoutesByDate(string $date)
+    {
+        return Route::whereDate('start_time', $date)->get();
+    }
+
     public function new()
     {
-        $users = User::all();
+        $users = User::all();// traer todo menos los admins
         return view('routes.new', compact('users'));
     }
-    
+
     public function newCart($id)
     {
         $route = Route::find($id);
@@ -58,7 +75,7 @@ class RouteController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Route created successfully.',
-                'data' => $route
+                'data' => $route->id
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -66,14 +83,6 @@ class RouteController extends Controller
                 'message' => 'Route creation failed: ' . $e->getMessage(),
             ], 400);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Route $route)
-    {
-        //
     }
 
     /**

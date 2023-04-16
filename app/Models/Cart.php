@@ -15,4 +15,9 @@ class Cart extends Model
         'start_date',
         'end_date',
     ];
+
+    public function ProductsCart()
+    {
+        return $this->hasMany(ProductCart::class, 'cart_id');
+    }
 }
