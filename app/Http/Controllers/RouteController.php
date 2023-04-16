@@ -23,8 +23,8 @@ class RouteController extends Controller
      */
     public function show(Request $request)
     {
-        $routes = $this->getRoutesByDate($request->input('start_time'));
-        return view('routes.index', compact('routes'));
+        $routes = $this->getRoutesByDate($request->input('start_daytime'))->load(['Carts', 'User']);;
+        return response()->json(['routes' => $routes]);
     }
 
     /**
@@ -35,7 +35,7 @@ class RouteController extends Controller
      */
     private function getRoutesByDate(string $date)
     {
-        return Route::whereDate('start_time', $date)->get();
+        return Route::whereDate('start_daytime', $date)->get();
     }
 
     public function new()
