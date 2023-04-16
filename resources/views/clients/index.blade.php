@@ -26,6 +26,92 @@
         <!-- ============================================================== -->
         <!-- Start Page Content -->
         <!-- ============================================================== -->
+
+        <!-- Modal -->
+        <div id="modalConfirmation" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog">
+                <form role="form" class="needs-validation" method="POST" action="{{ url('/client/create') }}" id="form-create" autocomplete="off" novalidate>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Agregar cliente</h4>
+                            <button type="button" class="close" id="btnCloseModal" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    @csrf
+                                    <div class="form-column">
+                                        <div class="col-12 mb-3">
+                                            <label for="clientName" class="mb-0">Nombre</label>
+                                            <input type="text" class="form-control" id="clientName" name="name" required>
+                                            <div class="invalid-feedback">
+                                                Por favor, ingrese un nombre
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label for="clientAdress" class="mb-0">Dirección</label>
+                                            <input type="text" class="form-control" id="clientAdress" name="adress" required>
+                                            <div class="invalid-feedback">
+                                                Por favor, ingrese una dirección
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label for="clientPhone" class="mb-0">Teléfono</label>
+                                            <input type="tel" class="form-control" id="clientPhone" name="phone" required>
+                                            <div class="invalid-feedback">
+                                                Por favor, ingrese un teléfono
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label for="clientEmail" class="mb-0">Email</label>
+                                            <input type="email" class="form-control" id="clientEmail" name="email" required>
+                                            <div class="invalid-feedback">
+                                                Por favor, ingrese un email
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label for="clientDNI" class="mb-0">DNI</label>
+                                            <input type="number" min="0" class="form-control" id="clientDNI" name="dni" required>
+                                            <div class="invalid-feedback">
+                                                Por favor, ingrese un DNI
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label for="clientDebt" class="mb-0">Deuda</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="number" step="0.01" min="0" max="1000000" class="form-control" id="clientDebt" name="debt" placearia-describedby="inputGroupPrepend" required>
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese un monto
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label for="clientObservation" class="mb-0">Observación</label>
+                                            <textarea type="text" class="form-control" id="clientObservation" name="observation"></textarea>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <div>
+                                                <input type="checkbox" id="clientInvoice" name="invoice" value="1"/>
+                                                <label for="clientInvoice">¿Quiere factura?</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-danger waves-effect waves-light">Agregar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- End Modal -->
+        
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -34,91 +120,6 @@
                             <h2 class="card-title">Listado de clientes</h4>
                             <button type="button" class="btn btn-danger btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar nuevo cliente</button>
                         </div>
-                        <!-- Modal -->
-                        <div id="modalConfirmation" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                            <div class="modal-dialog">
-                                <form role="form" class="needs-validation" method="POST" action="{{ url('/client/create') }}" id="form-create" autocomplete="off" novalidate>
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Agregar cliente</h4>
-                                            <button type="button" class="close" id="btnCloseModal" data-dismiss="modal" aria-hidden="true">×</button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    @csrf
-                                                    <div class="form-column">
-                                                        <div class="col-12 mb-3">
-                                                            <label for="clientName" class="mb-0">Nombre</label>
-                                                            <input type="text" class="form-control" id="clientName" name="name" required>
-                                                            <div class="invalid-feedback">
-                                                                Por favor, ingrese un nombre
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 mb-3">
-                                                            <label for="clientAdress" class="mb-0">Dirección</label>
-                                                            <input type="text" class="form-control" id="clientAdress" name="adress" required>
-                                                            <div class="invalid-feedback">
-                                                                Por favor, ingrese una dirección
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 mb-3">
-                                                            <label for="clientPhone" class="mb-0">Teléfono</label>
-                                                            <input type="tel" class="form-control" id="clientPhone" name="phone" required>
-                                                            <div class="invalid-feedback">
-                                                                Por favor, ingrese un teléfono
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 mb-3">
-                                                            <label for="clientEmail" class="mb-0">Email</label>
-                                                            <input type="email" class="form-control" id="clientEmail" name="email" required>
-                                                            <div class="invalid-feedback">
-                                                                Por favor, ingrese un email
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 mb-3">
-                                                            <label for="clientDNI" class="mb-0">DNI</label>
-                                                            <input type="number" min="0" class="form-control" id="clientDNI" name="dni" required>
-                                                            <div class="invalid-feedback">
-                                                                Por favor, ingrese un DNI
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 mb-3">
-                                                            <label for="clientDebt" class="mb-0">Deuda</label>
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <span class="input-group-text">$</span>
-                                                                </div>
-                                                                <input type="number" step="0.01" min="0" max="1000000" class="form-control" id="clientDebt" name="debt" placearia-describedby="inputGroupPrepend" required>
-                                                                <div class="invalid-feedback">
-                                                                    Por favor, ingrese un monto
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 mb-3">
-                                                            <label for="clientObservation" class="mb-0">Observación</label>
-                                                            <textarea type="text" class="form-control" id="clientObservation" name="observation"></textarea>
-                                                        </div>
-                                                        <div class="col-12 mb-3">
-                                                            <div>
-                                                                <input type="checkbox" id="clientInvoice" name="invoice" value="1"/>
-                                                                <label for="clientInvoice">¿Quiere factura?</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                                            <button type="submit" class="btn btn-danger waves-effect waves-light">Agregar</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- End Modal -->
-
                         <div class="table-responsive m-t-40">
                             <table id="clientsTable" class="table table-bordered table-striped">
                                 <thead>

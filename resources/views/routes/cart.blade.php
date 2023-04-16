@@ -11,13 +11,17 @@
     <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
         style="display: none;">
         <div class="modal-dialog">
-            <form role="form" class="needs-validation" method="POST" action="{{ url('') }}" id="form-create" autocomplete="off" novalidate>
+            <form role="form" class="needs-validation" method="POST" action="{{ url('/cart/create') }}" id="form-create" autocomplete="off" novalidate>
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Crear pedido</h4>
+                        <h4 id="modalTitle" class="modal-title">Crear pedido</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     </div>
                     <div class="modal-body">
+                        @csrf
+                        <input type="hidden" name="route_id" value="{{ $route->id }}" required>
+                        <input type="hidden" name="client_id" id="client_id" value="" required>
+                        <input type="hidden" name="products_array" id="products_array" value="" required>
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="table-responsive">
@@ -30,20 +34,16 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <input type="number" min="0" max="10000" class="form-control cantidadProducto" id="product_1" style="width: 120px">
-                                                </td>
-                                                <td>Botella de agua 1L</td>
-                                                <td class="precioProducto">$1500</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input type="number" min="0" max="10000" class="form-control cantidadProducto" id="product_2" style="width: 120px">
-                                                </td>
-                                                <td>Bidón de agua</td>
-                                                <td class="precioProducto">$3650</td>
-                                            </tr>
+                                            @foreach ($products as $product)
+                                                <tr>
+                                                    <td class="product_inputs">
+                                                        <input type="hidden" name="product_id" value="{{ $product->id }}" required>
+                                                        <input type="number" min="0" max="10000" class="form-control cantidadProducto" name="quantity" style="width: 120px">
+                                                    </td>
+                                                    <td>{{ $product->name }}</td>
+                                                    <td class="precioProducto">${{ $product->price }}</td>
+                                                </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                     <hr/>
@@ -71,8 +71,8 @@
                 <h3 class="text-themecolor m-b-0 m-t-0">Repartos</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('/routes/index') }}">Repartos</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('/routes/create') }}">Nuevo</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url('/route/index') }}">Repartos</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url('/route/new') }}">Nuevo</a></li>
                     <li class="breadcrumb-item active">Carrito</li>
                 </ol>
             </div>
@@ -86,55 +86,45 @@
 
         <div class="row">
             <div class="col-12">
+                <h2 class="text-left">Nuevo reparto para {{ $route->user_id }}</h2>
+                <hr />
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Listado de clientes</h4>
                         <h6 class="card-subtitle">Seleccione uno</h6>
-                        <div class="table-responsive m-t-40">
+                        <div class="table-responsive m-t-20">
                             <table id="clientsTable" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Office</th>
-                                        <th>Age</th>
-                                        <th>Start date</th>
-                                        <th>Salary</th>
+                                        <th>Nombre</th>
+                                        <th>Dirección</th>
+                                        <th>Teléfono</th>
+                                        <th>Email</th>
+                                        <th>DNI</th>
+                                        <th>Factura</th>
+                                        <th>Deuda</th>
+                                        <th>Observación</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr data-toggle="modal" data-target="#modalConfirmation" onclick="openModal()">
-                                        <td>Tiger Nixon</td>
-                                        <td>System Architect</td>
-                                        <td>Edinburgh</td>
-                                        <td>61</td>
-                                        <td>2011/04/25</td>
-                                        <td>$320,800</td>
-                                    </tr>
-                                    <tr data-toggle="modal" data-target="#modalConfirmation" onclick="openModal()">
-                                        <td>Garrett Winters</td>
-                                        <td>Accountant</td>
-                                        <td>Tokyo</td>
-                                        <td>63</td>
-                                        <td>2011/07/25</td>
-                                        <td>$170,750</td>
-                                    </tr>
-                                    <tr data-toggle="modal" data-target="#modalConfirmation" onclick="openModal()">
-                                        <td>Ashton Cox</td>
-                                        <td>Junior Technical Author</td>
-                                        <td>San Francisco</td>
-                                        <td>66</td>
-                                        <td>2009/01/12</td>
-                                        <td>$86,000</td>
-                                    </tr>
-                                    <tr data-toggle="modal" data-target="#modalConfirmation" onclick="openModal()">
-                                        <td>Cedric Kelly</td>
-                                        <td>Senior Javascript Developer</td>
-                                        <td>Edinburgh</td>
-                                        <td>22</td>
-                                        <td>2012/03/29</td>
-                                        <td>$433,060</td>
-                                    </tr>
+                                    @foreach ($clients as $client)
+                                        <tr data-toggle="modal" data-target="#modalConfirmation" onclick="openModal({{ $client->id }}, '{{ $client->name }}')">
+                                            <td>{{ $client->name }}</td>
+                                            <td>{{ $client->adress }}</td>
+                                            <td>{{ $client->phone }}</td>
+                                            <td>{{ $client->email }}</td>
+                                            <td>{{ $client->dni }}</td>
+                                            <td class="text-center">
+                                                @if ( $client->invoice == true)
+                                                    <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                                @else
+                                                    <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
+                                                @endif
+                                            </td>
+                                            <td>${{ $client->debt }}</td>
+                                            <td>{{ $client->observation }}</td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -179,9 +169,12 @@
             $("#totalAmount").html("Total pedido: $" + total);
         });
 
-        function openModal() {
-            $('#modalTable input').each(function() {
-                $(this).val("");
+        function openModal(id, name) {
+            $("#client_id").val(id);
+            $("#form-create").removeClass("was-validated");
+            $("#modalTitle").html("Crear pedido para " + name)
+            $('#modalTable input[name="quantity"]').each(function() {
+                $(this).val("0");
             });
         }
     </script>
@@ -199,38 +192,65 @@
                         if (form.checkValidity() === false) {
                             event.preventDefault();
                             event.stopPropagation();
+                            form.classList.add('was-validated');
                         } else {
                             event.preventDefault();
-                            sendForm();
-                        }
-                        form.classList.add('was-validated');
+                            createProductsArray();
+                            if ($("#products_array").val() != "[]") {
+                                form.classList.add('was-validated');
+                                sendForm();
+                            } else {
+                                $("#form-create").removeClass("was-validated");
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: "Debes agregar al menos un producto al pedido",
+                                });
+                            };
+                        };
                     }, false);
                 });
             }, false);
         })();
 
+        function createProductsArray() {
+            var products = []; // arreglo para almacenar los productos
+    
+            // para cada fila de la tabla
+            $('tr .product_inputs').each(function(index) {
+                var product = {}; // objeto para almacenar un producto
+                product.quantity = parseInt($(this).find('input[name="quantity"]').val()); // obtener la cantidad del producto
+                if (product.quantity > 0) {
+                    product.product_id = parseInt($(this).find('input[name="product_id"]').val()); // obtener el id del producto
+                    products.push(product); // agregar el producto al arreglo de productos
+                }
+            });
+            
+            // agregar el arreglo de productos como un campo del formulario
+            $("#products_array").val(JSON.stringify(products));
+        };
+
         function sendForm() {
-                // Enviar solicitud AJAX
-                $.ajax({
-                    url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
-                    method: $("#form-create").attr('method'), // Utiliza el método del formulario
-                    data: $("#form-create").serialize(), // Utiliza los datos del formulario
-                    success: function(response) {
-                        $("#btnCloseModal").click();
-                        Swal.fire(
-                            'Todo piola gato',
-                            'Se agregó correctamente',
-                            'success'
-                        );
-                    },
-                    error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                        });
-                    }
-                });
-            }
+            // Enviar solicitud AJAX
+            $.ajax({
+                url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-create").attr('method'), // Utiliza el método del formulario
+                data: $("#form-create").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnCloseModal").click();
+                    Swal.fire(
+                        'Todo piola gato',
+                        'Se agregó correctamente',
+                        'success'
+                    );
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                    });
+                }
+            });
+        };
     </script>
 
     <style>
@@ -239,6 +259,13 @@
         }
         #clientsTable tbody tr:hover {
             background-color: #dee2e6;
+        }
+
+        #clientsTable_paginate > ul > li.paginate_button.page-item.active > a,
+        #clientsTable_paginate > ul > li.paginate_button.page-item.active > a:hover
+        {
+            background-color: #fc4b6c;
+            border-color: #ff0030;
         }
     </style>
 

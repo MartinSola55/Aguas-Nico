@@ -20,7 +20,7 @@ Auth::routes();
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
-    Route::view('/dealers/index', 'dealers.index');
+    Route::view('/dealer/index', 'dealers.index');
     Route::view('/dealer/details', 'dealers.details');
     Route::view('/dealer/edit', 'dealers.edit');
 
@@ -43,8 +43,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/route/edit', [App\Http\Controllers\RouteController::class, 'update']);
     Route::view('/route/details', 'routes.details');
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
-    Route::view('/routes/cart', 'routes.cart');
-    Route::view('/routes/details', 'routes.details');
+    Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+    Route::view('/route/cart', 'routes.cart');
 
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
     Route::post('/cart/create', [App\Http\Controllers\CartController::class, 'store']);
