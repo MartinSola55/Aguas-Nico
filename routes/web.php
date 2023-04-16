@@ -41,10 +41,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
     Route::post('/route/create', [App\Http\Controllers\RouteController::class, 'store']);
     Route::post('/route/edit', [App\Http\Controllers\RouteController::class, 'update']);
-    Route::view('/route/details', 'routes.details');
+    Route::get('/route/showRoutes', [App\Http\Controllers\RouteController::class, 'show']);
+    Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details']);
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
-    Route::view('/route/cart', 'routes.cart');
 
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
     Route::post('/cart/create', [App\Http\Controllers\CartController::class, 'store']);

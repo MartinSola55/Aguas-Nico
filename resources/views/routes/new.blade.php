@@ -32,14 +32,16 @@
                                 <div class="form-column">
                                     <div id="dateFromContainer" class="col-12 mb-3">
                                         <label for="dateFrom" class="mb-0">Día y hora de inicio</label>
-                                        <input id="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" name="start_daytime" required>
+                                        <input id="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" required>
+                                        <input type="hidden" id="start_daytime" name="start_daytime" required>
                                         <div class="invalid-feedback">
                                             Por favor, ingrese un día y horario
                                         </div>
                                     </div>
                                     <div id="dateToContainer" class="form-group col-12 mb-3" style="display: none">
                                         <label for="dateTo" class="mb-0">Día y hora de finalización</label>
-                                        <input id="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" name="end_daytime" required>
+                                        <input id="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" required>
+                                        <input type="hidden" id="end_daytime" name="end_daytime" required>
                                         <div class="invalid-feedback">
                                             Por favor, ingrese un día y horario
                                         </div>
@@ -50,7 +52,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-danger waves-effect waves-light">Confirmar</button>
+                        <button id="btnCreateRoute" type="submit" class="btn btn-danger waves-effect waves-light">Confirmar</button>
                     </div>
                 </div>
             </form>
@@ -82,7 +84,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="card-title">Seleccionar un repartidor</h4>
+                        <h2 class="card-title">Seleccione un repartidor</h4>
                         <div class="table-responsive m-t-40">
                             <table id="dealersTable" class="table table-bordered table-striped">
                                 <thead>
@@ -141,12 +143,7 @@
                     method: $("#form-create").attr('method'), // Utiliza el método del formulario
                     data: $("#form-create").serialize(), // Utiliza los datos del formulario
                     success: function(response) {
-                        $("#btnCloseModal").click();
-                        Swal.fire(
-                            'Todo piola gato',
-                            'Se agregó correctamente',
-                            'success'
-                        );
+                        window.location.href = window.location.origin + "/route/" + response.data + "/newCart";
                     },
                     error: function(errorThrown) {
                         Swal.fire({
@@ -204,6 +201,38 @@
             $("#dateToContainer").css("display", "none");
             $("#dateTo").val("");
         }
+    </script>
+
+    <script>
+        function formatDate(date) {
+            let fechaHora = date;
+
+            // Dividimos la cadena en fecha y hora
+            let partes = fechaHora.split(' - ');
+            let fecha = partes[0];
+            let hora = partes[1];
+
+            // Dividimos la fecha en día, mes y año
+            let partesFecha = fecha.split('/');
+            let dia = partesFecha[0];
+            let mes = partesFecha[1];
+            let anio = partesFecha[2];
+
+            // Reordenamos la fecha al formato yyyy-mm-dd
+            let fechaFormateada = anio + '-' + mes + '-' + dia;
+
+            // Concatenamos la fecha y hora formateadas
+            let fechaHoraFormateada = fechaFormateada + ' ' + hora;
+
+            return fechaHoraFormateada;
+        };
+
+        $("#btnCreateRoute").on("click", function (e) {
+            e.preventDefault();
+            $("#start_daytime").val(formatDate($('#dateFrom').val()));
+            $("#end_daytime").val(formatDate($('#dateTo').val()));
+            sendForm();
+        });
     </script>
 
 <style>
