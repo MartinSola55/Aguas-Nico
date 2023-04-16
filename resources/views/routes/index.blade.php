@@ -61,8 +61,8 @@
                                 </thead>
                                 <tbody>
                                     
-                                    {{-- <tr class="clickable" data-url="{{ route('/routes/details', ['id' => $user->id]) }}"> --}}
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
+                                    {{-- <tr class="clickable" data-url="{{ route('/route/details', ['id' => $user->id]) }}"> --}}
+                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
                                         <td style="width:50px;"><span class="round">JP</span></td>
                                         <td>
                                             <h6>Juan Pérez</h6><small class="text-muted">Camión 1</small>
@@ -71,8 +71,8 @@
                                         <td><span class="label label-danger">En reparto</span></td>
                                         <td>$3.9K</td>
                                     </tr>
-                                    {{-- <tr class="clickable" data-url="{{ route('/routes/details', ['id' => $user->id]) }}" /*class="active"*/> --}}
-                                        <tr class="clickable" data-url="{{ url('/routes/details') }}">
+                                    {{-- <tr class="clickable" data-url="{{ route('/route/details', ['id' => $user->id]) }}" /*class="active"*/> --}}
+                                        <tr class="clickable" data-url="{{ url('/route/details') }}">
                                             <td><span class="round">MS</span></td>
                                         <td>
                                             <h6>Martín Sola</h6><small class="text-muted">Camión 2</small>
@@ -81,7 +81,7 @@
                                         <td><span class="label label-primary">Completado</span></td>
                                         <td>$23.9K</td>
                                     </tr>
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
+                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
                                         <td><span class="round round-success">PB</span></td>
                                         <td>
                                             <h6>Peter Bettig</h6><small class="text-muted">Camión 3</small>
@@ -90,7 +90,7 @@
                                         <td><span class="label label-danger">En reparto</span></td>
                                         <td>$12.9K</td>
                                     </tr>
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
+                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
                                         <td><span class="round round-primary">SL</span></td>
                                         <td>
                                             <h6>Samuelson Leiva</h6><small class="text-muted">Camión 4</small>
@@ -99,7 +99,7 @@
                                         <td><span class="label label-danger">En reparto</span></td>
                                         <td>$10.9K</td>
                                     </tr>
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
+                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
                                         <td><span class="round round-warning">NB</span></td>
                                         <td>
                                             <h6>Nachito Bettig</h6><small class="text-muted">Camión 5</small>
@@ -108,7 +108,7 @@
                                         <td><span class="label label-primary">Completado</span></td>
                                         <td>$12.9K</td>
                                     </tr>
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
+                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
                                         <td><span class="round round-danger">J</span></td>
                                         <td>
                                             <h6>Johny</h6><small class="text-muted">Camión 6</small>

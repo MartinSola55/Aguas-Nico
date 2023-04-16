@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
+use App\Models\Client;
+use App\Models\Product;
 use App\Models\Route;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -23,6 +25,14 @@ class RouteController extends Controller
     {
         $users = User::all();
         return view('routes.new', compact('users'));
+    }
+    
+    public function newCart($id)
+    {
+        $route = Route::find($id);
+        $clients = Client::all();
+        $products = Product::all();
+        return view('routes.cart', compact('route', 'clients', 'products'));
     }
 
     /**
