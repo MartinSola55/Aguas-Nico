@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
+use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductCart;
@@ -20,9 +21,8 @@ class RouteController extends Controller
     }
 
     public function details($id) {
-        $product_carts = ProductCart::all();
-        $route = Route::find($id);
-        return view('routes.details', compact('route', 'product_carts'));
+        $route = Route::find('id')->with('Carts.ProductsCart.product')->first();
+        return view('routes.details', compact('route'));
     }
 
     /**
