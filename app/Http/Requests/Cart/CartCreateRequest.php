@@ -24,17 +24,12 @@ class CartCreateRequest extends BaseFormRequest
         $this->validate([
             'route_id' => ['required', 'exists:routes,id'],
             'client_id' => ['required', 'exists:clients,id'],
-            'delivered' => ['required', 'boolean'],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after:start_date'],
+            'products_array' => ['required'],
         ]);
 
         return [
             'route_id',
             'client_id',
-            'delivered',
-            'start_date',
-            'end_date',
         ];
     }
 }

@@ -86,7 +86,6 @@ class RouteController extends Controller
             $route = Route::create([
                 'user_id' => $request->input('user_id'),
                 'start_daytime' => $request->input('start_daytime'),
-                'end_daytime' => $request->input('end_daytime'),
             ]);
 
             return response()->json([

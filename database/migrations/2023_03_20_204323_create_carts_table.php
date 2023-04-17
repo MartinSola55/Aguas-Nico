@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('route_id')->constrained('routes');
             $table->foreignId('client_id')->constrained('clients');
             $table->integer('state')->default(0);
-            $table->dateTime('start_date');
+            $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             $table->timestamps();
         });
