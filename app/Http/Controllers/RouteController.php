@@ -40,7 +40,7 @@ class RouteController extends Controller
 
     public function new()
     {
-        $users = User::all();// traer todo menos los admins
+        $users = User::where('rol_id', '!=', 1)->get();
         return view('routes.new', compact('users'));
     }
 
