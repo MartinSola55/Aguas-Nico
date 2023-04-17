@@ -13,4 +13,15 @@ class Route extends Model
         'start_daytime',
         'end_daytime',
     ];
+
+    public function Carts()
+    {
+        return $this->hasMany(Cart::class, 'route_id');
+    }
+
+    public function User()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
 }

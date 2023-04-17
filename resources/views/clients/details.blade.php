@@ -171,7 +171,8 @@
                                     </div>
                                 </div>
                                 <div class="row" id="divSaveClient" style="display: none">
-                                    <div class="col-md-12 d-flex justify-content-end">
+                                    <div class="col-md-12 d-flex justify-content-between">
+                                        <button type="button" id="btnDeleteClient" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar</button>
                                         <button type="submit" class="btn btn-sm btn-danger btn-rounded px-3">Guardar</button>
                                     </div>
                                 </div>
@@ -181,6 +182,11 @@
                 </div>
             </div>
         </div>
+
+        <form id="formDeleteClient" action="{{ url('/client/delete') }}" method="POST">
+            @csrf
+            <input type="hidden" name="id" value="{{ $client->id }}">
+        </form>
     </div>
 
     <script>
@@ -236,6 +242,40 @@
                 return $(this).attr('name') === 'id' || $(this).attr('name') === '_token' ? false : !val;
             });
             $("#divSaveClient").toggle();
+        });
+
+
+        $("#btnDeleteClient").on("click", function() {
+            Swal.fire({
+                title: 'Seguro deseas eliminar este cliente?',
+                text: "Esta acción no se puede revertir",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Eliminar'
+                })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: $("#formDeleteClient").attr('action'), // Utiliza la ruta del formulario
+                        method: $("#formDeleteClient").attr('method'), // Utiliza el método del formulario
+                        data: $("#formDeleteClient").serialize(), // Utiliza los datos del formulario
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cliente eliminado correctamente',
+                            });
+                        },
+                        error: function(errorThrown) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: errorThrown.responseJSON.message,
+                            });
+                        }
+                    });
+                }
+            })
         });
     </script>
 

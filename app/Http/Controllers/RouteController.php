@@ -4,18 +4,59 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
+use App\Models\Client;
+use App\Models\Product;
+use App\Models\ProductCart;
 use App\Models\Route;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class RouteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $routes = Route::all();
+        $routes = $this->getRoutesByDate(today()->toDateString());
         return view('routes.index', compact('routes'));
+    }
+
+    public function details($id) {
+        $product_carts = ProductCart::all();
+        $route = Route::find($id);
+        return view('routes.details', compact('route', 'product_carts'));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Request $request)
+    {
+        $routes = $this->getRoutesByDate($request->input('start_daytime'))->load(['Carts', 'User']);;
+        return response()->json(['routes' => $routes]);
+    }
+
+    /**
+     * Get routes by date.
+     *
+     * @param  string  $date
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getRoutesByDate(string $date)
+    {
+        return Route::whereDate('start_daytime', $date)->get();
+    }
+
+    public function new()
+    {
+        $users = User::all();// traer todo menos los admins
+        return view('routes.new', compact('users'));
+    }
+
+    public function newCart($id)
+    {
+        $route = Route::find($id);
+        $clients = Client::all();
+        $products = Product::all();
+        return view('routes.cart', compact('route', 'clients', 'products'));
     }
 
     /**
@@ -41,7 +82,7 @@ class RouteController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Route created successfully.',
-                'data' => $route
+                'data' => $route->id
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -49,14 +90,6 @@ class RouteController extends Controller
                 'message' => 'Route creation failed: ' . $e->getMessage(),
             ], 400);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Route $route)
-    {
-        //
     }
 
     /**

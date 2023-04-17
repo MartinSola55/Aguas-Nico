@@ -20,6 +20,17 @@
                     <li class="breadcrumb-item active">Repartos</li>
                 </ol>
             </div>
+            <div class="col-md-7 col-4 align-self-center">
+                <div class="d-flex m-t-10 justify-content-end">
+                    <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                        <div>
+                            <a class="btn btn-danger waves-effect waves-light" href="{{ url('/route/new') }}">
+                                <i class="bi bi-plus-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- ============================================================== -->
         <!-- End Bread crumb and right sidebar toggle -->
@@ -34,8 +45,11 @@
                         <div class="d-flex no-block">
                             <h4 class="card-title">Repartos</h4>
                             <div class="ml-auto">
-                                <label for="datePicker" class="mb-0">Día</label>
-                                <input type="text" class="form-control" placeholder="dd/mm/aaaa" id="datePicker" name="date">
+                                <form method="GET" action="{{ url('/route/showRoutes') }}" id="formSearchRoutes" novalidate>
+                                    <label for="datePicker" class="mb-0">Día</label>
+                                    <input type="text" class="form-control" placeholder="dd/mm/aaaa" id="datePicker">
+                                    <input type="hidden" name="start_daytime" id="start_daytime">
+                                </form>
                             </div>
                         </div>
                         <div class="table-responsive m-t-20">
@@ -48,63 +62,25 @@
                                         <th>Recaudado</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {{-- <tr class="clickable" data-url="{{ route('/routes/details', ['id' => $user->id]) }}"> --}}
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
-                                        <td style="width:50px;"><span class="round">JP</span></td>
-                                        <td>
-                                            <h6>Juan Pérez</h6><small class="text-muted">Camión 1</small>
-                                        </td>
-                                        <td>4/6</td>
-                                        <td><span class="label label-danger">En reparto</span></td>
-                                        <td>$3.9K</td>
-                                    </tr>
-                                    {{-- <tr class="clickable" data-url="{{ route('/routes/details', ['id' => $user->id]) }}" /*class="active"*/> --}}
-                                        <tr class="clickable" data-url="{{ url('/routes/details') }}">
-                                            <td><span class="round">MS</span></td>
-                                        <td>
-                                            <h6>Martín Sola</h6><small class="text-muted">Camión 2</small>
-                                        </td>
-                                        <td>5/5</td>
-                                        <td><span class="label label-primary">Completado</span></td>
-                                        <td>$23.9K</td>
-                                    </tr>
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
-                                        <td><span class="round round-success">PB</span></td>
-                                        <td>
-                                            <h6>Peter Bettig</h6><small class="text-muted">Camión 3</small>
-                                        </td>
-                                        <td>6/7</td>
-                                        <td><span class="label label-danger">En reparto</span></td>
-                                        <td>$12.9K</td>
-                                    </tr>
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
-                                        <td><span class="round round-primary">SL</span></td>
-                                        <td>
-                                            <h6>Samuelson Leiva</h6><small class="text-muted">Camión 4</small>
-                                        </td>
-                                        <td>1/8</td>
-                                        <td><span class="label label-danger">En reparto</span></td>
-                                        <td>$10.9K</td>
-                                    </tr>
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
-                                        <td><span class="round round-warning">NB</span></td>
-                                        <td>
-                                            <h6>Nachito Bettig</h6><small class="text-muted">Camión 5</small>
-                                        </td>
-                                        <td>8/8</td>
-                                        <td><span class="label label-primary">Completado</span></td>
-                                        <td>$12.9K</td>
-                                    </tr>
-                                    <tr class="clickable" data-url="{{ url('/routes/details') }}">
-                                        <td><span class="round round-danger">J</span></td>
-                                        <td>
-                                            <h6>Johny</h6><small class="text-muted">Camión 6</small>
-                                        </td>
-                                        <td>0/5</td>
-                                        <td><span class="label label-warning">En galpón</span></td>
-                                        <td>$0</td>
-                                    </tr>
+                                <tbody id="tableBody">
+                                    @foreach ($routes as $route)
+                                        <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
+                                            <?php
+                                                $names = explode(" ", $route->user->name);
+                                                $initials = '';
+                                                foreach ($names as $name) {
+                                                    $initials .= strtoupper(substr($name, 0, 1));
+                                                }
+                                            ?>
+                                            <td style="width:50px;"><span class="round">{{ $initials }}</span></td>
+                                            <td>
+                                                <h6>{{ $route->user->name }}</h6><small class="text-muted">Camión {{ $route->user->truck_number }}</small>
+                                            </td>
+                                            <td>4/6</td>
+                                            <td><span class="label label-danger">En reparto</span></td>
+                                            <td>$3.9K</td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -120,13 +96,20 @@
         }
     </style>
 
+
+
     <script>
         $(document).ready(function() {
-            $('.clickable').click(function() {
-                var url = $(this).data('url');
-                window.location.href = url;
-            });
+            makeHREF();
         });
+
+        function makeHREF() {
+            $('.clickable').click(function() {
+                let url = $(this).data('url');
+                let id = $(this).data('id');
+                window.location.href = window.location.origin + url + "/" + id;
+            });
+        }
     </script>
 
     <script>
@@ -137,6 +120,53 @@
             format: 'DD/MM/YYYY',
             cancelText: "Cancelar",
             weekStart: 1,
+        });
+    </script>
+
+    <script>
+        function formatDate(date) {
+            // Convertir a formato yyyy-mm-dd
+            let partesFecha = date.split("/");
+            let fechaNueva = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0]);
+            let fechaISO = fechaNueva.toISOString().slice(0,10);
+            return fechaISO;
+        }
+
+        function fillTable(routes) {
+            let content = "";
+            routes.forEach(route => {
+                content += `<tr class="clickable" data-url="/route/details" data-id="` + route.id + `">`;
+                content += '<td style="width:50px;"><span class="round">' + route.user.name.split(' ').map(word => word.charAt(0).toUpperCase()).join('') + '</span></td>';
+                content += '<td>';
+                content += '<h6>' + route.user.name + '</h6><small class="text-muted">Camión ' + route.user.truck_number + '</small>';
+                content += '</td>';
+                content += '<td>4/6</td>';
+                content += '<td><span class="label label-danger">Estado</span></td>';
+                content += '<td>$3.9K</td>';
+                content += "</tr>";
+            });
+            $("#tableBody").html(content);
+            makeHREF();
+        }
+
+        $("#datePicker").on("change", function() {
+            $("#start_daytime").val(formatDate($("#datePicker").val()));
+
+            // Enviar solicitud AJAX
+            $.ajax({
+                url: $("#formSearchRoutes").attr('action'), // Utiliza la ruta del formulario
+                method: $("#formSearchRoutes").attr('method'), // Utiliza el método del formulario
+                data: $("#formSearchRoutes").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    fillTable(response.routes)
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                    });
+                }
+            });
         });
     </script>
 

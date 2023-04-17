@@ -83,7 +83,7 @@
                         <b>
                             <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                             <!-- Dark Logo icon -->
-                            <img src="{{ asset('images/logo.png') }}" alt="Inicio" style="width: 200px;">
+                            <img src="{{ asset('images/logo.png') }}" alt="Inicio" class="p-2" style="width: 150px; height: 70px;">
                         </b>
                         <!--End Logo icon -->
                     </a>
@@ -97,8 +97,8 @@
                     <!-- ============================================================== -->
                     <ul class="navbar-nav mr-auto mt-md-0">
                         <!-- This is  -->
-                        <li class="nav-item"> <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="mdi mdi-menu ti-close"></i></a> </li>
-                        <li class="nav-item"> <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="ti-menu"></i></a> </li>
+                        <li class="nav-item"> <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark"><i class="mdi mdi-menu ti-close"></i></a> </li>
+                        <li class="nav-item"> <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark"><i class="ti-menu"></i></a> </li>
                     </ul>
                     <!-- ============================================================== -->
                     <!-- User profile and search -->
@@ -276,23 +276,31 @@
                     <nav class="sidebar-nav">
                         <ul id="sidebarnav">
                             <li class="nav-small-cap">PERSONAL</li>
-                            <li class=""><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
+                            </li>
+                            <li><a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
                                 <ul aria-expanded="false" class="collapse" style="height: 10px;">
                                     <li><a href="{{ url('/product/index') }}">Inicio</a></li>
-                                    <li><a href="{{ url('/products/create') }}">Nuevo</a></li>
+                                    <li><a href="{{ url('/product/new') }}">Nuevo</a></li>
                                 </ul>
                             </li>
-                            <li class=""><a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
+                            <li><a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
                                 <ul aria-expanded="false" class="collapse" style="height: 10px;">
                                     <li><a href="{{ url('/client/index') }}">Inicio</a></li>
                                 </ul>
                             </li>
                             <li class="nav-devider"></li>
                             <li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
-                            <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartos</span></a>
+                            <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Repartos</span></a>
                                 <ul aria-expanded="false" class="collapse">
-                                    <li><a href="{{ url('/routes/index') }}">Inicio</a></li>
-                                    <li><a href="{{ url('/routes/new') }}">Nuevo</a></li>
+                                    <li><a href="{{ url('/route/index') }}">Inicio</a></li>
+                                    <li><a href="{{ url('/route/new') }}">Nuevo</a></li>
+                                </ul>
+                            </li>
+                            <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartidores</span></a>
+                                <ul aria-expanded="false" class="collapse">
+                                    <li><a href="{{ url('/dealer/index') }}">Inicio</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -317,9 +325,11 @@
             @yield('content')
         </main>
 
-        <footer class="footer">
-            © {{ $today->format('Y') }} - Aguas Nico
-        </footer>
+        @auth
+            <footer class="footer">
+                © {{ $today->format('Y') }} - Aguas Nico
+            </footer>
+        @endauth
     </div>
 </body>
 
