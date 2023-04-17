@@ -111,61 +111,24 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
-                                        <td style="width:50px;"><span class="round">JP</span></td>
-                                        <td>
-                                            <h6>Juan Pérez</h6><small class="text-muted">Camión 1</small>
-                                        </td>
-                                        <td>4/6</td>
-                                        <td><span class="label label-danger">En reparto</span></td>
-                                        <td>$3.9K</td>
-                                    </tr>
-                                        {{-- class="active" --}}
-                                        <tr class="clickable" data-url="{{ url('/route/details') }}">
-                                            <td><span class="round">MS</span></td>
-                                        <td>
-                                            <h6>Martín Sola</h6><small class="text-muted">Camión 2</small>
-                                        </td>
-                                        <td>5/5</td>
-                                        <td><span class="label label-primary">Completado</span></td>
-                                        <td>$23.9K</td>
-                                    </tr>
-                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
-                                        <td><span class="round round-success">PB</span></td>
-                                        <td>
-                                            <h6>Peter Bettig</h6><small class="text-muted">Camión 3</small>
-                                        </td>
-                                        <td>6/7</td>
-                                        <td><span class="label label-danger">En reparto</span></td>
-                                        <td>$12.9K</td>
-                                    </tr>
-                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
-                                        <td><span class="round round-primary">SL</span></td>
-                                        <td>
-                                            <h6>Samuelson Leiva</h6><small class="text-muted">Camión 4</small>
-                                        </td>
-                                        <td>1/8</td>
-                                        <td><span class="label label-danger">En reparto</span></td>
-                                        <td>$10.9K</td>
-                                    </tr>
-                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
-                                        <td><span class="round round-warning">NB</span></td>
-                                        <td>
-                                            <h6>Nachito Bettig</h6><small class="text-muted">Camión 5</small>
-                                        </td>
-                                        <td>8/8</td>
-                                        <td><span class="label label-primary">Completado</span></td>
-                                        <td>$12.9K</td>
-                                    </tr>
-                                    <tr class="clickable" data-url="{{ url('/route/details') }}">
-                                        <td><span class="round round-danger">J</span></td>
-                                        <td>
-                                            <h6>Johny</h6><small class="text-muted">Camión 6</small>
-                                        </td>
-                                        <td>0/5</td>
-                                        <td><span class="label label-warning">En galpón</span></td>
-                                        <td>$0</td>
-                                    </tr>
+                                    @foreach ($routes as $route)
+                                        <tr class="clickable" data-url="{{ url('/route/details') }}" data-id="{{ $route->id }}">
+                                            <?php
+                                                $names = explode(" ", $route->user->name);
+                                                $initials = '';
+                                                foreach ($names as $name) {
+                                                    $initials .= strtoupper(substr($name, 0, 1));
+                                                }
+                                            ?>
+                                            <td style="width:50px;"><span class="round">{{ $initials }}</span></td>
+                                            <td>
+                                                <h6>{{ $route->user->name }}</h6><small class="text-muted">Camión {{ $route->user->truck_number }}</small>
+                                            </td>
+                                            <td>4/6</td>
+                                            <td><span class="label label-danger">En reparto</span></td>
+                                            <td>$3.9K</td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -184,8 +147,9 @@
     <script>
         $(document).ready(function() {
             $('.clickable').click(function() {
-                var url = $(this).data('url');
-                window.location.href = url;
+                let url = $(this).data('url');
+                let id = $(this).data('id');
+                window.location.href = url + "/" + id;
             });
         });
     </script>

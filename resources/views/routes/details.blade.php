@@ -109,74 +109,27 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <h3 class="card-header">Lunes 27/03/2023 - Martín Sola</h1>
-                        <div class="card-body">
-                            <ul class="timeline">
+                    <div class="card-header d-flex flex-row justify-content-between">
+                        <h3 class="m-0">Repartos de <b>{{ $route->user->name }}</b> para el <b>{{ \Carbon\Carbon::parse($route->start_daytime)->format('d/m/Y') }}</b></h1>
+                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar ruta</button>
+                    </div>
+                    <div class="card-body">
+                        <ul class="timeline">
+                            <?php
+                                $contador = 0;
+                            ?>
+                            @foreach ($product_carts as $pc)
+                                <?php $contador++; ?>
+                                @if ($contador % 2 != 0)
                                 <li>
-                                    <div class="timeline-badge danger"><i class="bi bi-truck"></i></div>
-                                    <div class="timeline-panel">
-                                        <div class="timeline-heading">
-                                            <h4 class="timeline-title">Samuelson - Deuda: $12500</h4>
-                                            <p><small class="text-muted"><i class="bi bi-house-door"></i> Mendoza
-                                                    379</small></p>
-                                        </div>
-                                        <div class="timeline-body">
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <div class="table-responsive">
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Cantidad</th>
-                                                                    <th>Producto</th>
-                                                                    <th>Precio</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>3</td>
-                                                                    <td>Botella de agua 1L</td>
-                                                                    <td>$1500</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>7</td>
-                                                                    <td>Bidón de agua</td>
-                                                                    <td>$3650</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>6</td>
-                                                                    <td>Botella de agua 3L</td>
-                                                                    <td>$4200</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <hr>
-                                            <p><b>Observaciones:</b> Lorem ipsum dolor sit amet, consectetur adipisicing
-                                                elit. Deserunt obcaecati, quaerat tempore officia.</p>
-                                            <hr>
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
-                                                <div class="dropdown-menu">
-                                                    <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal()"><b>Confirmar</b></button>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item" href="#">No estaba</a>
-                                                    <a class="dropdown-item" href="#">No necesitaba</a>
-                                                    <a class="dropdown-item" href="#">Vacaciones</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
+                                @else
                                 <li class="timeline-inverted">
+                                @endif
                                     <div class="timeline-badge danger"><i class="bi bi-truck"></i></div>
                                     <div class="timeline-panel">
                                         <div class="timeline-heading">
-                                            <h4 class="timeline-title">Samuelson - Deuda: $12500</h4>
-                                            <p><small class="text-muted"><i class="bi bi-house-door"></i> Mendoza
-                                                    379</small></p>
+                                            {{-- <h4 class="timeline-title">{{ $pc->cart->client->name }} - Deuda: ${{ $pc->cart->client->debt }}</h4>
+                                            <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $pc->cart->client->adress }}</small></p> --}}
                                         </div>
                                         <div class="timeline-body">
                                             <div class="row">
@@ -191,29 +144,20 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                <tr>
-                                                                    <td>3</td>
-                                                                    <td>Botella de agua 1L</td>
-                                                                    <td>$1500</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>7</td>
-                                                                    <td>Bidón de agua</td>
-                                                                    <td>$3650</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>6</td>
-                                                                    <td>Botella de agua 3L</td>
-                                                                    <td>$4200</td>
-                                                                </tr>
+                                                                {{-- @foreach ($pc->product as $product)    
+                                                                    <tr>
+                                                                        <td>{{ $pc->quantity}}</td>
+                                                                        <td>{{ $product->name }}</td>
+                                                                        <td>${{ $product->price }}</td>
+                                                                    </tr>
+                                                                @endforeach --}}
                                                             </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
                                             </div>
                                             <hr>
-                                            <p><b>Observaciones:</b> Lorem ipsum dolor sit amet, consectetur adipisicing
-                                                elit. Deserunt obcaecati, quaerat tempore officia.</p>
+                                            {{-- <p><b>Observaciones:</b> {{ $pc->cart->client->observation }}</p> --}}
                                             <hr>
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
@@ -228,9 +172,14 @@
                                         </div>
                                     </div>
                                 </li>
-                            </ul>
-                        </div>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
+                <form id="formDeleteRoute" action="{{ url('/route/delete') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="id" value="{{ $route->id }}">
+                </form>
             </div>
         </div>
     </div>
@@ -268,6 +217,36 @@
                 $("#paymentInput").css("display", "none");
                 $("#paymentInput input").prop("disabled", true);
             }
+        });
+
+        $("#btnDeleteRoute").on("click", function() {
+            Swal.fire({
+                title: 'Seguro deseas eliminar esta ruta?',
+                text: "Esta acción no se puede revertir",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Eliminar'
+                })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: $("#formDeleteRoute").attr('action'), // Utiliza la ruta del formulario
+                        method: $("#formDeleteRoute").attr('method'), // Utiliza el método del formulario
+                        data: $("#formDeleteRoute").serialize(), // Utiliza los datos del formulario
+                        success: function(response) {
+                            window.location.href = window.location.origin + "/route/index";
+                        },
+                        error: function(errorThrown) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: errorThrown.responseJSON.message,
+                            });
+                        }
+                    });
+                }
+            })
         });
     </script>
 @endsection

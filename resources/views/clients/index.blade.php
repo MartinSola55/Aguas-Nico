@@ -188,27 +188,27 @@
         })();
 
         function sendForm() {
-                // Enviar solicitud AJAX
-                $.ajax({
-                    url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
-                    method: $("#form-create").attr('method'), // Utiliza el método del formulario
-                    data: $("#form-create").serialize(), // Utiliza los datos del formulario
-                    success: function(response) {
-                        $("#btnCloseModal").click();
-                        Swal.fire(
-                            'Todo piola gato',
-                            'Se agregó correctamente',
-                            'success'
-                        );
-                    },
-                    error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                        });
-                    }
-                });
-            }
+            // Enviar solicitud AJAX
+            $.ajax({
+                url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-create").attr('method'), // Utiliza el método del formulario
+                data: $("#form-create").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnCloseModal").click();
+                    Swal.fire(
+                        'Todo piola gato',
+                        'Se agregó correctamente',
+                        'success'
+                    );
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                    });
+                }
+            });
+        }
     </script>
 
     <script>
