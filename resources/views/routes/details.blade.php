@@ -5,7 +5,7 @@
     <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
         style="display: none;">
         <div class="modal-dialog">
-            <form>
+            <form role="form" class="needs-validation" method="POST" action="{{ url('/route/confirm') }}" id="form-confirm" autocomplete="off" novalidate>
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Confirmar pedido</h4>
@@ -24,42 +24,12 @@
                                                 <th>Descargado</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>3</td>
-                                                <td>Botella de agua 1L</td>
-                                                <td class="precioProducto">$1500</td>
-                                                <td>
-                                                    <select class="form-control cantidadProducto">
-                                                        <option value="0" selected>0</option>
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>7</td>
-                                                <td>Bidón de agua</td>
-                                                <td class="precioProducto">$3650</td>
-                                                <td>
-                                                    <select class="form-control cantidadProducto">
-                                                        <option value="0" selected>0</option>
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                        <option value="4">4</option>
-                                                        <option value="5">5</option>
-                                                        <option value="6">6</option>
-                                                        <option value="7">7</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
+                                        <tbody id="tableBody">
                                         </tbody>
                                     </table>
                                     <hr/>
                                     <p id="totalAmount" class="mr-2">Total pedido: $0</p>
-                                    <p>Deuda: $12500</p>
+                                    <p id="modalClientDebt">Deuda: $</p>
                                     <div>
                                         <div>
                                             <input type="checkbox" id="debtCheckbox" />
@@ -110,7 +80,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex flex-row justify-content-between">
-                        <h3 class="m-0">Repartos de <b>{{ $route->user->name }}</b> para el <b>{{ \Carbon\Carbon::parse($route->start_daytime)->format('d/m/Y') }}</b></h1>
+                        <h3 class="m-0">Repartos de <b>{{ $route->user->name }}</b> para el <b id="routeDate">{{ \Carbon\Carbon::parse($route->start_daytime)->format('d/m/Y') }}</b></h1>
                         <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar ruta</button>
                     </div>
                     <div class="card-body">
@@ -118,18 +88,22 @@
                             <?php
                                 $contador = 0;
                             ?>
-                            @foreach ($product_carts as $pc)
+                            @foreach ($route->carts as $cart)
                                 <?php $contador++; ?>
                                 @if ($contador % 2 != 0)
                                 <li>
                                 @else
                                 <li class="timeline-inverted">
                                 @endif
-                                    <div class="timeline-badge danger"><i class="bi bi-truck"></i></div>
+                                    @if ($cart->delivered == true)
+                                        <div class="timeline-badge danger"><i class="bi bi-truck"></i></div>
+                                    @else
+                                        <div class="timeline-badge" style="background-color: #30d577"><i class="bi bi-truck"></i></div>
+                                    @endif
                                     <div class="timeline-panel">
                                         <div class="timeline-heading">
-                                            {{-- <h4 class="timeline-title">{{ $pc->cart->client->name }} - Deuda: ${{ $pc->cart->client->debt }}</h4>
-                                            <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $pc->cart->client->adress }}</small></p> --}}
+                                            <h4 class="timeline-title">{{ $cart->Client->name }} - Deuda: ${{ $cart->Client->debt }}</h4>
+                                            <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
                                         </div>
                                         <div class="timeline-body">
                                             <div class="row">
@@ -144,31 +118,37 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                {{-- @foreach ($pc->product as $product)    
+                                                                @foreach ($cart->ProductsCart as $pc)    
                                                                     <tr>
                                                                         <td>{{ $pc->quantity}}</td>
-                                                                        <td>{{ $product->name }}</td>
-                                                                        <td>${{ $product->price }}</td>
+                                                                        <td>{{ $pc->product->name }}</td>
+                                                                        <td>${{ $pc->product->price }}</td>
                                                                     </tr>
-                                                                @endforeach --}}
+                                                                @endforeach
                                                             </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
                                             </div>
                                             <hr>
-                                            {{-- <p><b>Observaciones:</b> {{ $pc->cart->client->observation }}</p> --}}
-                                            <hr>
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
-                                                <div class="dropdown-menu">
-                                                    <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal()"><b>Confirmar</b></button>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item" href="#">No estaba</a>
-                                                    <a class="dropdown-item" href="#">No necesitaba</a>
-                                                    <a class="dropdown-item" href="#">Vacaciones</a>
+                                            @if ($cart->Client->observation != "")
+                                                <p><b>Observaciones:</b> {{ $cart->Client->observation }}</p>
+                                            @endif
+                                            @if ($cart->delivered == true)
+                                                @if ($cart->Client->observation != "")
+                                                    <hr>
+                                                @endif
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
+                                                    <div class="dropdown-menu">
+                                                        <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
+                                                        <div class="dropdown-divider"></div>
+                                                        <button class="dropdown-item" type="button" id="btnNoEstaba">No estaba</button>
+                                                        <button class="dropdown-item" type="button" id="btnNoNecesitaba">No necesitaba</button>
+                                                        <button class="dropdown-item" type="button" id="btnVacaciones">Vacaciones</button>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </li>
@@ -180,13 +160,49 @@
                     @csrf
                     <input type="hidden" name="id" value="{{ $route->id }}">
                 </form>
+                {{-- Acción-->No estaba --}}
+                <form id="formNoEstaba" action="{{ url('/route/noEstaba') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="id" value="{{ $route->id }}">
+                </form>
+                <form id="form_search_products" action="{{ url('/route/getProductCarts') }}" method="GET">
+                    @csrf
+                    <input type="hidden" id="cart_id" name="id" value="">
+                </form>
             </div>
         </div>
     </div>
 
-    {{-- Calcular el total dentro del modal --}}
     <script>
-        $(".cantidadProducto").change(function() {
+        const diasDeLaSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        let dateFormatted = $("#routeDate").text();
+        let date = new Date($("#routeDate").text().split('/').reverse().join('-'));
+        $("#routeDate").html(diasDeLaSemana[date.getDay()] + ", " + dateFormatted);
+
+        // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
+
+        function fillModal(data) {
+            let content = "";
+            data.forEach(pc => {
+                content += '<tr>';
+                content += '<td>' + pc.quantity + '</span></td>';
+                content += '<td>' + pc.product.name + '</td>';
+                content += '<td class="precioProducto">$ ' + pc.product.price + '</td>';
+                content += '<td>';
+                content += '<select class="form-control cantidadProducto">';
+                content += '<option value="0" selected>0</option>';
+                for (let index = 0; index < pc.quantity; index++) {
+                    content += '<option value="' + (index + 1) + '">' + (index + 1) + '</option>';
+                }
+                content += '</select>';
+                content += '</td>';
+                content += "</tr>";
+            });
+            $("#tableBody").html(content);
+
+            // Calcular el total dentro del modal
+
+            $(".cantidadProducto").change(function() {
             let total = 0;
             $("#modalTable tbody tr").each(function() {
                 let precioUnit = $(this).find(".precioProducto").text().replace('$', '');
@@ -197,13 +213,32 @@
 
             $("#totalAmount").html("Total pedido: $" + total);
         });
-    </script>
+        };
 
-    <script>
-        function openModal() {
+        function openModal(id, debt) {
+            $("#modalClientDebt").text("Deuda: $" + debt);
+            $("#tableBody").html("");
+            $("#cart_id").val(id);
             $("#debtCheckbox").prop("checked", false);
             $("#paymentInput").css("display", "none");
             $("#paymentInput input").prop("disabled", true);
+
+            // Enviar solicitud AJAX para rellenar el modal
+            $.ajax({
+                url: $("#form_search_products").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form_search_products").attr('method'), // Utiliza el método del formulario
+                data: $("#form_search_products").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    fillModal(response.cart.products_cart);
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                    });
+                }
+            });
+
             $('#modalTable select').each(function() {
                 $(this).val($(this).find('option:first').val());
             });

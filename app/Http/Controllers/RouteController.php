@@ -20,8 +20,9 @@ class RouteController extends Controller
         return view('routes.index', compact('routes'));
     }
 
-    public function details($id) {
-        $route = Route::find('id')->with('Carts.ProductsCart.product')->first();
+    public function details($id)
+    {
+        $route = Route::find($id);
         return view('routes.details', compact('route'));
     }
 
@@ -30,8 +31,17 @@ class RouteController extends Controller
      */
     public function show(Request $request)
     {
-        $routes = $this->getRoutesByDate($request->input('start_daytime'))->load(['Carts', 'User']);;
+        $routes = $this->getRoutesByDate($request->input('start_daytime'))->load(['Carts', 'User']);
         return response()->json(['routes' => $routes]);
+    }
+
+    /*
+        Get all the products from a specific cart (when opening the modal)
+    */
+    public function getProductCarts(Request $request)
+    {
+        $cart = Cart::where('id', $request->input('id'))->with('ProductsCart.Product')->first();
+        return response()->json(['cart' => $cart]);
     }
 
     /**
