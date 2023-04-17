@@ -25,4 +25,20 @@ class Cart extends Model
     {
         return $this->belongsTo(Client::class, 'client_id');
     }
+
+    // public function Total()
+    // {
+    //     $total = 0;
+    //     foreach ($this->ProductsCart() as $product) {
+    //         $total += $product->quantity * $product->Product->price;
+    //     }
+    //     return $total;
+    // }
+
+    public function Total()
+    {
+        return $this->ProductsCart()->sum(function($product) {
+            return $product->quantity * $product->Product->price;
+        });
+    }
 }

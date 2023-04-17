@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use PhpParser\Node\Stmt\Break_;
 
 class Route extends Model
 {
@@ -22,6 +23,27 @@ class Route extends Model
     public function User()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function Info()
+    {
+        $info = [];
+        $info['state'] = "En Deposito";
+        $info['total_carts'] = $this->Carts()->count();
+        $info['completed_carts'] = 0;
+        $info['total_collected'] = 0;
+        $countState = 0;
+        foreach ($this->Carts() as $cart) {
+            $countState ++;
+            if ($cart->state !== 0) {
+                $info['state'] = "En Reparto";
+                $info['completed_carts'] ++;
+                $info['total_collected'] += $cart->Total();
+                if ($countState === $this->Carts()->count()) {
+                    $info['state'] = "Completado";
+                }
+            }
+        }
     }
 
 }
