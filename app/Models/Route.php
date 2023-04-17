@@ -28,22 +28,24 @@ class Route extends Model
     public function Info()
     {
         $info = [];
-        $info['state'] = "En Deposito";
+        $info['state'] = "En depósito";
         $info['total_carts'] = $this->Carts()->count();
         $info['completed_carts'] = 0;
         $info['total_collected'] = 0;
-        $countState = 0;
-        foreach ($this->Carts() as $cart) {
-            $countState ++;
+        $countCarts = 0;
+        $carts = $this->with('Carts')->get();
+        foreach ($carts as $cart) {
+            $countCarts ++;
             if ($cart->state !== 0) {
-                $info['state'] = "En Reparto";
+                $info['state'] = "En reparto";
                 $info['completed_carts'] ++;
-                $info['total_collected'] += $cart->Total();
-                if ($countState === $this->Carts()->count()) {
+                $info['total_collected'] += $cart->Total;
+                if ($countCarts === $this->Carts()->count()) {
                     $info['state'] = "Completado";
                 }
             }
         }
+        return $info;
     }
 
 }

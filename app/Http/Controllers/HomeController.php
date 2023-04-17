@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Route;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,9 +24,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $request = new Request(['start_daytime' => now()->toDateString()]);
-        $response = app(RouteController::class)->show($request);
-        $routes = $response->getData()->routes;
+        $routes = Route::whereDate('start_daytime', now()->toDateString())->get();
         return view('home', compact('routes'));
     }
 }

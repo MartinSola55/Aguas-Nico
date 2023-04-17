@@ -86,7 +86,7 @@
 
         <div class="row">
             <div class="col-12">
-                <h2 class="text-left">Nuevo reparto para {{ $route->user_id }}</h2>
+                <h2 class="text-left">Nuevo reparto para {{ $route->user->name }}</h2>
                 <hr />
                 <div class="card">
                     <div class="card-body">
