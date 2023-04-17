@@ -6,6 +6,7 @@ use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Client;
 use App\Models\Product;
+use App\Models\ProductCart;
 use App\Models\Route;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,6 +17,12 @@ class RouteController extends Controller
     {
         $routes = $this->getRoutesByDate(today()->toDateString());
         return view('routes.index', compact('routes'));
+    }
+
+    public function details($id) {
+        $product_carts = ProductCart::all();
+        $route = Route::find($id);
+        return view('routes.details', compact('route', 'product_carts'));
     }
 
     /**

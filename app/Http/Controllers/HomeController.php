@@ -23,6 +23,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $request = new Request(['start_daytime' => now()->toDateString()]);
+        $response = app(RouteController::class)->show($request);
+        $routes = $response->getData()->routes;
+        return view('home', compact('routes'));
     }
 }
