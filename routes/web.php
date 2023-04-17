@@ -45,6 +45,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details']);
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+    Route::get('/route/getProductCarts', [App\Http\Controllers\RouteController::class, 'getProductCarts']);
+    //Confirmar pedido
+    Route::post('/route/confirm', [App\Http\Controllers\RouteController::class, 'confirm']);
 
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
     Route::post('/cart/create', [App\Http\Controllers\CartController::class, 'store']);
