@@ -27,6 +27,7 @@ class Route extends Model
 
     public function Info()
     {
+        /*$index = 0;
         $info = [];
         $info['state'] = "En depósito";
         $info['total_carts'] = $this->Carts()->count();
@@ -34,7 +35,6 @@ class Route extends Model
         $info['total_collected'] = 0;
         $countCarts = 0;
         $carts = $this->with(['Carts', 'Carts.ProductsCart', 'Carts.ProductsCart.Product'])->get()[0];
-        $info['QSY'] = $carts;
         foreach ($carts->carts as $cart) {
             foreach ($cart->ProductsCart as $pc) {
                 $info['total_collected'] += $pc->quantity_sent * $pc->Product->price;
@@ -43,7 +43,30 @@ class Route extends Model
             if ($cart->state !== 0) {
                 $info['state'] = "En reparto";
                 $info['completed_carts'] ++;
-                if ($countCarts === $this->Carts()->count()) {
+                if ($info['completed_carts'] === $this->Carts()->count()) {
+                    $info['state'] = "Completado";
+                }
+            }
+        }
+        return $info;*/
+        if ($this->Carts()->count() === 2) {
+            //dd($this->Carts);
+        }
+        $info = [];
+        $info['state'] = "En depósito";
+        $info['total_carts'] = $this->Carts()->count();
+        $info['completed_carts'] = 0;
+        $info['total_collected'] = 0;
+        $carts = $this->Carts->Load('ProductsCart', 'ProductsCart.Product');
+        foreach ($carts as $cart) {
+            foreach ($cart->ProductsCart as $pc) {
+                $info['total_collected'] += ($pc->quantity_sent * $pc->Product->price) ?? 0;
+            }
+            if ($cart->state !== 0) {
+                $info['state'] = "En reparto";
+                $info['completed_carts']++;
+                #dd($info['total_carts']);
+                if ($info['completed_carts'] === $info['total_carts']) {
                     $info['state'] = "Completado";
                 }
             }

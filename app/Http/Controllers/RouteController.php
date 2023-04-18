@@ -32,10 +32,9 @@ class RouteController extends Controller
     public function show(Request $request)
     {
         $routes = $this->getRoutesByDate($request->input('start_daytime'))->load(['Carts', 'User']);
-        $routes = $routes->map(function ($route) {
-            $route->info = $route->Info();
-            return $route;
-        });
+        foreach ($routes as $route) {
+                $route->info = $route->Info();
+        }
         return response()->json(['routes' => $routes]);
     }
 
