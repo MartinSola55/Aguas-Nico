@@ -95,7 +95,7 @@
                                 @else
                                 <li class="timeline-inverted">
                                 @endif
-                                    @if ($cart->delivered == true)
+                                    @if ($cart->state === 0)
                                         <div class="timeline-badge danger"><i class="bi bi-truck"></i></div>
                                     @else
                                         <div class="timeline-badge" style="background-color: #30d577"><i class="bi bi-truck"></i></div>
