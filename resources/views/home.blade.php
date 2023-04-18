@@ -112,7 +112,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($routes as $route)
-                                        <tr class="clickable" data-url="{{ url('/route/details') }}" data-id="{{ $route->id }}">
+                                        <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
                                             <?php
                                                 $names = explode(" ", $route->user->name);
                                                 $initials = '';
@@ -124,9 +124,15 @@
                                             <td>
                                                 <h6>{{ $route->user->name }}</h6><small class="text-muted">Camión {{ $route->user->truck_number }}</small>
                                             </td>
-                                            <td>4/6</td>
-                                            <td><span class="label label-danger">En reparto</span></td>
-                                            <td>$3.9K</td>
+                                            <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
+                                            @if ($route->Info()['state'] === "En depósito")
+                                                <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
+                                            @elseif ($route->Info()['state'] === "En reparto")
+                                                <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
+                                            @else
+                                                <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
+                                            @endif
+                                            <td>${{ $route->Info()['total_collected'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
