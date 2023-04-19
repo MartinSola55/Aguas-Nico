@@ -11,7 +11,7 @@ class Cart extends Model
     protected $fillable = [
         'route_id',
         'client_id',
-        'delivered',
+        'state',
         'start_date',
         'end_date',
     ];
@@ -24,21 +24,5 @@ class Cart extends Model
     public function Client()
     {
         return $this->belongsTo(Client::class, 'client_id');
-    }
-
-    // public function Total()
-    // {
-    //     $total = 0;
-    //     foreach ($this->ProductsCart() as $product) {
-    //         $total += $product->quantity * $product->Product->price;
-    //     }
-    //     return $total;
-    // }
-
-    public function Total()
-    {
-        return $this->ProductsCart()->sum(function($product) {
-            return $product->quantity * $product->Product->price;
-        });
     }
 }

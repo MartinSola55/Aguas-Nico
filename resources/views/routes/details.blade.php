@@ -95,14 +95,18 @@
                                 @else
                                 <li class="timeline-inverted">
                                 @endif
-                                    @if ($cart->delivered == true)
+                                    @if ($cart->state === 0)
                                         <div class="timeline-badge danger"><i class="bi bi-truck"></i></div>
                                     @else
                                         <div class="timeline-badge" style="background-color: #30d577"><i class="bi bi-truck"></i></div>
                                     @endif
                                     <div class="timeline-panel">
                                         <div class="timeline-heading">
-                                            <h4 class="timeline-title">{{ $cart->Client->name }} - Deuda: ${{ $cart->Client->debt }}</h4>
+                                            @if ($cart->state !== 0)
+                                                <h4 class="timeline-title" style="color: #30d577">{{ $cart->Client->name }} - Deuda: ${{ $cart->Client->debt }}</h4>
+                                            @else
+                                                <h4 class="timeline-title" style="color: #fc4b6c">{{ $cart->Client->name }} - Deuda: ${{ $cart->Client->debt }}</h4>
+                                            @endif
                                             <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
                                         </div>
                                         <div class="timeline-body">
@@ -134,7 +138,7 @@
                                             @if ($cart->Client->observation != "")
                                                 <p><b>Observaciones:</b> {{ $cart->Client->observation }}</p>
                                             @endif
-                                            @if ($cart->delivered == true)
+                                            @if ($cart->state === 0)
                                                 @if ($cart->Client->observation != "")
                                                     <hr>
                                                 @endif

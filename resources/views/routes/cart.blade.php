@@ -15,7 +15,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 id="modalTitle" class="modal-title">Crear pedido</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     </div>
                     <div class="modal-body">
                         @csrf
@@ -86,7 +86,7 @@
 
         <div class="row">
             <div class="col-12">
-                <h2 class="text-left">Nuevo reparto para {{ $route->user_id }}</h2>
+                <h2 class="text-left">Nuevo reparto para {{ $route->user->name }}</h2>
                 <hr />
                 <div class="card">
                     <div class="card-body">

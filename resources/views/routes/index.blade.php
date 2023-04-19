@@ -63,9 +63,13 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody">
+                                    <?php
+                                    $i = -1;
+                                    ?>
                                     @foreach ($routes as $route)
                                         <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
                                             <?php
+                                                $i++;
                                                 $names = explode(" ", $route->user->name);
                                                 $initials = '';
                                                 foreach ($names as $name) {
@@ -74,11 +78,21 @@
                                             ?>
                                             <td style="width:50px;"><span class="round">{{ $initials }}</span></td>
                                             <td>
+                                            @if ($route->user->truck_number !== null)
                                                 <h6>{{ $route->user->name }}</h6><small class="text-muted">Camión {{ $route->user->truck_number }}</small>
+                                            @else
+                                                <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
+                                            @endif
                                             </td>
-                                            <td>4/6</td>
-                                            <td><span class="label label-danger">En reparto</span></td>
-                                            <td>$3.9K</td>
+                                            <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
+                                            @if ($route->Info()['state'] === "En depósito")
+                                                <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
+                                            @elseif ($route->Info()['state'] === "En reparto")
+                                                <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
+                                            @else
+                                                <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
+                                            @endif
+                                            <td>${{ $route->Info()['total_collected'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -138,11 +152,21 @@
                 content += `<tr class="clickable" data-url="/route/details" data-id="` + route.id + `">`;
                 content += '<td style="width:50px;"><span class="round">' + route.user.name.split(' ').map(word => word.charAt(0).toUpperCase()).join('') + '</span></td>';
                 content += '<td>';
-                content += '<h6>' + route.user.name + '</h6><small class="text-muted">Camión ' + route.user.truck_number + '</small>';
+                if (route.user.truck_number !== null) {
+                    content += '<h6>' + route.user.name + '</h6><small class="text-muted">Camión ' + route.user.truck_number + '</small>';
+                } else {
+                    content += '<h6>' + route.user.name + '</h6><small class="text-muted">Sin camión asignado</small>';
+                }
                 content += '</td>';
-                content += '<td>4/6</td>';
-                content += '<td><span class="label label-danger">Estado</span></td>';
-                content += '<td>$3.9K</td>';
+                content += '<td>' + route.info.completed_carts + '/' + route.info.total_carts + '</td>';
+                if (route.info.state === "En depósito") {
+                    content += '<td><span class="label label-danger">' + route.info.state + '</span></td>';
+                } else if (route.info.state === "En reparto") {
+                    content += '<td><span class="label label-warning">' + route.info.state + '</span></td>';
+                } else {
+                    content += '<td><span class="label label-success">' + route.info.state + '</span></td>';
+                }
+                content += '<td>$' + route.info.total_collected + '</td>';
                 content += "</tr>";
             });
             $("#tableBody").html(content);
@@ -158,7 +182,7 @@
                 method: $("#formSearchRoutes").attr('method'), // Utiliza el método del formulario
                 data: $("#formSearchRoutes").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
-                    fillTable(response.routes)
+                    fillTable(response.routes);
                 },
                 error: function(errorThrown) {
                     Swal.fire({
