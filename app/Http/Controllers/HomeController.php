@@ -55,7 +55,6 @@ class HomeController extends Controller
                 $in_deposit_routes++;
             }
         }
-        #dd($in_deposit_routes);
         $pending_routes = $routes->count() - $completed_routes - $in_deposit_routes;
 
 

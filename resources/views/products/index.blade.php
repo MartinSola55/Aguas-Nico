@@ -249,7 +249,6 @@
                 data: $("#form-edit").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     updatedSuccess(response);
-                    console.log(response)
                 },
                 error: function(errorThrown) {
                     Swal.fire({
