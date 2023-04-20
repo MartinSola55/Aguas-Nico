@@ -45,6 +45,7 @@
                         <div class="col-md-6 m-b-30 m-t-20 text-center">
                             <h1 class="m-b-0 font-light">$54578</h1>
                             <h6 class="text-muted">Ganancias totales</h6>
+                            <h1 class="m-b-0 font-light">ARRAY CANT {{ $cant[3]}}</h1>
                         </div>
                         <div class="col-md-6 m-b-30 m-t-20 text-center">
                             <h1 class="m-b-0 font-light">{{ $product->stock }}</h1>

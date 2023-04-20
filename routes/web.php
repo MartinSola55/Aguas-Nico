@@ -35,6 +35,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/client/index', [App\Http\Controllers\ClientController::class, 'index']);
     Route::get('/client/details/{id}', [App\Http\Controllers\ClientController::class, 'show'])->name('client.details');
     Route::get('/client/showInvoice/{id}', [App\Http\Controllers\ClientController::class, 'show_invoice'])->name('client.invoice');
+    Route::post('/client/searchSales', [App\Http\Controllers\ClientController::class, 'searchSales']);
     Route::post('/client/create', [App\Http\Controllers\ClientController::class, 'store']);
     Route::post('/client/edit', [App\Http\Controllers\ClientController::class, 'update']);
 

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Client\ClientCreateRequest;
 use App\Http\Requests\Client\ClientShowRequest;
 use App\Http\Requests\Client\ClientUpdateRequest;
+use App\Http\Requests\Client\SearchSalesRequest;
+use App\Models\Cart;
 use App\Models\Client;
+use App\Models\ProductCart;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -63,7 +66,57 @@ class ClientController extends Controller
     public function show($id)
     {
         $client = Client::find($id);
-        return view('clients.details', compact('client'));
+        $cartIds = Cart::where('client_id', $id)->pluck('id');
+
+        $products = ProductCart::whereIn('cart_id', $cartIds)
+                    ->whereNotNull('quantity_sent')
+                    ->get();
+
+        $graph = [];
+        foreach ($products as $product) {
+            if (isset($graph[$product->product_id])) {
+                $graph[$product->product_id]['data'] += $product->quantity_sent;
+            }else {
+                $graph[$product->product_id]['label'] = $product->Product->name;
+                $graph[$product->product_id]['data'] = $product->quantity_sent;
+            }
+        }
+
+        return view('clients.details', compact('client','graph'));
+    }
+
+    public function searchSales(SearchSalesRequest $request){
+        try {
+            $cartIds = Cart::where('client_id', $request->input('clientId'))->pluck('id');
+            $dateFrom = $request->input('dateFrom');
+            $dateTo = $request->input('dateTo');
+            $products = ProductCart::whereIn('cart_id', $cartIds)
+                        ->whereNotNull('quantity_sent')
+                        ->whereBetween('updated_at', [$dateFrom, $dateTo])
+                        ->get();
+
+            $response = [];
+            foreach ($products as $product) {
+                if (isset($response[$product->product_id])) {
+                    $response[$product->product_id]['quantity'] += $product->quantity_sent;
+                }else {
+                    $response[$product->product_id]['name'] = $product->Product->name;
+                    $response[$product->product_id]['quantity'] = $product->quantity_sent;
+                    $response[$product->product_id]['price'] = $product->setted_price;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $response
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search sales failed: ' . $e->getMessage(),
+            ], 400);
+        }
+
     }
 
     public function show_invoice($id)

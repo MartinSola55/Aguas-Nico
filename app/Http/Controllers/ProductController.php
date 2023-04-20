@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Product\ProductCreateRequest;
 use App\Http\Requests\Product\ProductUpdateRequest;
 use App\Models\Product;
+use App\Models\ProductCart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -58,12 +60,24 @@ class ProductController extends Controller
     {
         //
     }
-    
-    
+
+
     public function stats($id)
     {
         $product = Product::find($id);
-        return view('products.stats', compact('product'));
+        $products = ProductCart::select('quantity_sent', 'updated_at')
+            ->where('product_id', $id)
+            ->whereNotNull('quantity_sent')
+            ->get();
+
+        $cant = array_fill(0, 12, 0);
+
+        foreach ($products as $product) {
+            $mes = date('n', strtotime($product->updated_at)) - 1;
+            $cant[$mes] += $product->quantity_sent;
+        };
+
+        return view('products.stats', compact('product','cant'));
     }
 
     /**
