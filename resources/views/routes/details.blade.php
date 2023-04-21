@@ -142,14 +142,24 @@
                                                 @if ($cart->Client->observation != "")
                                                     <hr>
                                                 @endif
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
-                                                    <div class="dropdown-menu">
-                                                        <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
-                                                        <div class="dropdown-divider"></div>
-                                                        <button class="dropdown-item" type="button" id="btnNoEstaba">No estaba</button>
-                                                        <button class="dropdown-item" type="button" id="btnNoNecesitaba">No necesitaba</button>
-                                                        <button class="dropdown-item" type="button" id="btnVacaciones">Vacaciones</button>
+                                                <div class="d-flex flex-row justify-content-between">
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
+                                                        <div class="dropdown-menu">
+                                                            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
+                                                            <div class="dropdown-divider"></div>
+                                                            <button class="dropdown-item" type="button" id="btnNoEstaba">No estaba</button>
+                                                            <button class="dropdown-item" type="button" id="btnNoNecesitaba">No necesitaba</button>
+                                                            <button class="dropdown-item" type="button" id="btnVacaciones">Vacaciones</button>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        {{-- Delete Cart --}}
+                                                        <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
+                                                            @csrf
+                                                            <input type="hidden" name="id" value="{{ $cart->id }}">
+                                                            <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar</button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             @endif
@@ -163,6 +173,7 @@
                         </div>
                     </div>
                 </div>
+                {{-- Delete Route --}}
                 <form id="formDeleteRoute" action="{{ url('/route/delete') }}" method="POST">
                     @csrf
                     <input type="hidden" name="id" value="{{ $route->id }}">
@@ -263,7 +274,7 @@
 
         $("#btnDeleteRoute").on("click", function() {
             Swal.fire({
-                title: 'Seguro deseas eliminar esta ruta?',
+                title: 'Seguro deseas eliminar este reparto?',
                 text: "Esta acción no se puede revertir",
                 icon: 'warning',
                 showCancelButton: true,
@@ -279,6 +290,38 @@
                         data: $("#formDeleteRoute").serialize(), // Utiliza los datos del formulario
                         success: function(response) {
                             window.location.href = window.location.origin + "/route/index";
+                        },
+                        error: function(errorThrown) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: errorThrown.responseJSON.message,
+                            });
+                        }
+                    });
+                }
+            })
+        });
+
+
+        $("button[name='btnDeleteCart']").on("click", function() {
+            let id = $(this).val();
+            Swal.fire({
+                title: 'Seguro deseas eliminar esta ruta?',
+                text: "Esta acción no se puede revertir",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Eliminar'
+                })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: $("#formDeleteCart_" + id).attr('action'), // Utiliza la ruta del formulario
+                        method: $("#formDeleteCart_" + id).attr('method'), // Utiliza el método del formulario
+                        data: $("#formDeleteCart_" + id).serialize(), // Utiliza los datos del formulario
+                        success: function(response) {
+                            console.log(response);
                         },
                         error: function(errorThrown) {
                             Swal.fire({
