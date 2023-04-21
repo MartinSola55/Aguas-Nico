@@ -5,7 +5,7 @@
     <script src="{{ asset('plugins/flot/jquery.flot.js') }}"></script>
     <script src="{{ asset('plugins/flot/jquery.flot.pie.js') }}"></script>
     <script src="{{ asset('plugins/flot.tooltip/js/jquery.flot.tooltip.min.js') }}"></script>
-    <script src="{{ asset('js/flot-data.js') }}"></script>
+    {{-- <script src="{{ asset('js/flot-data.js') }}"></script> --}}
 
     <div class="container-fluid">
         <!-- ============================================================== -->
@@ -31,8 +31,8 @@
             <div class="col-xl-4">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Productos pedidos</h4>
-                        <div class="flot-chart">
+                        <h4 id="proucts_ordered" class="card-title">Productos pedidos</h4>
+                        <div class="flot-chart" id="pie_chart">
                             <div class="flot-chart-content" id="flot-pie-chart"></div>
                         </div>
                     </div>
@@ -281,8 +281,37 @@
 
     <script>
         //DATA GRAFICO
-        let dataGraph = Object.values(@json($graph));
-        console.log(dataGraph);
+        $(function () {
+            let data = [];
+            data = @json($graph);
+            console.log(data)
+            if (data.length > 0) {
+                var plotObj = $.plot($("#flot-pie-chart"), data, {
+                    series: {
+                        pie: {
+                            innerRadius: 0.5
+                            , show: true
+                        }
+                    }
+                    , grid: {
+                        hoverable: true
+                    }
+                    , color: null
+                    , tooltip: true
+                    , tooltipOpts: {
+                        content: "%p.0%, %s", // show percentages, rounding to 2 decimal places
+                        shifts: {
+                            x: 20
+                            , y: 0
+                        }
+                        , defaultTheme: false
+                    }
+                });
+            } else {
+                $("#proucts_ordered").text("El cliente no ha realizado ningún pedido");
+                $("#pie_chart").css("display", "none");
+            }
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

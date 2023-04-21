@@ -44,15 +44,19 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Intervalo de facturación</h4>
-                        <form method="POST" action="{{ url('/client/searchSales') }}" id="form-sales" class="form-material m-t-30">
+                        <form method="GET" action="{{ url('/client/searchSales') }}" id="form-sales" class="form-material m-t-30">
+                            @csrf
+                            <input type="hidden" name="client_id" value="{{ $client->id }}">
+                            <input type="hidden" name="dateFrom" id="dateFromFormatted" value="">
+                            <input type="hidden" name="dateTo" id="dateToFormatted" value="">
                             <div class="row">
                                 <div class="form-group col-lg-6">
                                     <label for="dateFrom">Fecha inicio</label>
-                                    <input id="dateFrom" name="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                                    <input id="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa">
                                 </div>
                                 <div id="dateToContainer" class="form-group col-lg-6" style="display: none">
                                     <label for="dateTo">Fecha fin</label>
-                                    <input id="dateTo" name="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                                    <input id="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa">
                                 </div>
                             </div>
                             <div id="buttonDatesContainer" class="col-lg-12 d-flex flex-direction-row justify-content-end" style="display: none !important">
@@ -166,10 +170,10 @@
                         </div>
                         <div class="col-md-12">
                             <div class="pull-right m-t-30 text-right">
-                                <p id="subtotalAmount">Subtotal: $13,848</p>
-                                <p id="IVAAmount">IVA (21%) : $138</p>
+                                <p id="subtotalAmount">Subtotal: $</p>
+                                <p id="IVAAmount">IVA (21%) : $</p>
                                 <hr>
-                                <h3 id="totalAmount"><b>Total: </b>$13,986</h3>
+                                <h3 id="totalAmount"><b>Total: </b>$</h3>
                             </div>
                             <div class="clearfix"></div>
                             <hr>
@@ -186,18 +190,20 @@
 
     {{-- Script para calcular el subtotal, iva y total automáticamente --}}
     <script>
-        const formattedNumber = (number) => {
-            return number.toLocaleString('es-AR', { minimumFractionDigits: 2 });
+        function calculateTotal () {
+            const formattedNumber = (number) => {
+                return number.toLocaleString('es-AR', { minimumFractionDigits: 2 });
+            }
+            let subtotal = 0;
+            $('#invoiceProducts .productTotal').each(function() {
+                const valor = $(this).text().replace('$', '').trim();
+                subtotal += parseFloat(valor);
+            });
+            $('#subtotalAmount').text("Subtotal: $" + formattedNumber(subtotal));
+            $("#IVAAmount").html("IVA (21%) : $" + formattedNumber(subtotal*0.21))
+            let iva = subtotal*0.21;
+            $("#totalAmount").html("<b>Total: </b>$" + formattedNumber(subtotal+iva))
         }
-        let subtotal = 0;
-        $('#invoiceProducts .productTotal').each(function() {
-            const valor = $(this).text().replace('$', '').trim();
-            subtotal += parseFloat(valor);
-        });
-        $('#subtotalAmount').text("Subtotal: $" + formattedNumber(subtotal));
-        $("#IVAAmount").html("IVA (21%) : $" + formattedNumber(subtotal*0.21))
-        let iva = subtotal*0.21;
-        $("#totalAmount").html("<b>Total: </b>$" + formattedNumber(subtotal+iva))
     </script>
     
     <script>
@@ -257,14 +263,24 @@
 
     {{-- Buscar ventas para la facturación --}}
     <script>
+        function formatDate(date) {
+            // Convertir a formato yyyy-mm-dd
+            let partesFecha = date.split("/");
+            let fechaNueva = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0]);
+            let fechaISO = fechaNueva.toISOString().slice(0,10);
+            return fechaISO;
+        }
+
         $("#btnSearchSale").on("click", function() {
+            $("#dateFromFormatted").val(formatDate($("#dateFrom").val()));
+            $("#dateToFormatted").val(formatDate($("#dateTo").val()));
             $.ajax({
                 url: $("#form-sales").attr('action'), // Utiliza la ruta del formulario
                 method: $("#form-sales").attr('method'), // Utiliza el método del formulario
                 data: $("#form-sales").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     let content = "";
-                    response.forEach(item => {
+                    Object.values(response.data).forEach((item) => {
                         content += "<tr>";
                             content += "<td>" + item.name + "</td>";
                             content += "<td class='text-right'>" + item.quantity + "</td>";
@@ -273,6 +289,7 @@
                             content += "</tr>";
                     });
                     $("#invoiceProducts tbody").html(content);
+                    calculateTotal();
                 },
                 error: function(errorThrown) {
                     Swal.fire({

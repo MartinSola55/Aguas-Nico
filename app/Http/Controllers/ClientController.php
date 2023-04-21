@@ -9,6 +9,7 @@ use App\Http\Requests\Client\SearchSalesRequest;
 use App\Models\Cart;
 use App\Models\Client;
 use App\Models\ProductCart;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -72,29 +73,32 @@ class ClientController extends Controller
                     ->whereNotNull('quantity_sent')
                     ->get();
 
-        $graph = [];
+        $auxGraph = [];
         foreach ($products as $product) {
-            if (isset($graph[$product->product_id])) {
-                $graph[$product->product_id]['data'] += $product->quantity_sent;
-            }else {
-                $graph[$product->product_id]['label'] = $product->Product->name;
-                $graph[$product->product_id]['data'] = $product->quantity_sent;
+            if (isset($auxGraph[$product->product_id])) {
+                $auxGraph[$product->product_id]['data'] += $product->quantity_sent;
+            } else {
+                $auxGraph[$product->product_id]['label'] = $product->Product->name;
+                $auxGraph[$product->product_id]['data'] = $product->quantity_sent;
+                $auxGraph[$product->product_id]['color'] = sprintf('#%06X', mt_rand(0, 0xFFFFFF));
             }
         }
+
+        // Reindex array
+        $graph = array_values($auxGraph);
 
         return view('clients.details', compact('client','graph'));
     }
 
     public function searchSales(SearchSalesRequest $request){
         try {
-            $cartIds = Cart::where('client_id', $request->input('clientId'))->pluck('id');
-            $dateFrom = $request->input('dateFrom');
-            $dateTo = $request->input('dateTo');
+            $cartIds = Cart::where('client_id', $request->input('client_id'))->pluck('id');
+            $dateFrom = Carbon::createFromFormat('Y-m-d', $request->input('dateFrom'))->startOfDay();
+            $dateTo = Carbon::createFromFormat('Y-m-d', $request->input('dateTo'))->endOfDay();
             $products = ProductCart::whereIn('cart_id', $cartIds)
                         ->whereNotNull('quantity_sent')
                         ->whereBetween('updated_at', [$dateFrom, $dateTo])
                         ->get();
-
             $response = [];
             foreach ($products as $product) {
                 if (isset($response[$product->product_id])) {

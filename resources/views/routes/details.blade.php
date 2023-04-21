@@ -158,6 +158,9 @@
                                 </li>
                             @endforeach
                         </ul>
+                        <div class="d-flex flex-row justify-content-end">
+                            <a class="btn btn-danger btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo carrito</a>
+                        </div>
                     </div>
                 </div>
                 <form id="formDeleteRoute" action="{{ url('/route/delete') }}" method="POST">

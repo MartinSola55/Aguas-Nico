@@ -65,19 +65,21 @@ class ProductController extends Controller
     public function stats($id)
     {
         $product = Product::find($id);
-        $products = ProductCart::select('quantity_sent', 'updated_at')
+        $products = ProductCart::select('quantity_sent', 'updated_at', 'setted_price')
             ->where('product_id', $id)
             ->whereNotNull('quantity_sent')
             ->get();
 
-        $cant = array_fill(0, 12, 0);
+        $graph = array_fill(0, 12, 0);
+        $total_earnings = 0;
 
-        foreach ($products as $product) {
-            $mes = date('n', strtotime($product->updated_at)) - 1;
-            $cant[$mes] += $product->quantity_sent;
+        foreach ($products as $prod) {
+            $total_earnings += $prod->quantity_sent * $prod->setted_price;
+            $mes = date('n', strtotime($prod->updated_at)) - 1;
+            $graph[$mes] += $prod->quantity_sent;
         };
 
-        return view('products.stats', compact('product','cant'));
+        return view('products.stats', compact('product','graph','total_earnings'))->with('graph', json_encode($graph));
     }
 
     /**
