@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('cart_id')->constrained('carts');
             $table->integer('quantity');
             $table->integer('quantity_sent')->nullable();
+            $table->double('setted_price', 8, 2);
             $table->timestamps();
         });
     }

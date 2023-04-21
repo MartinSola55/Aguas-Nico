@@ -268,8 +268,8 @@
             $("#productPrice" + id).html("Precio: $" + $("#productPrice").val());
 
             Swal.fire(
-                'Todo piola gato',
-                'Se agregó correctamente',
+                'OK',
+                'Acción correcta',
                 'success'
             );
         }

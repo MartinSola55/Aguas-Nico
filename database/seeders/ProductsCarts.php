@@ -17,18 +17,21 @@ class ProductsCarts extends Seeder
             'product_id' => 1,
             'cart_id' => 1,
             'quantity' => 2,
+            'setted_price' => '250',
         ]);
 
         ProductCart::create([
             'product_id' => 2,
             'cart_id' => 1,
             'quantity' => 1,
+            'setted_price' => '500',
         ]);
 
         ProductCart::create([
             'product_id' => 3,
             'cart_id' => 2,
             'quantity' => 1,
+            'setted_price' => '1300',
         ]);
     }
 }
