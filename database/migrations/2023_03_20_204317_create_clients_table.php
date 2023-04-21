@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email');
             $table->double('debt', 8, 2)->default(0);
             $table->string('dni');
-            $table->boolean('invoice');
+            $table->boolean('invoice')->default(0);
             $table->text('observation')->nullable();
             $table->timestamps();
         });

@@ -41,7 +41,7 @@
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-info"><i class="ti-wallet"></i></div>
                             <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-light">$3249</h3>
+                                <h3 class="m-b-0 font-light">${{ $day_earnings }}</h3>
                                 <h5 class="text-muted m-b-0">Ganancias del día</h5>
                             </div>
                         </div>
@@ -56,7 +56,7 @@
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-cellphone-link"></i></div>
                             <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">2</h3>
+                                <h3 class="m-b-0 font-lgiht">{{ $completed_routes }}</h3>
                                 <h5 class="text-muted m-b-0">Repartos completados</h5>
                             </div>
                         </div>
@@ -71,7 +71,7 @@
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-cart-outline"></i></div>
                             <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">4</h3>
+                                <h3 class="m-b-0 font-lgiht">{{ $pending_routes }}</h3>
                                 <h5 class="text-muted m-b-0">Repartos en curso</h5>
                             </div>
                         </div>
@@ -86,8 +86,8 @@
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-danger"><i class="mdi mdi-bullseye"></i></div>
                             <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">1</h3>
-                                <h5 class="text-muted m-b-0">Algo más</h5>
+                                <h3 class="m-b-0 font-lgiht">{{ $in_deposit_routes }}</h3>
+                                <h5 class="text-muted m-b-0">Repartos en depósito</h5>
                             </div>
                         </div>
                     </div>
@@ -111,9 +111,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <?php
+                                    $i = -1;
+                                    ?>
                                     @foreach ($routes as $route)
-                                        <tr class="clickable" data-url="{{ url('/route/details') }}" data-id="{{ $route->id }}">
+                                        <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
                                             <?php
+                                            $i++;
                                                 $names = explode(" ", $route->user->name);
                                                 $initials = '';
                                                 foreach ($names as $name) {
@@ -122,11 +126,21 @@
                                             ?>
                                             <td style="width:50px;"><span class="round">{{ $initials }}</span></td>
                                             <td>
+                                            @if ($route->user->truck_number !== null)
                                                 <h6>{{ $route->user->name }}</h6><small class="text-muted">Camión {{ $route->user->truck_number }}</small>
+                                            @else
+                                                <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
+                                            @endif
                                             </td>
-                                            <td>4/6</td>
-                                            <td><span class="label label-danger">En reparto</span></td>
-                                            <td>$3.9K</td>
+                                            <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
+                                            @if ($route->Info()['state'] === "En depósito")
+                                                <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
+                                            @elseif ($route->Info()['state'] === "En reparto")
+                                                <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
+                                            @else
+                                                <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
+                                            @endif
+                                            <td>${{ $route->Info()['total_collected'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

@@ -41,20 +41,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Martin</td>
-                                            <td>2</td>
-                                            <td>m@m.com</td>
-                                        </tr>
-                                        {{-- @foreach ($users as $user)
+                                        @foreach ($users as $user)
                                             <tr>
                                                 <td>
-                                                    <a href="{{ route('dealers.details', ['id' => $user->id]) }}">{{ $user->name }}</a>
+                                                    <a href="{{ route('dealer.details', ['id' => $user->id]) }}">{{ $user->name }}</a>
                                                 </td>
                                                 <td>{{ $user->truck_number }}</td>
                                                 <td>{{ $user->email }}</td>
                                             </tr>
-                                            @endforeach --}}
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -70,10 +65,10 @@
         $('#dealersTable').DataTable({
             "language": {
                 // "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json" // La url reemplaza todo al español
-                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
-                "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
-                "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
-                "sLengthMenu": "Mostrar _MENU_ clientes",
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ repartidores",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 repartidores",
+                "sInfoFiltered": "(filtrado de _MAX_ repartidores en total)",
+                "sLengthMenu": "Mostrar _MENU_ repartidores",
                 "sSearch": "Buscar:",
                 "oPaginate": {
                     "sFirst": "Primero",

@@ -30,18 +30,10 @@
                                 @csrf
                                 <input type="hidden" name="user_id" id="dealerID">
                                 <div class="form-column">
-                                    <div id="dateFromContainer" class="col-12 mb-3">
+                                    <div class="col-12 mb-3">
                                         <label for="dateFrom" class="mb-0">Día y hora de inicio</label>
                                         <input id="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" required>
                                         <input type="hidden" id="start_daytime" name="start_daytime" required>
-                                        <div class="invalid-feedback">
-                                            Por favor, ingrese un día y horario
-                                        </div>
-                                    </div>
-                                    <div id="dateToContainer" class="form-group col-12 mb-3" style="display: none">
-                                        <label for="dateTo" class="mb-0">Día y hora de finalización</label>
-                                        <input id="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" required>
-                                        <input type="hidden" id="end_daytime" name="end_daytime" required>
                                         <div class="invalid-feedback">
                                             Por favor, ingrese un día y horario
                                         </div>
@@ -163,16 +155,6 @@
             cancelText: "Cancelar",
             weekStart: 1,
         });
-
-        $("#dateFrom").on("change", function() {
-            $("#dateToContainer").css("display", "block");
-            $('#dateTo').bootstrapMaterialDatePicker({
-                minDate: moment($("#dateFrom").val(), 'DD/MM/YYYY - HH:mm'),
-                format: 'DD/MM/YYYY - HH:mm',
-                cancelText: "Cancelar",
-                weekStart: 1,
-            });
-        });
     </script>
 
     <script>
@@ -198,7 +180,6 @@
         function openModal(id, name) {
             $("#dealerID").val(id);
             $(".modal-title").html("Crear reparto para " + name);
-            $("#dateToContainer").css("display", "none");
             $("#dateTo").val("");
         }
     </script>
@@ -230,7 +211,6 @@
         $("#btnCreateRoute").on("click", function (e) {
             e.preventDefault();
             $("#start_daytime").val(formatDate($('#dateFrom').val()));
-            $("#end_daytime").val(formatDate($('#dateTo').val()));
             sendForm();
         });
     </script>

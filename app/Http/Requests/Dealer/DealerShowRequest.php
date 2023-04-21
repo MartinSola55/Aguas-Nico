@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Route;
+namespace App\Http\Requests\Dealer;
 
-use App\Http\Requests\BaseFormRequest;;
+use App\Http\Requests\BaseFormRequest;
 
-class RouteCreateRequest extends BaseFormRequest
+class DealerShowRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,13 +22,18 @@ class RouteCreateRequest extends BaseFormRequest
     public function rules(): array
     {
         $this->validate([
-            'user_id' => ['required', 'exists:users,id'],
-            'start_daytime' => ['required', 'date'],
+            'id' => ['required', 'exists:users,id'],
         ]);
 
-        return [
-            'user_id',
-            'start_daytime',
+       return [
+        'name',
+        'adress',
+        'phone',
+        'email',
+        'debt',
+        'dni',
+        'invoice',
+        'observation',
         ];
     }
 }

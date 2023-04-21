@@ -103,8 +103,8 @@
                 success: function(response) {
                     $("#btnCloseModal").click();
                     Swal.fire(
-                        'Todo piola gato',
-                        'Se agregó correctamente',
+                        'OK',
+                        'Acción correcta',
                         'success'
                     );
                     limpiarCampos();

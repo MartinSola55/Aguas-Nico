@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
+use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductCart;
@@ -19,10 +20,10 @@ class RouteController extends Controller
         return view('routes.index', compact('routes'));
     }
 
-    public function details($id) {
-        $product_carts = ProductCart::all();
+    public function details($id)
+    {
         $route = Route::find($id);
-        return view('routes.details', compact('route', 'product_carts'));
+        return view('routes.details', compact('route'));
     }
 
     /**
@@ -30,8 +31,20 @@ class RouteController extends Controller
      */
     public function show(Request $request)
     {
-        $routes = $this->getRoutesByDate($request->input('start_daytime'))->load(['Carts', 'User']);;
+        $routes = $this->getRoutesByDate($request->input('start_daytime'))->load(['Carts', 'User']);
+        foreach ($routes as $route) {
+                $route->info = $route->Info();
+        }
         return response()->json(['routes' => $routes]);
+    }
+
+    /*
+        Get all the products from a specific cart (when opening the modal)
+    */
+    public function getProductCarts(Request $request)
+    {
+        $cart = Cart::where('id', $request->input('id'))->with('ProductsCart.Product')->first();
+        return response()->json(['cart' => $cart]);
     }
 
     /**
@@ -47,7 +60,7 @@ class RouteController extends Controller
 
     public function new()
     {
-        $users = User::all();// traer todo menos los admins
+        $users = User::where('rol_id', '!=', 1)->get();
         return view('routes.new', compact('users'));
     }
 
@@ -76,7 +89,6 @@ class RouteController extends Controller
             $route = Route::create([
                 'user_id' => $request->input('user_id'),
                 'start_daytime' => $request->input('start_daytime'),
-                'end_daytime' => $request->input('end_daytime'),
             ]);
 
             return response()->json([

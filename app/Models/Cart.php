@@ -11,7 +11,7 @@ class Cart extends Model
     protected $fillable = [
         'route_id',
         'client_id',
-        'delivered',
+        'state',
         'start_date',
         'end_date',
     ];
@@ -19,5 +19,10 @@ class Cart extends Model
     public function ProductsCart()
     {
         return $this->hasMany(ProductCart::class, 'cart_id');
+    }
+
+    public function Client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
     }
 }

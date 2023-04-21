@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Cart\CartCreateRequest;
 use App\Http\Requests\Cart\CartUpdateRequest;
 use App\Models\Cart;
+use App\Models\Product;
+use App\Models\ProductCart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
@@ -31,14 +34,40 @@ class CartController extends Controller
      */
     public function store(CartCreateRequest $request)
     {
+
         try {
-            $cart = Cart::create([
-                'route_id' => $request->input('route_id'),
-                'client_id' => $request->input('client_id'),
-                'delivered' => $request->input('delivered'),
-                'start_date' => $request->input('start_date'),
-                'end_date' => $request->input('end_date'),
-            ]);
+            $productsJson = json_decode($request->input('products_array'));
+            try {
+                DB::beginTransaction();
+
+                $cart = Cart::create([
+                    'route_id' => $request->input('route_id'),
+                    'client_id' => $request->input('client_id'),
+                ]);
+                $productsIds = [];
+                foreach ($productsJson as $prod) {
+                    $productsIds[] = $prod->product_id;
+                }
+                $products = Product::whereIn('id', $productsIds)->get();
+                foreach ($products as $product) {
+                    foreach ($productsJson as $prodJson) {
+                        if ($prodJson->product_id === $product->id) {
+                            $product->quantity = $prodJson->quantity;
+                        }
+                    }
+                    ProductCart::create([
+                        'product_id' => $product->id,
+                        'cart_id' => $cart->id,
+                        'quantity' => $product->quantity,
+                        'setted_price' => $product->price,
+                    ]);
+                }
+
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
 
             return response()->json([
                 'success' => true,
