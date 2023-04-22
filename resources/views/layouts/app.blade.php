@@ -83,9 +83,14 @@
                         <b>
                             <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                             <!-- Dark Logo icon -->
-                            <img src="{{ asset('images/logo.png') }}" alt="Inicio" class="p-2" style="width: 150px; height: 70px;">
+                            <img src="{{ asset('images/logo_n.png') }}" alt="N" class="p-2" style="width: 60px; height: 60px;">
                         </b>
                         <!--End Logo icon -->
+                        <!-- Logo text -->
+                        <span>
+                            <!-- Logo text -->
+                            <img src="{{ asset('images/logo.png') }}" alt="Inicio" class="p-2" style="width: 150px; height: 70px;"/>
+                        </span>
                     </a>
                 </div>
                 <!-- ============================================================== -->
