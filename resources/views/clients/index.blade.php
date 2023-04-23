@@ -118,7 +118,7 @@
                     <div class="card-body">
                         <div class="d-flex flex-row justify-content-between">
                             <h2 class="card-title">Listado de clientes</h4>
-                            <button type="button" class="btn btn-danger btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar nuevo cliente</button>
+                            <button id="btnAddClient" type="button" class="btn btn-danger btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar nuevo cliente</button>
                         </div>
                         <div class="table-responsive m-t-40">
                             <table id="clientsTable" class="table table-bordered table-striped">
@@ -212,6 +212,12 @@
     </script>
 
     <script>
+        $("#btnAddClient").on("click", function () {
+            $("#form-create").removeClass('was-validated');
+            $("#form-create input,textarea").val("");
+            $("#form-create input[type='checkbox']").prop("checked", false);
+        });
+
         $('#clientsTable').DataTable({
             "language": {
                 // "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json" // La url reemplaza todo al español

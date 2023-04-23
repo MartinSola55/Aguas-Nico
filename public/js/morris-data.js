@@ -1,60 +1,38 @@
 // Dashboard 1 Morris-chart
 $(function () {
     "use strict";
+let fas = [];
+let earn = 1000;
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+for (let index = 0; index < 12; index++) {
+    fas[index] = {
+        period: '2010-0'+(index+1),
+        iphone: getRandomInt(earn, earn * 2),
+    }
+    earn += Math.floor(Math.random() * earn);
+    console.log(earn)
+}
+
 Morris.Area({
         element: 'morris-area-chart',
-        data: [{
-            period: '2010',
-            iphone: 50,
-            ipad: 80,
-            itouch: 20
-        }, {
-            period: '2011',
-            iphone: 130,
-            ipad: 100,
-            itouch: 80
-        }, {
-            period: '2012',
-            iphone: 80,
-            ipad: 60,
-            itouch: 70
-        }, {
-            period: '2013',
-            iphone: 70,
-            ipad: 200,
-            itouch: 140
-        }, {
-            period: '2014',
-            iphone: 180,
-            ipad: 150,
-            itouch: 140
-        }, {
-            period: '2015',
-            iphone: 105,
-            ipad: 100,
-            itouch: 80
-        },
-         {
-            period: '2016',
-            iphone: 250,
-            ipad: 150,
-            itouch: 200
-        }],
+        data: fas,
         xkey: 'period',
-        ykeys: ['iphone', 'ipad', 'itouch'],
-        labels: ['iPhone', 'iPad', 'iPod Touch'],
+        ykeys: ['iphone'],
+        labels: ['$'],
         pointSize: 3,
         fillOpacity: 0,
-        pointStrokeColors:['#55ce63', '#009efb', '#2f3d4a'],
+        pointStrokeColors:['#2f3d4a'],
         behaveLikeLine: true,
-        gridLineColor: '#e0e0e0',
+        gridLineColor: '#009efb',
         lineWidth: 3,
         hideHover: 'auto',
-        lineColors: ['#55ce63', '#009efb', '#2f3d4a'],
-        resize: true
-        
+        lineColors: ['#2f3d4a'],
+        resize: true,
     });
-
+/*
 Morris.Area({
         element: 'morris-area-chart2',
         data: [{
@@ -201,59 +179,29 @@ Morris.Area({
         gridLineColor: '#eef0f2',
         resize: true
     });
+*/
 // Extra chart
+let asd = [];
+for (let index = 0; index < 31; index++) {
+    asd[index] = {
+        period: '2010-01-'+(index+1),
+        iphone: Math.floor(Math.random() * 151),
+    }
+}
  Morris.Area({
         element: 'extra-area-chart',
-        data: [{
-                    period: '2010',
-                    iphone: 0,
-                    ipad: 0,
-                    itouch: 0
-                }, {
-                    period: '2011',
-                    iphone: 50,
-                    ipad: 15,
-                    itouch: 5
-                }, {
-                    period: '2012',
-                    iphone: 20,
-                    ipad: 50,
-                    itouch: 65
-                }, {
-                    period: '2013',
-                    iphone: 60,
-                    ipad: 12,
-                    itouch: 7
-                }, {
-                    period: '2014',
-                    iphone: 30,
-                    ipad: 20,
-                    itouch: 120
-                }, {
-                    period: '2015',
-                    iphone: 25,
-                    ipad: 80,
-                    itouch: 40
-                }, {
-                    period: '2016',
-                    iphone: 10,
-                    ipad: 10,
-                    itouch: 10
-                }
-
-
-                ],
-                lineColors: ['#55ce63', '#2f3d4a', '#009efb'],
-                xkey: 'period',
-                ykeys: ['iphone', 'ipad', 'itouch'],
-                labels: ['Site A', 'Site B', 'Site C'],
-                pointSize: 0,
-                lineWidth: 0,
-                resize:true,
-                fillOpacity: 0.8,
-                behaveLikeLine: true,
-                gridLineColor: '#e0e0e0',
-                hideHover: 'auto'
+        data: asd,
+        lineColors: ['#2f3d4a'],
+        xkey: 'period',
+        ykeys: ['iphone'],
+        labels: ['$'],
+        pointSize: 0,
+        lineWidth: 0,
+        resize:true,
+        fillOpacity: 0.8,
+        behaveLikeLine: true,
+        gridLineColor: '#e0e0e0',
+        hideHover: 'auto'
         
     });
  });    

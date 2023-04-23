@@ -2163,6 +2163,14 @@ File: scss
   display: inline-block;
 }
 
+.mini-sidebar .topbar .top-navbar .navbar-header .navbar-brand b {
+  display: inline-block !important;
+}
+
+.topbar .top-navbar .navbar-header .navbar-brand b {
+  display: none !important;
+}
+
 .topbar .top-navbar .navbar-nav>.nav-item>.nav-link {
   padding-left: .75rem;
   padding-right: .75rem;
@@ -2295,7 +2303,7 @@ File: scss
 }
 
 .mini-sidebar .top-navbar .navbar-header {
-  width: 150px;
+  width: 60px;
   text-align: center;
 }
 
