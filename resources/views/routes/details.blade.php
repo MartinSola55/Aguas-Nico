@@ -81,7 +81,9 @@
                 <div class="card">
                     <div class="card-header d-flex flex-row justify-content-between">
                         <h3 class="m-0">Repartos de <b>{{ $route->user->name }}</b> para el <b id="routeDate">{{ \Carbon\Carbon::parse($route->start_daytime)->format('d/m/Y') }}</b></h1>
+                        @if (auth()->user()->rol_id == '1')
                         <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar ruta</button>
+                        @endif
                     </div>
                     <div class="card-body">
                         <ul class="timeline">
@@ -143,6 +145,7 @@
                                                     <hr>
                                                 @endif
                                                 <div class="d-flex flex-row justify-content-between">
+                                                    
                                                     <div class="btn-group">
                                                         <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                         <div class="dropdown-menu">
@@ -153,6 +156,8 @@
                                                             <button class="dropdown-item" type="button" id="btnVacaciones">Vacaciones</button>
                                                         </div>
                                                     </div>
+                                                    {{-- 1 = admin --}}
+                                                    @if (auth()->user()->rol_id == '1') 
                                                     <div>
                                                         {{-- Delete Cart --}}
                                                         <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
@@ -161,6 +166,7 @@
                                                             <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar</button>
                                                         </form>
                                                     </div>
+                                                    @endif
                                                 </div>
                                             @endif
                                         </div>
@@ -168,9 +174,11 @@
                                 </li>
                             @endforeach
                         </ul>
+                        @if (auth()->user()->rol_id == '1')
                         <div class="d-flex flex-row justify-content-end">
                             <a class="btn btn-danger btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo carrito</a>
                         </div>
+                        @endif
                     </div>
                 </div>
                 {{-- Delete Route --}}

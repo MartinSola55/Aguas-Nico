@@ -256,13 +256,6 @@
                                 </ul>
                             </div>
                         </li>
-                        <!-- ============================================================== -->
-                        <!-- Language -->
-                        <!-- ============================================================== -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="flag-icon flag-icon-us"></i></a>
-                            <div class="dropdown-menu dropdown-menu-right scale-up"> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-in"></i> India</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-fr"></i> French</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-cn"></i> China</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-de"></i> Dutch</a> </div>
-                        </li>
                     </ul>
                 </div>
             </nav>
@@ -280,7 +273,8 @@
                     <!-- Sidebar navigation-->
                     <nav class="sidebar-nav">
                         <ul id="sidebarnav">
-                            <li class="nav-small-cap">PERSONAL</li>
+                            @if (auth()->user()->rol_id == '1')
+                            <li class="nav-small-cap">NEGOCIO</li>
                             <li>
                                 <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
                             </li>
@@ -296,7 +290,7 @@
                                 </ul>
                             </li>
                             <li class="nav-devider"></li>
-                            <li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
+                            <li class="nav-small-cap">REPARTOS</li>
                             <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Repartos</span></a>
                                 <ul aria-expanded="false" class="collapse">
                                     <li><a href="{{ url('/route/index') }}">Inicio</a></li>
@@ -308,21 +302,23 @@
                                     <li><a href="{{ url('/dealer/index') }}">Inicio</a></li>
                                 </ul>
                             </li>
+                            
+                            @else
+                            <li class="nav-small-cap">SECCIONES</li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/route/myRoutes') }}" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Repartos</span></a>
+                            </li>
+                            
+                            @endif
                         </ul>
                     </nav>
                     <!-- End Sidebar navigation -->
                 </div>
-                <div class="slimScrollBar" style="background: rgb(220, 220, 220); width: 5px; position: absolute; top: 0px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; left: 1px; height: 746.088px;"></div>
-                <div class="slimScrollRail" style="width: 5px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; left: 1px;"></div>
             </div>
             <!-- End Sidebar scroll-->
-            <!-- Bottom points-->
-            <div class="sidebar-footer">
-                <!-- item--><a href="#" class="link" data-toggle="tooltip" title="" data-original-title="Settings"><i class="ti-settings"></i></a>
-                <!-- item--><a href="#" class="link" data-toggle="tooltip" title="" data-original-title="Email"><i class="mdi mdi-gmail"></i></a>
-                <!-- item--><a href="#" class="link" data-toggle="tooltip" title="" data-original-title="Logout"><i class="mdi mdi-power"></i></a>
-            </div>
-            <!-- End Bottom points-->
         </aside>
         @endauth
 
