@@ -107,7 +107,7 @@
                     @foreach ($products as $product)
                         <div class="col-lg-4 col-md-8 col-xlg-3 col-xs-12">
                             <div class="ribbon-wrapper card">
-                                <div class="ribbon ribbon-default" id="productName{{ $product->id }}">{{ $product->name }}</div>
+                                <div class="ribbon ribbon-default ribbon-bookmark" id="productName{{ $product->id }}">{{ $product->name }}</div>
                                 <div class="my-4">
                                     <p class="ribbon-content" id="productStock{{ $product->id }}">Stock: {{ $product->stock }} u.</p>
                                     <p class="ribbon-content" id="productPrice{{ $product->id }}">Precio: ${{ $product->price }}</p>
