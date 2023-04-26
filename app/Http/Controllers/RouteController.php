@@ -11,13 +11,20 @@ use App\Models\ProductCart;
 use App\Models\Route;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RouteController extends Controller
 {
     public function index()
     {
-        $routes = $this->getRoutesByDate(today()->toDateString());
-        return view('routes.index', compact('routes'));
+        $user = Auth::user();
+        if ($user->rol_id == '1') {
+            $routes = $this->getRoutesByDate(today()->toDateString());
+            return view('routes.index', compact('routes'));
+        } else {
+            $routes = $this->getDealerRoutes(today()->toDateString(), $user->id);
+            return view('routes.index', compact('routes'));
+        }
     }
 
     public function details($id)
@@ -56,6 +63,20 @@ class RouteController extends Controller
     private function getRoutesByDate(string $date)
     {
         return Route::whereDate('start_daytime', $date)->get();
+    }
+
+    /**
+     * Get routes by date and user_id.
+     *
+     * @param  string  $date
+     * @param  int  $user_id
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getDealerRoutes(string $date, int $id)
+    {
+        return Route::where('user_id', $id)
+            ->whereDate('start_daytime', $date)
+            ->get();
     }
 
     public function new()

@@ -144,8 +144,9 @@
                                                 @if ($cart->Client->observation != "")
                                                     <hr>
                                                 @endif
-                                                <div class="d-flex flex-row justify-content-between">
-                                                    
+                                                <div class="d-flex flex-row justify-content-end">
+                                                    {{-- 2 = employee --}}
+                                                    @if (auth()->user()->rol_id == '2')
                                                     <div class="btn-group">
                                                         <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                         <div class="dropdown-menu">
@@ -156,6 +157,7 @@
                                                             <button class="dropdown-item" type="button" id="btnVacaciones">Vacaciones</button>
                                                         </div>
                                                     </div>
+                                                    @endif
                                                     {{-- 1 = admin --}}
                                                     @if (auth()->user()->rol_id == '1') 
                                                     <div>
@@ -314,7 +316,7 @@
         $("button[name='btnDeleteCart']").on("click", function() {
             let id = $(this).val();
             Swal.fire({
-                title: 'Seguro deseas eliminar esta ruta?',
+                title: 'Seguro deseas eliminar este pedido?',
                 text: "Esta acción no se puede revertir",
                 icon: 'warning',
                 showCancelButton: true,

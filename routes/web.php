@@ -18,18 +18,21 @@ Route::get('/', function () {
 
 Auth::routes();
 
+// ADMIN
 Route::middleware(['auth', 'admin'])->group(function () {
 
+    // DEALER
     Route::get('/dealer/index', [App\Http\Controllers\DealerController::class, 'index']);
     Route::get('/dealer/details/{id}', [App\Http\Controllers\DealerController::class, 'show'])->name('dealer.details');
 
-
+    // PRODUCT
     Route::get('/product/index', [App\Http\Controllers\ProductController::class, 'index']);
     Route::post('/product/create', [App\Http\Controllers\ProductController::class, 'store']);
     Route::post('/product/edit', [App\Http\Controllers\ProductController::class, 'update']);
     Route::get('/product/stats/{id}', [App\Http\Controllers\ProductController::class, 'stats'])->name('product.stats');
     Route::view('/product/new', 'products.new');
 
+    // CLIENT
     Route::get('/client/index', [App\Http\Controllers\ClientController::class, 'index']);
     Route::get('/client/details/{id}', [App\Http\Controllers\ClientController::class, 'show'])->name('client.details');
     Route::get('/client/showInvoice/{id}', [App\Http\Controllers\ClientController::class, 'show_invoice'])->name('client.invoice');
@@ -37,6 +40,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/client/searchSales', [App\Http\Controllers\ClientController::class, 'searchSales']);
     Route::post('/client/edit', [App\Http\Controllers\ClientController::class, 'update']);
 
+    // ROUTE
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
     Route::post('/route/create', [App\Http\Controllers\RouteController::class, 'store']);
     Route::post('/route/edit', [App\Http\Controllers\RouteController::class, 'update']);
@@ -48,16 +52,20 @@ Route::middleware(['auth', 'admin'])->group(function () {
     //Confirmar pedido
     Route::post('/route/confirm', [App\Http\Controllers\RouteController::class, 'confirm']);
 
+    // CART
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
     Route::post('/cart/create', [App\Http\Controllers\CartController::class, 'store']);
     Route::post('/cart/edit', [App\Http\Controllers\CartController::class, 'update']);
 
 });
 
-Route::middleware(['auth', 'employee'])->group(function () {
+// EMPLOYEE
+Route::middleware(['auth'])->group(function () {
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details']);
+    Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
+    Route::get('/dealer/details/{id}', [App\Http\Controllers\DealerController::class, 'show'])->name('dealer.details');
 
 });
 

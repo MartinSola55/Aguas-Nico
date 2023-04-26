@@ -20,6 +20,7 @@
                     <li class="breadcrumb-item active">Repartos</li>
                 </ol>
             </div>
+            @if (auth()->user()->rol_id == '1')  
             <div class="col-md-7 col-4 align-self-center">
                 <div class="d-flex m-t-10 justify-content-end">
                     <div class="d-flex m-r-20 m-l-10 hidden-md-down">
@@ -31,6 +32,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
         <!-- ============================================================== -->
         <!-- End Bread crumb and right sidebar toggle -->
