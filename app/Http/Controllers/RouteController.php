@@ -11,19 +11,32 @@ use App\Models\ProductCart;
 use App\Models\Route;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RouteController extends Controller
 {
     public function index()
     {
-        $routes = $this->getRoutesByDate(today()->toDateString());
-        return view('routes.index', compact('routes'));
+        $user = Auth::user();
+        if ($user->rol_id == '1') {
+            $routes = $this->getRoutesByDate(date('N'));
+            return view('routes.index', compact('routes'));
+        } else {
+            $routes = $this->getDealerRoutes(date('N'), $user->id);
+            return view('routes.index', compact('routes'));
+        }
     }
 
     public function details($id)
     {
+        $payment_methods = [
+            ['id' => 1, 'name' => 'Efectivo'],
+            ['id' => 2,'name' => 'Mercado Pago'],
+            ['id' => 3,'name' => 'Transferencia'],
+            ['id' => 4,'name' => 'Cheque'],
+        ];
         $route = Route::find($id);
-        return view('routes.details', compact('route'));
+        return view('routes.details', compact('route', 'payment_methods'));
     }
 
     /**
@@ -31,9 +44,9 @@ class RouteController extends Controller
      */
     public function show(Request $request)
     {
-        $routes = $this->getRoutesByDate($request->input('start_daytime'))->load(['Carts', 'User']);
+        $routes = $this->getRoutesByDate($request->input('day_of_week'))->load(['Carts', 'User']);
         foreach ($routes as $route) {
-                $route->info = $route->Info();
+            $route->info = $route->Info();
         }
         return response()->json(['routes' => $routes]);
     }
@@ -50,12 +63,26 @@ class RouteController extends Controller
     /**
      * Get routes by date.
      *
-     * @param  string  $date
+     * @param  int  $date
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    private function getRoutesByDate(string $date)
+    private function getRoutesByDate(int $day)
     {
-        return Route::whereDate('start_daytime', $date)->get();
+        return Route::where('day_of_week', $day)->get();
+    }
+
+    /**
+     * Get routes by date and user_id.
+     *
+     * @param  int  $day
+     * @param  int  $user_id
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getDealerRoutes(int $day, int $id)
+    {
+        return Route::where('user_id', $id)
+            ->where('day_of_week', $day)
+            ->get();
     }
 
     public function new()

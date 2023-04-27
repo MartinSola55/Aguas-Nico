@@ -9,7 +9,7 @@ function getRandomInt(min, max) {
 
 for (let index = 0; index < 12; index++) {
     fas[index] = {
-        period: '2010-0'+(index+1),
+        period: '2023-0'+(index+1),
         iphone: getRandomInt(earn, earn * 2),
     }
     earn += Math.floor(Math.random() * earn);
@@ -184,7 +184,7 @@ Morris.Area({
 let asd = [];
 for (let index = 0; index < 31; index++) {
     asd[index] = {
-        period: '2010-01-'+(index+1),
+        period: '2023-01-'+(index+1),
         iphone: Math.floor(Math.random() * 151),
     }
 }
