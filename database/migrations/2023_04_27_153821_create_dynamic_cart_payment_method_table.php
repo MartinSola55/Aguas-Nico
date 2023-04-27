@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cart_payment_method', function (Blueprint $table) {
-            $table->foreignId('cart_id')->constrained('carts');
+        Schema::create('dynamic_cart_payment_method', function (Blueprint $table) {
+            $table->foreignId('cart_id')->constrained('dynamic_carts');
             $table->foreignId('payment_method_id')->constrained('payment_method');
             $table->double('amount', 8, 2);
 
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cart_payment_method');
+        Schema::dropIfExists('dynamic_cart_payment_method');
     }
 };
