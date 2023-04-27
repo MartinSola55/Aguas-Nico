@@ -31,11 +31,17 @@
                                 <input type="hidden" name="user_id" id="dealerID">
                                 <div class="form-column">
                                     <div class="col-12 mb-3">
-                                        <label for="dateFrom" class="mb-0">Día y hora de inicio</label>
-                                        <input id="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa - HH:MM" required>
-                                        <input type="hidden" id="start_daytime" name="start_daytime" required>
+                                        <label for="day_of_week" class="mb-0">Día del reparto</label>
+                                        <select name="day_of_week" class="form-control" id="day_of_week" required>
+                                            <option disabled selected value="">Seleccione un día</option>
+                                            <option value="1">Lunes</option>
+                                            <option value="2">Martes</option>
+                                            <option value="3">Miércoles</option>
+                                            <option value="4">Jueves</option>
+                                            <option value="5">Viernes</option>
+                                        </select>
                                         <div class="invalid-feedback">
-                                            Por favor, ingrese un día y horario
+                                            Por favor, seleccione un día
                                         </div>
                                     </div>
                                 </div>
@@ -147,7 +153,7 @@
             }
     </script>
 
-    <script>
+    {{-- <script>
         moment.locale('es');
         $('#dateFrom').bootstrapMaterialDatePicker({
             format: 'DD/MM/YYYY - HH:mm',
@@ -155,16 +161,16 @@
             cancelText: "Cancelar",
             weekStart: 1,
         });
-    </script>
+    </script> --}}
 
     <script>
         $('#dealersTable').DataTable({
             "language": {
                 // "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json" // La url reemplaza todo al español
-                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
-                "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
-                "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
-                "sLengthMenu": "Mostrar _MENU_ clientes",
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ repartidores",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 repartidores",
+                "sInfoFiltered": "(filtrado de _MAX_ repartidores en total)",
+                "sLengthMenu": "Mostrar _MENU_ repartidores",
                 "sSearch": "Buscar:",
                 "oPaginate": {
                     "sFirst": "Primero",
@@ -180,11 +186,11 @@
         function openModal(id, name) {
             $("#dealerID").val(id);
             $(".modal-title").html("Crear reparto para " + name);
-            $("#dateTo").val("");
+            $("#day_of_week").val("");
         }
     </script>
 
-    <script>
+    {{-- <script>
         function formatDate(date) {
             let fechaHora = date;
 
@@ -213,7 +219,7 @@
             $("#start_daytime").val(formatDate($('#dateFrom').val()));
             sendForm();
         });
-    </script>
+    </script> --}}
 
 <style>
     #dealersTable_paginate > ul > li.paginate_button.page-item.active > a,

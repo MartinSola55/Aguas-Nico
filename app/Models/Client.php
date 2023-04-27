@@ -16,6 +16,8 @@ class Client extends Model
         'debt',
         'dni',
         'invoice',
+        'is_active',
         'observation',
+        'user_id',
     ];
 }

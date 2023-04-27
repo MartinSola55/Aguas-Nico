@@ -10,8 +10,7 @@ class Route extends Model
     use HasFactory;
     protected $fillable = [
         'user_id',
-        'start_daytime',
-        'end_daytime',
+        'day_of_week',
     ];
 
     public function Carts()

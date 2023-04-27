@@ -33,14 +33,16 @@ class ClientCreateRequest extends BaseFormRequest
         ]);
 
        return [
-        'name',
-        'adress',
-        'phone',
-        'email',
-        'debt',
-        'dni',
-        'invoice',
-        'observation',
+            'name',
+            'adress',
+            'phone',
+            'email',
+            'debt',
+            'dni',
+            'invoice',
+            'is_active',
+            'observation',
+            'user_id',
         ];
     }
 }
