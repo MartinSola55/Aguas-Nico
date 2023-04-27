@@ -13,9 +13,9 @@ class Route extends Model
         'day_of_week',
     ];
 
-    public function Carts()
+    public function StaticCarts()
     {
-        return $this->hasMany(Cart::class, 'route_id');
+        return $this->hasMany(StaticCart::class, 'route_id');
     }
 
     public function User()

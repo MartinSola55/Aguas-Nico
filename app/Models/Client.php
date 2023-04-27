@@ -20,4 +20,9 @@ class Client extends Model
         'observation',
         'user_id',
     ];
+
+    public function User()
+    {
+        return $this->belongsTo(Route::class, 'user_id');
+    }
 }

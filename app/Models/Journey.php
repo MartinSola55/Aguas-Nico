@@ -18,4 +18,9 @@ class Journey extends Model
     {
         return $this->belongsTo(Route::class, 'route_id');
     }
+
+    public function DynamicCarts()
+    {
+        return $this->hasMany(DynamicCart::class, 'journey_id');
+    }
 }

@@ -5,20 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cart extends Model
+class StaticCart extends Model
 {
     use HasFactory;
     protected $fillable = [
         'route_id',
         'client_id',
-        'state',
-        'start_date',
-        'end_date',
+        'priority',
     ];
 
-    public function ProductsCart()
+    public function Route()
     {
-        return $this->hasMany(ProductCart::class, 'cart_id');
+        return $this->belongsTo(Route::class, 'route_id');
     }
 
     public function Client()

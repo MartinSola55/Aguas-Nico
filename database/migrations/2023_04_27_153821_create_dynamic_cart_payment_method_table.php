@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dynamic_cart_payment_method', function (Blueprint $table) {
-            $table->foreignId('cart_id')->constrained('dynamic_carts');
+            $table->foreignId('dynamic_cart_id')->constrained('dynamic_carts');
             $table->foreignId('payment_method_id')->constrained('payment_method');
             $table->double('amount', 8, 2);
 
