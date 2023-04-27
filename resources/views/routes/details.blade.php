@@ -1,3 +1,13 @@
+@php
+    $diasSemana = [
+        1 => 'Lunes',
+        2 => 'Martes',
+        3 => 'Miércoles',
+        4 => 'Jueves',
+        5 => 'Viernes',
+    ];
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -21,26 +31,36 @@
                                                 <th>Cantidad</th>
                                                 <th>Producto</th>
                                                 <th>Precio</th>
-                                                <th>Descargado</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tableBody">
                                         </tbody>
                                     </table>
                                     <hr/>
-                                    <p id="totalAmount" class="mr-2">Total pedido: $0</p>
-                                    <p id="modalClientDebt">Deuda: $</p>
-                                    <div>
-                                        <div>
-                                            <input type="checkbox" id="debtCheckbox" />
-                                            <label for="debtCheckbox">Otro monto</label>
-                                        </div>
-                                        <div class="input-group mb-3 pr-1" id="paymentInput" style="display: none">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">$</span>
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <p id="totalAmount" class="mr-2 mb-0">Total pedido: $0</p>
+                                        <p id="modalClientDebt">Deuda: $</p>
+                                    </div>
+                                    <hr >
+                                    <div class="d-flex flex-column">
+                                        @foreach ($payment_methods as $pm)
+                                            <div class="d-flex flex-row justify-content-between mb-3">
+                                                <div class="col-6 d-flex flex-row">    
+                                                    <div class="switch">
+                                                        <label>
+                                                            <input type="checkbox" class="payment_checkbox"><span class="lever switch-col-red"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="demo-switch-title">{{ $pm["name"] }}</div>
+                                                </div>
+                                                <div class="input-group payment_input_container" style="display: none">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input type="number" min="0" class="form-control mr-1" disabled name="method_{{ $pm["id"] }}">
+                                                </div>
                                             </div>
-                                            <input type="number" step="0.01" min="0" max="1000000" class="form-control" name="payment" placearia-describedby="inputGroupPrepend" required>
-                                        </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -80,7 +100,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex flex-row justify-content-between">
-                        <h3 class="m-0">Repartos de <b>{{ $route->user->name }}</b> para el <b id="routeDate">{{ \Carbon\Carbon::parse($route->start_daytime)->format('d/m/Y') }}</b></h1>
+                        <h3 class="m-0">Repartos de <b>{{ $route->user->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
                         @if (auth()->user()->rol_id == '1')
                         <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar ruta</button>
                         @endif
@@ -144,18 +164,20 @@
                                                 @if ($cart->Client->observation != "")
                                                     <hr>
                                                 @endif
-                                                <div class="d-flex flex-row justify-content-between">
-                                                    
+                                                <div class="d-flex flex-row justify-content-end">
+                                                    {{-- 2 = employee --}}
+                                                    @if (auth()->user()->rol_id == '2')
                                                     <div class="btn-group">
                                                         <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                         <div class="dropdown-menu">
                                                             <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
                                                             <div class="dropdown-divider"></div>
-                                                            <button class="dropdown-item" type="button" id="btnNoEstaba">No estaba</button>
-                                                            <button class="dropdown-item" type="button" id="btnNoNecesitaba">No necesitaba</button>
-                                                            <button class="dropdown-item" type="button" id="btnVacaciones">Vacaciones</button>
+                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" id="btnNoEstaba">No estaba</button>
+                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" id="btnNoNecesitaba">No necesitaba</button>
+                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" id="btnVacaciones">Vacaciones</button>
                                                         </div>
                                                     </div>
+                                                    @endif
                                                     {{-- 1 = admin --}}
                                                     @if (auth()->user()->rol_id == '1') 
                                                     <div>
@@ -174,11 +196,9 @@
                                 </li>
                             @endforeach
                         </ul>
-                        @if (auth()->user()->rol_id == '1')
                         <div class="d-flex flex-row justify-content-end">
-                            <a class="btn btn-danger btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo carrito</a>
+                            <a class="btn btn-danger btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
                         </div>
-                        @endif
                     </div>
                 </div>
                 {{-- Delete Route --}}
@@ -199,55 +219,74 @@
         </div>
     </div>
 
+    {{-- Habilitar los medios de pago --}}
     <script>
-        const diasDeLaSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-        let dateFormatted = $("#routeDate").text();
-        let date = new Date($("#routeDate").text().split('/').reverse().join('-'));
-        $("#routeDate").html(diasDeLaSemana[date.getDay()] + ", " + dateFormatted);
+        $(document).ready(function() {
+            // Agregamos evento change a los checkboxes
+            $('.payment_checkbox').change(function() {
+                // Obtenemos el input number correspondiente
+                let inputNumber = $(this).closest('.mb-3').find('.payment_input_container');
+                // Mostramos u ocultamos el input number según el estado del checkbox
+                if($(this).is(":checked")) {
+                    inputNumber.show();
+                    inputNumber.find('input').prop('disabled', false);
+                } else {
+                    inputNumber.hide();
+                    inputNumber.find('input').prop('disabled', true);
+                }
+            });
+        });
 
+        $(".payment_input_container input").on("input", function() {
+                if ($(this).val() <= 0 || !esNumero($(this).val())) {
+                    $(this).val("");
+                }
+            });
+    </script>
+
+    <script>
+        function esNumero(valor) {
+            return /^\d+$/.test(valor);
+        }
+        
         // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
-
         function fillModal(data) {
             let content = "";
             data.forEach(pc => {
                 content += '<tr>';
-                content += '<td>' + pc.quantity + '</span></td>';
+                content += '<td><input type="number" min="0" max="1000" class="form-control cantidadProducto"></td>';
                 content += '<td>' + pc.product.name + '</td>';
                 content += '<td class="precioProducto">$ ' + pc.product.price + '</td>';
-                content += '<td>';
-                content += '<select class="form-control cantidadProducto">';
-                content += '<option value="0" selected>0</option>';
-                for (let index = 0; index < pc.quantity; index++) {
-                    content += '<option value="' + (index + 1) + '">' + (index + 1) + '</option>';
-                }
-                content += '</select>';
-                content += '</td>';
                 content += "</tr>";
             });
             $("#tableBody").html(content);
 
             // Calcular el total dentro del modal
 
-            $(".cantidadProducto").change(function() {
-            let total = 0;
-            $("#modalTable tbody tr").each(function() {
-                let precioUnit = $(this).find(".precioProducto").text().replace('$', '');
-                let cantidad = $(this).find(".cantidadProducto").val();
-                let resultado = precioUnit * cantidad;
-                total += resultado;
-            });
+            $(".cantidadProducto").on("input", function() {
+                if ($(this).val() <= 0 || !esNumero($(this).val())) {
+                    $(this).val("");
+                }
+                let total = 0;
+                $("#modalTable tbody tr").each(function() {
+                    let precioUnit = $(this).find(".precioProducto").text().replace('$', '');
+                    let cantidad = $(this).find(".cantidadProducto").val();
+                    let resultado = precioUnit * cantidad;
+                    total += resultado;
+                });
 
-            $("#totalAmount").html("Total pedido: $" + total);
-        });
+                $("#totalAmount").html("Total pedido: $" + total);
+            });
         };
 
         function openModal(id, debt) {
             $("#modalClientDebt").text("Deuda: $" + debt);
             $("#tableBody").html("");
             $("#cart_id").val(id);
-            $("#debtCheckbox").prop("checked", false);
-            $("#paymentInput").css("display", "none");
-            $("#paymentInput input").prop("disabled", true);
+            $(".payment_checkbox").prop("checked", false);
+            $(".payment_input_container").css("display", "none");
+            $(".payment_input_container input").prop("disabled", true);
+            $(".payment_input_container input").val("");
 
             // Enviar solicitud AJAX para rellenar el modal
             $.ajax({
@@ -269,16 +308,6 @@
                 $(this).val($(this).find('option:first').val());
             });
         }
-
-        $("#debtCheckbox").change(function() {
-            if ($(this).prop("checked")) {
-                $("#paymentInput").css("display", "flex");
-                $("#paymentInput input").prop("disabled", false);
-            } else {
-                $("#paymentInput").css("display", "none");
-                $("#paymentInput input").prop("disabled", true);
-            }
-        });
 
         $("#btnDeleteRoute").on("click", function() {
             Swal.fire({
@@ -314,7 +343,7 @@
         $("button[name='btnDeleteCart']").on("click", function() {
             let id = $(this).val();
             Swal.fire({
-                title: 'Seguro deseas eliminar esta ruta?',
+                title: 'Seguro deseas eliminar este pedido?',
                 text: "Esta acción no se puede revertir",
                 icon: 'warning',
                 showCancelButton: true,

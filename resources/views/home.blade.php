@@ -33,7 +33,6 @@
         <!-- ============================================================== -->
         <!-- Start Page Content -->
         <!-- ============================================================== -->
-        @if (auth()->user()->rol_id == '1')
         <div class="row">
             <!-- Column -->
             <div class="col-lg-3 col-md-6">
@@ -96,7 +95,6 @@
             </div>
             <!-- Column -->
         </div>
-        @endif
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">

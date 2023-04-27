@@ -230,16 +230,9 @@
                                                 <div class="u-text">
                                                     <h4>{{ Auth::user()->name }}</h4>
                                                     <p class="text-muted">{{ Auth::user()->email }}</p>
-                                                    <a href="#" class="btn btn-rounded btn-danger btn-sm">Ver perfil</a>
                                                 </div>
                                             </div>
                                         </li>
-                                        <li role="separator" class="divider"></li>
-                                        <li><a href="#"><i class="ti-user"></i> Mi perfil</a></li>
-                                        <li><a href="#"><i class="ti-wallet"></i> Mi balance</a></li>
-                                        <li><a href="#"><i class="ti-email"></i> Inbox</a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li><a href="#"><i class="ti-settings"></i> Preferencias</a></li>
                                         <li role="separator" class="divider"></li>
                                         <li>
                                             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -303,15 +296,20 @@
                                 </ul>
                             </li>
                             
+                            <li class="nav-devider"></li>
+                            <li class="nav-small-cap">ADMINISTRACIÓN</li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/invoice') }}" aria-expanded="false"><i class="bi bi-file-earmark-text"></i><span class="hide-menu">Facturación</span></a>
+                            </li>
+
                             @else
                             <li class="nav-small-cap">SECCIONES</li>
                             <li>
                                 <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
                             </li>
                             <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/route/myRoutes') }}" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Repartos</span></a>
+                                <a class="waves-effect waves-dark" href="{{ url('/route/index') }}" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Mis repartos</span></a>
                             </li>
-                            
                             @endif
                         </ul>
                     </nav>

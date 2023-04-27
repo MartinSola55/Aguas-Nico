@@ -39,8 +39,10 @@
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-lg-12">
-                                    @csrf
                                     <div class="form-column">
+                                        {{-- TOKEN --}}
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                                        
                                         <div class="col-12 mb-3">
                                             <label for="clientName" class="mb-0">Nombre</label>
                                             <input type="text" class="form-control" id="clientName" name="name" required>
@@ -214,7 +216,7 @@
     <script>
         $("#btnAddClient").on("click", function () {
             $("#form-create").removeClass('was-validated');
-            $("#form-create input,textarea").val("");
+            $("#form-create input:not([name='_token']),textarea").val("");
             $("#form-create input[type='checkbox']").prop("checked", false);
         });
 
