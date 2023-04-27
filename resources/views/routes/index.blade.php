@@ -1,13 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Datepicker -->
-    <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
-
-    <!-- Datepicker -->
-    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
-    <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
-
     <div class="container-fluid">
         <!-- ============================================================== -->
         <!-- Bread crumb and right sidebar toggle -->
@@ -48,9 +41,14 @@
                             <h4 class="card-title">Repartos</h4>
                             <div class="ml-auto">
                                 <form method="GET" action="{{ url('/route/showRoutes') }}" id="formSearchRoutes" novalidate>
-                                    <label for="datePicker" class="mb-0">Día</label>
-                                    <input type="text" class="form-control" placeholder="dd/mm/aaaa" id="datePicker">
-                                    <input type="hidden" name="start_daytime" id="start_daytime">
+                                    <label for="day_of_week" class="mb-0">Día</label>
+                                    <select name="day_of_week" class="form-control" id="day_of_week">
+                                        <option value="1">Lunes</option>
+                                        <option value="2">Martes</option>
+                                        <option value="3">Miércoles</option>
+                                        <option value="4">Jueves</option>
+                                        <option value="5">Viernes</option>
+                                    </select>
                                 </form>
                             </div>
                         </div>
@@ -112,8 +110,6 @@
         }
     </style>
 
-
-
     <script>
         $(document).ready(function() {
             makeHREF();
@@ -129,25 +125,11 @@
     </script>
 
     <script>
-        moment.locale('es');
-        $('#datePicker').bootstrapMaterialDatePicker({
-            currentDate: new Date(),
-            time: false,
-            format: 'DD/MM/YYYY',
-            cancelText: "Cancelar",
-            weekStart: 1,
-        });
+        let dayOfWeek = (new Date()).getDay();
+        $("#day_of_week").val(dayOfWeek);
     </script>
 
     <script>
-        function formatDate(date) {
-            // Convertir a formato yyyy-mm-dd
-            let partesFecha = date.split("/");
-            let fechaNueva = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0]);
-            let fechaISO = fechaNueva.toISOString().slice(0,10);
-            return fechaISO;
-        }
-
         function fillTable(routes) {
             let content = "";
             routes.forEach(route => {
@@ -175,9 +157,7 @@
             makeHREF();
         }
 
-        $("#datePicker").on("change", function() {
-            $("#start_daytime").val(formatDate($("#datePicker").val()));
-
+        $("#day_of_week").on("change", function() {
             // Enviar solicitud AJAX
             $.ajax({
                 url: $("#formSearchRoutes").attr('action'), // Utiliza la ruta del formulario

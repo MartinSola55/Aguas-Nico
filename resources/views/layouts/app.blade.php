@@ -230,9 +230,6 @@
                                                 <div class="u-text">
                                                     <h4>{{ Auth::user()->name }}</h4>
                                                     <p class="text-muted">{{ Auth::user()->email }}</p>
-                                                    @if (auth()->user()->rol_id == '2')   
-                                                    <a href="{{ url('/dealer/index') }}" class="btn btn-rounded btn-danger btn-sm">Ver perfil</a>
-                                                    @endif
                                                 </div>
                                             </div>
                                         </li>
@@ -299,6 +296,12 @@
                                 </ul>
                             </li>
                             
+                            <li class="nav-devider"></li>
+                            <li class="nav-small-cap">ADMINISTRACIÓN</li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/invoice') }}" aria-expanded="false"><i class="bi bi-file-earmark-text"></i><span class="hide-menu">Facturación</span></a>
+                            </li>
+
                             @else
                             <li class="nav-small-cap">SECCIONES</li>
                             <li>
@@ -306,9 +309,6 @@
                             </li>
                             <li>
                                 <a class="waves-effect waves-dark" href="{{ url('/route/index') }}" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Mis repartos</span></a>
-                            </li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ route('dealer.details', ['id' => auth()->user()->id]) }}" aria-expanded="false"><i class="bi bi-graph-up"></i><span class="hide-menu">Mis estadísticas</span></a>
                             </li>
                             @endif
                         </ul>

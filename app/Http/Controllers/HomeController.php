@@ -28,7 +28,7 @@ class HomeController extends Controller
         $user = Auth::user();
         // Admin
         if ($user->rol_id == '1') {
-            $routes = Route::whereDate('start_daytime', now()->toDateString())->get();
+            $routes = Route::all();
 
             // Calcular las ganancias totales del día
             $day_earnings = 0;
@@ -65,8 +65,13 @@ class HomeController extends Controller
             return view('home', compact('routes', 'day_earnings', 'completed_routes', 'pending_routes', 'in_deposit_routes'));
         } // Repartidor
         else {
-            $routes = Route::where('user_id', $user->id)->whereDate('start_daytime', now()->toDateString())->get();
-            return view('home', compact('routes'));
+            $routes = Route::where('user_id', $user->id)->get();
+            return view('dealerHome', compact('routes'));
         }
+    }
+    
+    public function invoice()
+    {
+        return view('invoice');
     }
 }
