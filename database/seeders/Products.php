@@ -14,20 +14,20 @@ class Products extends Seeder
     public function run(): void
     {
         Product::create([
-            'name' => 'Botella de Agua 2L',
-            'stock' => '100',
-            'price' => 250,
+            'name' => 'Máquina frío calor',
+            'stock' => '35',
+            'price' => 5000,
         ]);
 
         Product::create([
-            'name' => 'Bidon de Agua 5L',
-            'stock' => '100',
+            'name' => 'Bidon de Agua 12L',
+            'stock' => '130',
             'price' => 500,
         ]);
 
         Product::create([
             'name' => 'Bidon de Agua 15L',
-            'stock' => '100',
+            'stock' => '170',
             'price' => 1300,
         ]);
     }
