@@ -11,11 +11,14 @@ class Route extends Model
     protected $fillable = [
         'user_id',
         'day_of_week',
+        'start_date',
+        'end_date',
+        'is_static',
     ];
 
-    public function StaticCarts()
+    public function Carts()
     {
-        return $this->hasMany(StaticCart::class, 'route_id');
+        return $this->hasMany(Cart::class, 'route_id');
     }
 
     public function User()

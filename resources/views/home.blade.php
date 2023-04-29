@@ -116,20 +116,20 @@
                                     ?>
                                     @foreach ($routes as $route)
                                         <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
-                                            <?php
+                                            @php
                                             $i++;
-                                                $names = explode(" ", $route->user->name);
-                                                $initials = '';
-                                                foreach ($names as $name) {
-                                                    $initials .= strtoupper(substr($name, 0, 1));
-                                                }
-                                            ?>
+                                            $names = explode(" ", $route->User->name);
+                                            $initials = '';
+                                            foreach ($names as $name) {
+                                                $initials .= strtoupper(substr($name, 0, 1));
+                                            }
+                                            @endphp
                                             <td style="width:50px;"><span class="round">{{ $initials }}</span></td>
                                             <td>
-                                            @if ($route->user->truck_number !== null)
-                                                <h6>{{ $route->user->name }}</h6><small class="text-muted">Camión {{ $route->user->truck_number }}</small>
+                                            @if ($route->User->truck_number !== null)
+                                                <h6>{{ $route->User->name }}</h6><small class="text-muted">Camión {{ $route->User->truck_number }}</small>
                                             @else
-                                                <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
+                                                <h6>{{ $route->User->name }}</h6><small class="text-muted">Sin camión asignado</small>
                                             @endif
                                             </td>
                                             <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>

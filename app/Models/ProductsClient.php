@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DynamicCartProduct extends Model
+class ProductsClient extends Model
 {
     use HasFactory;
+    protected $table = 'products_client';
     protected $fillable = [
+        'client_id',
         'product_id',
-        'dynamic_cart_id',
-        'quantity',
-        'setted_price',
     ];
 
     public function Product()
@@ -20,8 +19,4 @@ class DynamicCartProduct extends Model
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function DynamicCart()
-    {
-        return $this->belongsTo(DynamicCart::class, 'dynamic_cart_id');
-    }
 }

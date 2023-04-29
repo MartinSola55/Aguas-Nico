@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('static_carts', function (Blueprint $table) {
+        Schema::create('carts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('route_id')->constrained('routes');
             $table->foreignId('client_id')->constrained('clients');
             $table->integer('priority');
+            $table->integer('state')->nullable();
+            $table->boolean('is_static')->default(0);
         });
     }
 
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('static_carts');
+        Schema::dropIfExists('carts');
     }
 };

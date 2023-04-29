@@ -5,18 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DynamicCartPaymentMethod extends Model
+class CartPaymentMethod extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'dynamic_cart_id',
+        'cart_id',
         'payment_method_id',
         'amount',
     ];
     
-    public function DynamicCart()
+    public function Cart()
     {
-        return $this->belongsTo(DynamicCart::class, 'dynamic_cart_id');
+        return $this->belongsTo(Cart::class, 'cart_id');
     }
 
     public function PaymentMethod()

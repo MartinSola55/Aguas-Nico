@@ -28,7 +28,13 @@ class HomeController extends Controller
         $user = Auth::user();
         // Admin
         if ($user->rol_id == '1') {
-            $routes = Route::all();
+            // Obtener las rutas del día
+            $routes = Route::whereDate('start_date', today('America/Buenos_Aires'))
+                ->with('Carts')
+                ->with('Carts.ProductsCart')
+                ->with('Carts.ProductsCart.Product')
+                ->with('User')
+                ->get();
 
             // Calcular las ganancias totales del día
             $day_earnings = 0;
@@ -39,7 +45,6 @@ class HomeController extends Controller
                 $total_carts = $route->Carts()->count();
                 $completed_carts = 0;
                 foreach ($route->Carts as $cart) {
-                    
                     $counter++;
                     // Calcular la cantidad de repartos completados
                     if ($cart->state !== 0) {
@@ -52,7 +57,7 @@ class HomeController extends Controller
                     }
                     
                     foreach ($cart->ProductsCart as $product_cart) {
-                        $day_earnings += $product_cart->Product->price * $product_cart->quantity_sent;
+                        $day_earnings += $product_cart->setted_price * $product_cart->quantity;
                     }
                 }
                 if ($route->Carts()->count() === 0) {
