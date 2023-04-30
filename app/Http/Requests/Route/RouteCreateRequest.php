@@ -23,12 +23,12 @@ class RouteCreateRequest extends BaseFormRequest
     {
         $this->validate([
             'user_id' => ['required', 'exists:users,id'],
-            'start_daytime' => ['required', 'date'],
+            'day_of_week' => ['required', 'int'],
         ]);
 
         return [
             'user_id',
-            'start_daytime',
+            'day_of_week',
         ];
     }
 }

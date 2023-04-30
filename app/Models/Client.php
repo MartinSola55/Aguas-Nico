@@ -16,6 +16,18 @@ class Client extends Model
         'debt',
         'dni',
         'invoice',
+        'is_active',
         'observation',
+        'user_id',
     ];
+
+    public function User()
+    {
+        return $this->belongsTo(Route::class, 'user_id');
+    }
+
+    public function Products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
 }

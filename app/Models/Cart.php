@@ -8,21 +8,32 @@ use Illuminate\Database\Eloquent\Model;
 class Cart extends Model
 {
     use HasFactory;
+    public $timestamps = false;
     protected $fillable = [
         'route_id',
         'client_id',
+        'priority',
         'state',
-        'start_date',
-        'end_date',
+        'is_static',
     ];
 
-    public function ProductsCart()
+    public function Route()
     {
-        return $this->hasMany(ProductCart::class, 'cart_id');
+        return $this->belongsTo(Route::class, 'route_id');
     }
 
     public function Client()
     {
         return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    public function ProductsCart()
+    {
+        return $this->hasMany(ProductsCart::class, 'cart_id');
+    }
+
+    public function CartPaymentMethod()
+    {
+        return $this->hasMany(CartPaymentMethod::class, 'cart_id');
     }
 }

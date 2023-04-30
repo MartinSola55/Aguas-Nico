@@ -21,7 +21,18 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'truck_number',
     ];
+
+    public function Clients()
+    {
+        return $this->hasMany(Client::class, 'user_id');
+    }
+
+    public function Routes()
+    {
+        return $this->hasMany(Route::class, 'user_id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.

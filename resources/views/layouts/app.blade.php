@@ -266,6 +266,8 @@
                     <!-- Sidebar navigation-->
                     <nav class="sidebar-nav">
                         <ul id="sidebarnav">
+
+                            {{-- ADMIN --}}
                             @if (auth()->user()->rol_id == '1')
                             <li class="nav-small-cap">NEGOCIO</li>
                             <li>
@@ -302,13 +304,10 @@
                                 <a class="waves-effect waves-dark" href="{{ url('/invoice') }}" aria-expanded="false"><i class="bi bi-file-earmark-text"></i><span class="hide-menu">Facturación</span></a>
                             </li>
 
+                            {{-- REPARTIDOR --}}
                             @else
-                            <li class="nav-small-cap">SECCIONES</li>
                             <li>
                                 <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
-                            </li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/route/index') }}" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Mis repartos</span></a>
                             </li>
                             @endif
                         </ul>

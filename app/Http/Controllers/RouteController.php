@@ -6,6 +6,7 @@ use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Cart;
 use App\Models\Client;
+use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductCart;
 use App\Models\Route;
@@ -29,13 +30,10 @@ class RouteController extends Controller
 
     public function details($id)
     {
-        $payment_methods = [
-            ['id' => 1, 'name' => 'Efectivo'],
-            ['id' => 2,'name' => 'Mercado Pago'],
-            ['id' => 3,'name' => 'Transferencia'],
-            ['id' => 4,'name' => 'Cheque'],
-        ];
-        $route = Route::find($id);
+        $payment_methods = PaymentMethod::all();
+        $route = Route::with(['Carts' => function ($query) {
+            $query->orderBy('priority', 'asc');
+        }])->find($id);
         return view('routes.details', compact('route', 'payment_methods'));
     }
 
@@ -68,7 +66,11 @@ class RouteController extends Controller
      */
     private function getRoutesByDate(int $day)
     {
-        return Route::where('day_of_week', $day)->get();
+        return Route::where('day_of_week', $day)
+            ->with(['Carts' => function($query) {
+                $query->orderBy('priority');
+            }])
+            ->get();
     }
 
     /**
@@ -82,6 +84,9 @@ class RouteController extends Controller
     {
         return Route::where('user_id', $id)
             ->where('day_of_week', $day)
+            ->with(['Carts' => function($query) {
+                $query->orderBy('priority');
+            }])
             ->get();
     }
 
@@ -115,7 +120,8 @@ class RouteController extends Controller
         try {
             $route = Route::create([
                 'user_id' => $request->input('user_id'),
-                'start_daytime' => $request->input('start_daytime'),
+                'day_of_week' => $request->input('day_of_week'),
+                'is_static' => true,
             ]);
 
             return response()->json([

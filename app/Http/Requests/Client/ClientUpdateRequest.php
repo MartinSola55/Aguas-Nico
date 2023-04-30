@@ -28,19 +28,21 @@ class ClientUpdateRequest extends BaseFormRequest
             'email' => ['required', 'email', 'max:255'],
             'debt' => ['required', 'numeric'],
             'dni' => ['required', 'string', 'max:255'],
-            'invoice' => ['required', 'boolean'],
+            'invoice' => ['boolean'],
             'observation' => ['nullable', 'string'],
         ]);
 
        return [
-        'name',
-        'adress',
-        'phone',
-        'email',
-        'debt',
-        'dni',
-        'invoice',
-        'observation',
+            'name',
+            'adress',
+            'phone',
+            'email',
+            'debt',
+            'dni',
+            'invoice',
+            'is_active',
+            'observation',
+            'user_id',
         ];
     }
 }

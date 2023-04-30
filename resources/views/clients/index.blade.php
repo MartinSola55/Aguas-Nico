@@ -136,7 +136,7 @@
                                         <th>Observación</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="table_body">
                                     @foreach ($clients as $client)
                                         <tr>
                                             <td>
@@ -167,6 +167,29 @@
     </div>
 
     <script>
+        function fillTable(client) {
+            let invoice = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
+            if (client.invoice) {
+                invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
+            }
+            let content = `
+            <tr>
+                <td>
+                    <a href="/client/details/` + client.id + `">` + client.name + `</a>
+                </td>
+                <td>` + client.adress + `</td>
+                <td>` + client.phone + `</td>
+                <td>` + client.email + `</td>
+                <td>` + client.dni + `</td>
+                <td class="text-center">` +
+                    invoice +
+                `</td>
+                <td>$` + client.debt + `</td>
+                <td>` + client.observation + `</td>
+            </tr>`;
+            $("#table_body").append(content);
+        }
+
         //For validation with custom styles
         (function() {
             'use strict';
@@ -202,6 +225,8 @@
                         'Acción correcta',
                         'success'
                     );
+                    console.log(response.data);
+                    fillTable(response.data);
                 },
                 error: function(errorThrown) {
                     Swal.fire({
@@ -216,7 +241,7 @@
     <script>
         $("#btnAddClient").on("click", function () {
             $("#form-create").removeClass('was-validated');
-            $("#form-create input:not([name='_token']),textarea").val("");
+            $("#form-create input:not([name='_token'], [type='checkbox']),textarea").val("");
             $("#form-create input[type='checkbox']").prop("checked", false);
         });
 

@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('route_id')->constrained('routes');
             $table->foreignId('client_id')->constrained('clients');
             $table->integer('priority');
-            $table->integer('state')->default(0);
+            $table->integer('state')->nullable();
+            $table->boolean('is_static')->default(0);
         });
     }
 

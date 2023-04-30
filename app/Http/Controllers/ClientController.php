@@ -44,7 +44,7 @@ class ClientController extends Controller
                 'email' => $request->input('email'),
                 'debt' => $request->input('debt'),
                 'dni' => $request->input('dni'),
-                'invoice' => $request->input('invoice') ?? false,
+                'invoice' => $request->input('invoice') == 1 ? true : false,
                 'observation' => $request->input('observation'),
             ]);
 
@@ -151,7 +151,7 @@ class ClientController extends Controller
                 'email' => $request->input('email'),
                 'debt' => $request->input('debt'),
                 'dni' => $request->input('dni'),
-                'invoice' => $request->input('invoice'),
+                'invoice' => $request->input('invoice') == 1 ? true : false,
                 'observation' => $request->input('observation'),
             ]);
 
