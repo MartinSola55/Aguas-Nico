@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,7 +24,10 @@ class DatabaseSeeder extends Seeder
         $this->call(Products::class);
         $this->call(Clients::class);
         $this->call(Routes::class);
+        $this->call(ProductsClient::class);
         $this->call(Carts::class);
         $this->call(ProductsCarts::class);
+        $this->call(PaymentMethods::class);
+        $this->call(CartPaymentMethods::class);
     }
 }

@@ -14,7 +14,7 @@ class Products extends Seeder
     public function run(): void
     {
         Product::create([
-            'name' => 'Máquina frío calor',
+            'name' => 'Máquina frío/calor',
             'stock' => '35',
             'price' => 5000,
         ]);

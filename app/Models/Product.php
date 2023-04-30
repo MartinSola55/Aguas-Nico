@@ -13,4 +13,9 @@ class Product extends Model
         'stock',
         'price',
     ];
+
+    public function Clients()
+    {
+        return $this->belongsToMany(Client::class);
+    }
 }

@@ -28,7 +28,7 @@ class HomeController extends Controller
         $user = Auth::user();
         // Admin
         if ($user->rol_id == '1') {
-            // Obtener las rutas del día
+            // Obtener los repartos del día
             $routes = Route::whereDate('start_date', today('America/Buenos_Aires'))
                 ->with('Carts')
                 ->with('Carts.ProductsCart')

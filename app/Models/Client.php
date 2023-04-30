@@ -25,4 +25,9 @@ class Client extends Model
     {
         return $this->belongsTo(Route::class, 'user_id');
     }
+
+    public function Products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
 }

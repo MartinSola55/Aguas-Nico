@@ -51,7 +51,7 @@
                                                             <input type="checkbox" class="payment_checkbox"><span class="lever switch-col-red"></span>
                                                         </label>
                                                     </div>
-                                                    <div class="demo-switch-title">{{ $pm["name"] }}</div>
+                                                    <div class="demo-switch-title">{{ $pm["method"] }}</div>
                                                 </div>
                                                 <div class="input-group payment_input_container" style="display: none">
                                                     <div class="input-group-prepend">
@@ -100,7 +100,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex flex-row justify-content-between">
-                        <h3 class="m-0">Repartos de <b>{{ $route->user->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
+                        <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
                         @if (auth()->user()->rol_id == '1')
                         <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar ruta</button>
                         @endif
@@ -110,7 +110,7 @@
                             <?php
                                 $contador = 0;
                             ?>
-                            @foreach ($route->carts as $cart)
+                            @foreach ($route->Carts->sortBy('priority') as $cart)
                                 <?php $contador++; ?>
                                 @if ($contador % 2 != 0)
                                 <li>

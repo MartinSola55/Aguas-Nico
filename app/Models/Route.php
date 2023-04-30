@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Route extends Model
 {
     use HasFactory;
+    public $timestamps = false;
     protected $fillable = [
         'user_id',
         'day_of_week',

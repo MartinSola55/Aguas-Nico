@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class CartPaymentMethod extends Model
 {
     use HasFactory;
+    public $timestamps = false;
     protected $fillable = [
         'cart_id',
         'payment_method_id',
