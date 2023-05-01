@@ -6,7 +6,7 @@ use App\Http\Requests\Cart\CartCreateRequest;
 use App\Http\Requests\Cart\CartUpdateRequest;
 use App\Models\Cart;
 use App\Models\Product;
-use App\Models\ProductCart;
+use App\Models\ProductsCart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -55,7 +55,7 @@ class CartController extends Controller
                             $product->quantity = $prodJson->quantity;
                         }
                     }
-                    ProductCart::create([
+                    ProductsCart::create([
                         'product_id' => $product->id,
                         'cart_id' => $cart->id,
                         'quantity' => $product->quantity,
@@ -116,6 +116,26 @@ class CartController extends Controller
                 'success' => true,
                 'message' => 'Cart edited successfully.',
                 'data' => $client
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cart edition failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function changeState(Request $request)
+    {
+        try {
+            $cart = Cart::find($request->input('id'));
+            $cart->state = $request->input('state');
+            $cart->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reparto actualizado',
+                'data' => $cart
             ], 201);
         } catch (\Exception $e) {
             return response()->json([

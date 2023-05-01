@@ -69,6 +69,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
     Route::get('/route/getProductsClient', [App\Http\Controllers\RouteController::class, 'getProductsClient']);
 
+    // Cambiar estado del carrito
+    Route::post('/cart/changeState', [App\Http\Controllers\CartController::class, 'changeState']);
+
     //Crear pedido
     Route::post('/route/createNew', [App\Http\Controllers\RouteController::class, 'create']);
 });

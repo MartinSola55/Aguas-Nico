@@ -174,9 +174,9 @@
                                                         <div class="dropdown-menu">
                                                             <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
                                                             <div class="dropdown-divider"></div>
-                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" id="btnNoEstaba">No estaba</button>
-                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" id="btnNoNecesitaba">No necesitaba</button>
-                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" id="btnVacaciones">Vacaciones</button>
+                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(2, {{ $cart->id }}, 'no estaba')">No estaba</button>
+                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(3, {{ $cart->id }}, 'no necesitaba')">No necesitaba</button>
+                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(4, {{ $cart->id }}, 'estaba de vacaciones')">Vacaciones</button>
                                                         </div>
                                                     </div>
                                                     @endif
@@ -208,14 +208,17 @@
                     @csrf
                     <input type="hidden" name="id" value="{{ $route->id }}">
                 </form>
-                {{-- Acción-->No estaba --}}
-                <form id="formNoEstaba" action="{{ url('/route/noEstaba') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="id" value="{{ $route->id }}">
-                </form>
+                {{-- Fill modal --}}
                 <form id="form_search_products" action="{{ url('/route/getProductsClient') }}" method="GET">
                     @csrf
                     <input type="hidden" id="client_id" name="client_id" value="">
+                </form>
+
+                {{-- Actions --}}
+                <form id="form_no_confirmation" action="{{ url('/cart/changeState') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="id" value="">
+                    <input type="hidden" name="state" value="">
                 </form>
             </div>
         </div>
@@ -305,10 +308,6 @@
                     });
                 }
             });
-
-            $('#modalTable select').each(function() {
-                $(this).val($(this).find('option:first').val());
-            });
         }
 
         $("#btnDeleteRoute").on("click", function() {
@@ -372,5 +371,53 @@
                 }
             })
         });
+    </script>
+
+    {{-- Acciones carrito --}}
+    <script>
+        function sendStateChange(state, cart_id, action) {
+            $("#form_no_confirmation input[name='id']").val(cart_id);
+            $("#form_no_confirmation input[name='state']").val(state);
+
+            Swal.fire({
+                title: "Alerta",
+                text: "¿Está seguro que el cliente " + action + "?",
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonColor: '#d33',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Confirmar'
+            })
+            // Si confirma la acción, envía el formulario
+            .then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: $("#form_no_confirmation").attr('action'),
+                        method: $("#form_no_confirmation").attr('method'),
+                        data: $("#form_no_confirmation").serialize(), // Utiliza los datos del formulario
+                        success: function(response) {
+                            Swal.fire({
+                                title: response.message,
+                                icon: 'success',
+                                showCancelButton: false,
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK'
+                            })
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            })
+                        },
+                        error: function(errorThrown) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: errorThrown.responseJSON.message,
+                            });
+                        }
+                    });
+                }
+            })
+        }
     </script>
 @endsection
