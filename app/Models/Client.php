@@ -28,6 +28,6 @@ class Client extends Model
 
     public function Products()
     {
-        return $this->hasManyThrough(Product::class, ProductClient::class, 'client_id', 'id', 'id', 'product_id');
+        return $this->hasManyThrough(Product::class, ProductsClient::class, 'client_id', 'id', 'id', 'product_id');
     }
 }

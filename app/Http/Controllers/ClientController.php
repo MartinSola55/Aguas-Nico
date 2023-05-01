@@ -10,7 +10,11 @@ use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductsCart;
+use App\Models\ProductsClient;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
@@ -67,11 +71,12 @@ class ClientController extends Controller
     public function show($id)
     {
         $client = Client::find($id);
-        $cartIds = Cart::where('client_id', $id)->pluck('id');
+        $cartIds = Cart::where('client_id', $id)
+            ->where('is_static', false)
+            ->where('state', '!=', 0)
+            ->pluck('id');
 
-        $products = ProductsCart::whereIn('cart_id', $cartIds)
-                    ->whereNotNull('quantity')
-                    ->get();
+        $products = ProductsCart::whereIn('cart_id', $cartIds)->get();
 
         $auxGraph = [];
         foreach ($products as $product) {
@@ -80,14 +85,16 @@ class ClientController extends Controller
             } else {
                 $auxGraph[$product->product_id]['label'] = $product->Product->name;
                 $auxGraph[$product->product_id]['data'] = $product->quantity;
-                $auxGraph[$product->product_id]['color'] = sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+                $auxGraph[$product->product_id]['color'] = '#' . substr(md5(Str::slug($product->Product->name)), 0, 6);
             }
         }
 
         // Reindex array
         $graph = array_values($auxGraph);
 
-        return view('clients.details', compact('client','graph'));
+        $client_products = $this->getProducts($client);
+
+        return view('clients.details', compact('client', 'graph', 'client_products'));
     }
 
     public function searchSales(SearchSalesRequest $request){
@@ -173,7 +180,7 @@ class ClientController extends Controller
         $productList = [];
         foreach ($products as $key => $product) {
             $productList[$key]['id'] = $product->id;
-            $productList[$key]['product'] = $product->name;
+            $productList[$key]['name'] = $product->name;
             $client_products = $client->Products;
 
             $exists = $client_products->contains('id',$product->id);
@@ -186,6 +193,42 @@ class ClientController extends Controller
         }
         return $productList;
     }
+
+    public function updateProducts(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $inputValues = $request->input(); // Obtener todos los valores de los inputs del formulario
+            $client_id = $request->input('client_id'); // Obtener el cliente
+            
+            $products = [];
+            foreach ($inputValues as $key => $value) {
+                if (strpos($key, 'product_') === 0) { // Verificar si el input corresponde a un producto
+                    $productId = substr($key, strlen('product_')); // Obtener el id del producto del nombre del input
+                    $products[] = [
+                        'client_id' => $client_id,
+                        'product_id' => $productId
+                    ];
+                }
+            }
+
+            ProductsClient::where('client_id', $client_id)->delete(); // Eliminar todos los productos del cliente
+            DB::table('products_client')->insert($products); // Insertar los nuevos productos del cliente
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Products edited successfully.',
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Products edition failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
 
     /**
      * Remove the specified resource from storage.

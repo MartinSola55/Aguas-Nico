@@ -72,7 +72,9 @@ class HomeController extends Controller
             return view('home', compact('routes', 'data'));
         } // Repartidor
         else {
-            $routes = Route::where('user_id', $user->id)->get();
+            $routes = Route::where('user_id', $user->id)
+                ->where('is_static', true)
+                ->get();
             return view('dealerHome', compact('routes'));
         }
     }

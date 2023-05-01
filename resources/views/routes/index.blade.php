@@ -43,6 +43,7 @@
                                 <form method="GET" action="{{ url('/route/showRoutes') }}" id="formSearchRoutes" novalidate>
                                     <label for="day_of_week" class="mb-0">Día</label>
                                     <select name="day_of_week" class="form-control" id="day_of_week">
+                                        <option disabled>Seleccione un día</option>
                                         <option value="1">Lunes</option>
                                         <option value="2">Martes</option>
                                         <option value="3">Miércoles</option>
@@ -116,7 +117,10 @@
 
     <script>
         let dayOfWeek = (new Date()).getDay();
-        $("#day_of_week").val(dayOfWeek);
+        if (dayOfWeek === 0 || dayOfWeek === 6)
+            $("#day_of_week").val($('#day_of_week option:first').val());
+        else
+            $("#day_of_week").val(dayOfWeek);
     </script>
 
     <script>

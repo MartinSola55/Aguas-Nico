@@ -40,16 +40,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/client/searchSales', [App\Http\Controllers\ClientController::class, 'searchSales']);
     Route::post('/client/edit', [App\Http\Controllers\ClientController::class, 'update']);
     Route::get('/client/products/{client}', [App\Http\Controllers\ClientController::class, 'getProducts']);
+    Route::post('/client/updateProducts', [App\Http\Controllers\ClientController::class, 'updateProducts']);
 
     // ROUTE
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
     Route::post('/route/create', [App\Http\Controllers\RouteController::class, 'store']);
     Route::post('/route/edit', [App\Http\Controllers\RouteController::class, 'update']);
     Route::get('/route/showRoutes', [App\Http\Controllers\RouteController::class, 'show']);
-    Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details']);
+    Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
-    Route::get('/route/getProductCarts', [App\Http\Controllers\RouteController::class, 'getProductCarts']);
     //Confirmar pedido
     Route::post('/route/confirm', [App\Http\Controllers\RouteController::class, 'confirm']);
 
@@ -65,9 +65,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
-    Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details']);
+    Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
-    Route::get('/route/getProductCarts', [App\Http\Controllers\RouteController::class, 'getProductCarts']);
+    Route::get('/route/getProductsClient', [App\Http\Controllers\RouteController::class, 'getProductsClient']);
 
+    //Crear pedido
+    Route::post('/route/createNew', [App\Http\Controllers\RouteController::class, 'create']);
 });
 

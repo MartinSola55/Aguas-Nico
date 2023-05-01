@@ -132,6 +132,7 @@
                                             <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
                                         </div>
                                         <div class="timeline-body">
+                                            @if ($cart->state !== 0)
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <div class="table-responsive">
@@ -157,6 +158,7 @@
                                                 </div>
                                             </div>
                                             <hr>
+                                            @endif
                                             @if ($cart->Client->observation != "")
                                                 <p><b>Observaciones:</b> {{ $cart->Client->observation }}</p>
                                             @endif
@@ -170,7 +172,7 @@
                                                     <div class="btn-group">
                                                         <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                         <div class="dropdown-menu">
-                                                            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
+                                                            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
                                                             <div class="dropdown-divider"></div>
                                                             <button class="dropdown-item" type="button" style="cursor: pointer;" id="btnNoEstaba">No estaba</button>
                                                             <button class="dropdown-item" type="button" style="cursor: pointer;" id="btnNoNecesitaba">No necesitaba</button>
@@ -211,9 +213,9 @@
                     @csrf
                     <input type="hidden" name="id" value="{{ $route->id }}">
                 </form>
-                <form id="form_search_products" action="{{ url('/route/getProductCarts') }}" method="GET">
+                <form id="form_search_products" action="{{ url('/route/getProductsClient') }}" method="GET">
                     @csrf
-                    <input type="hidden" id="cart_id" name="id" value="">
+                    <input type="hidden" id="client_id" name="client_id" value="">
                 </form>
             </div>
         </div>
@@ -252,11 +254,11 @@
         // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
         function fillModal(data) {
             let content = "";
-            data.forEach(pc => {
+            data.forEach(p => {
                 content += '<tr>';
                 content += '<td><input type="number" min="0" max="1000" class="form-control cantidadProducto"></td>';
-                content += '<td>' + pc.product.name + '</td>';
-                content += '<td class="precioProducto">$ ' + pc.product.price + '</td>';
+                content += '<td>' + p.product.name + '</td>';
+                content += '<td class="precioProducto">$ ' + p.product.price + '</td>';
                 content += "</tr>";
             });
             $("#tableBody").html(content);
@@ -282,7 +284,7 @@
         function openModal(id, debt) {
             $("#modalClientDebt").text("Deuda: $" + debt);
             $("#tableBody").html("");
-            $("#cart_id").val(id);
+            $("#client_id").val(id);
             $(".payment_checkbox").prop("checked", false);
             $(".payment_input_container").css("display", "none");
             $(".payment_input_container input").prop("disabled", true);
@@ -294,7 +296,7 @@
                 method: $("#form_search_products").attr('method'), // Utiliza el método del formulario
                 data: $("#form_search_products").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
-                    fillModal(response.cart.products_cart);
+                    fillModal(response.products);
                 },
                 error: function(errorThrown) {
                     Swal.fire({

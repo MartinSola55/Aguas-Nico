@@ -72,12 +72,16 @@
                         <h4 class="card-title">Datos de facturación</h4>
                         <form class="form-material m-t-30">
                             <div class="row">
-                                <div class="form-group col-lg-6">
+                                <div class="form-group col-lg-3">
                                     <label for="invoiceType">Tipo factura</label>
                                     <select id="invoiceType" class="form-control">
                                         <option value="A">A</option>
                                         <option value="B">B</option>
                                     </select>
+                                </div>
+                                <div class="form-group col-lg-3">
+                                    <label for="invoiceNumber">Número</label>
+                                    <input id="invoiceNumber" type="number" class="form-control">
                                 </div>
                                 <div class="form-group col-lg-6">
                                     <label for="invoiceName">Nombre y Apellido / Razón Social</label>
@@ -112,7 +116,7 @@
             <div class="col-md-12">
                 <div class="card card-body printableArea">
                     <div class="d-flex flex-row justify-content-between">
-                        <h3><b name="invoiceType">FACTURA -</b> <span class="pull-right">#5669626</span></h3>
+                        <h3><b name="invoiceType">FACTURA -</b> <span id="invoiceNumberText" class="pull-right">#</span></h3>
                         <h3 class="pull-right m-0"><b>ORIGINAL</b></h3>
                     </div>
                     <hr>
@@ -253,6 +257,7 @@
     <script>
         $("#buttonInvoiceData").on("click", function() {
             $('b[name="invoiceType"]').html("FACTURA " + $("#invoiceType").val())
+            $('#invoiceNumberText').html("#" + $("#invoiceNumber").val())
             $('p[name="invoiceName"]').html("<b>Apellido y Nombre / Razón Social: </b>" + $("#invoiceName").val())
             $('p[name="invoiceCUIT"]').html("<b>CUIT: </b>" + $("#invoiceCUIT").val())
             $('p[name="invoiceCondition"]').html("<b>Condición frente al IVA: </b>" + $("#invoiceCondition").val())

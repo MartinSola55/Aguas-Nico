@@ -63,6 +63,10 @@
         <!-- Start Page Content -->
         <!-- ============================================================== -->
         <div class="row">
+            <form action="/route/createNew" method="POST" id="form_confirm">
+                @csrf
+                <input type="hidden" value="" name="id" id="route_id">
+            </form>
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
@@ -72,9 +76,7 @@
                                 <thead>
                                     <tr>
                                         <th colspan="2">Nombre</th>
-                                        <th>Envíos completados</th>
-                                        <th>Estado</th>
-                                        <th>Recaudado</th>
+                                        <th>Envíos a realizar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -82,7 +84,7 @@
                                     $i = -1;
                                     ?>
                                     @foreach ($mondayRoutes as $route)
-                                        <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
+                                        <tr class="clickable" data-url="/route/createNew" data-id="{{ $route->id }}">
                                             <?php
                                             $i++;
                                                 $names = explode(" ", $route->user->name);
@@ -99,15 +101,7 @@
                                                 <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
                                             @endif
                                             </td>
-                                            <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
-                                            @if ($route->Info()['state'] === "En depósito")
-                                                <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
-                                            @elseif ($route->Info()['state'] === "En reparto")
-                                                <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
-                                            @else
-                                                <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
-                                            @endif
-                                            <td>${{ $route->Info()['total_collected'] }}</td>
+                                            <td>{{ $route->Info()['total_carts'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -123,9 +117,7 @@
                                 <thead>
                                     <tr>
                                         <th colspan="2">Nombre</th>
-                                        <th>Envíos completados</th>
-                                        <th>Estado</th>
-                                        <th>Recaudado</th>
+                                        <th>Envíos a realizar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -133,7 +125,7 @@
                                     $i = -1;
                                     ?>
                                     @foreach ($tuesdayRoutes as $route)
-                                        <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
+                                        <tr class="clickable" data-url="/route/createNew" data-id="{{ $route->id }}">
                                             <?php
                                             $i++;
                                                 $names = explode(" ", $route->user->name);
@@ -150,15 +142,7 @@
                                                 <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
                                             @endif
                                             </td>
-                                            <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
-                                            @if ($route->Info()['state'] === "En depósito")
-                                                <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
-                                            @elseif ($route->Info()['state'] === "En reparto")
-                                                <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
-                                            @else
-                                                <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
-                                            @endif
-                                            <td>${{ $route->Info()['total_collected'] }}</td>
+                                            <td>{{ $route->Info()['total_carts'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -174,9 +158,7 @@
                                 <thead>
                                     <tr>
                                         <th colspan="2">Nombre</th>
-                                        <th>Envíos completados</th>
-                                        <th>Estado</th>
-                                        <th>Recaudado</th>
+                                        <th>Envíos a realizar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -184,7 +166,7 @@
                                     $i = -1;
                                     ?>
                                     @foreach ($wednesdayRoutes as $route)
-                                        <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
+                                        <tr class="clickable" data-url="/route/createNew" data-id="{{ $route->id }}">
                                             <?php
                                             $i++;
                                                 $names = explode(" ", $route->user->name);
@@ -201,15 +183,7 @@
                                                 <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
                                             @endif
                                             </td>
-                                            <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
-                                            @if ($route->Info()['state'] === "En depósito")
-                                                <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
-                                            @elseif ($route->Info()['state'] === "En reparto")
-                                                <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
-                                            @else
-                                                <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
-                                            @endif
-                                            <td>${{ $route->Info()['total_collected'] }}</td>
+                                            <td>{{ $route->Info()['total_carts'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -225,9 +199,7 @@
                                 <thead>
                                     <tr>
                                         <th colspan="2">Nombre</th>
-                                        <th>Envíos completados</th>
-                                        <th>Estado</th>
-                                        <th>Recaudado</th>
+                                        <th>Envíos a realizar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -235,7 +207,7 @@
                                     $i = -1;
                                     ?>
                                     @foreach ($thursdayRoutes as $route)
-                                        <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
+                                        <tr class="clickable" data-url="/route/createNew" data-id="{{ $route->id }}">
                                             <?php
                                             $i++;
                                                 $names = explode(" ", $route->user->name);
@@ -252,15 +224,7 @@
                                                 <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
                                             @endif
                                             </td>
-                                            <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
-                                            @if ($route->Info()['state'] === "En depósito")
-                                                <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
-                                            @elseif ($route->Info()['state'] === "En reparto")
-                                                <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
-                                            @else
-                                                <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
-                                            @endif
-                                            <td>${{ $route->Info()['total_collected'] }}</td>
+                                            <td>{{ $route->Info()['total_carts'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -276,9 +240,7 @@
                                 <thead>
                                     <tr>
                                         <th colspan="2">Nombre</th>
-                                        <th>Envíos completados</th>
-                                        <th>Estado</th>
-                                        <th>Recaudado</th>
+                                        <th>Envíos a realizar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -286,7 +248,7 @@
                                     $i = -1;
                                     ?>
                                     @foreach ($fridayRoutes as $route)
-                                        <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
+                                        <tr class="clickable" data-url="/route/createNew" data-id="{{ $route->id }}">
                                             <?php
                                             $i++;
                                                 $names = explode(" ", $route->user->name);
@@ -303,15 +265,7 @@
                                                 <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
                                             @endif
                                             </td>
-                                            <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
-                                            @if ($route->Info()['state'] === "En depósito")
-                                                <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
-                                            @elseif ($route->Info()['state'] === "En reparto")
-                                                <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
-                                            @else
-                                                <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
-                                            @endif
-                                            <td>${{ $route->Info()['total_collected'] }}</td>
+                                            <td>{{ $route->Info()['total_carts'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -331,10 +285,34 @@
 
     <script>
         $(document).ready(function() {
-            $('.clickable').click(function() {
-                let url = $(this).data('url');
-                let id = $(this).data('id');
-                window.location.href = url + "/" + id;
+            $('.clickable').on("click", function() {
+                Swal.fire({
+                    title: '¿Seguro deseas comenzar el reparto?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Comenzar'
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        $("#route_id").val($(this).data('id'));
+                        $.ajax({
+                            url: $("#form_confirm").attr("action"),
+                            method: $("#form_confirm").attr("method"),
+                            data: $("#form_confirm").serialize(),
+                            success: function(response) {
+                                window.location.href = response.data;
+                            },
+                            error: function(errorThrown) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: errorThrown.responseJSON.message,
+                                });
+                            }
+                        });
+                    }
+                })
             });
         });
     </script>

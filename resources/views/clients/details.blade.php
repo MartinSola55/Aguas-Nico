@@ -28,28 +28,78 @@
         <!-- Start Page Content -->
         <!-- ============================================================== -->
         <div class="row">
-            <div class="col-xl-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 id="proucts_ordered" class="card-title">Productos pedidos</h4>
-                        <div class="flot-chart" id="pie_chart">
-                            <div class="flot-chart-content" id="flot-pie-chart"></div>
+            <div class="col">
+                <div class="row">
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 id="proucts_ordered" class="card-title">Productos pedidos</h4>
+                                <div class="flot-chart" id="pie_chart">
+                                    <div class="flot-chart-content" id="flot-pie-chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="row">
+                            <div class="col-md-4 col-12 col-sm-6">
+                                <div class="ribbon-wrapper card">
+                                    <div class="ribbon ribbon-default">Facturación</div>
+                                    <a href="{{ route('client.invoice', ['id' => $client->id]) }}" class="btn btn-danger btn-rounded m-t-10 float-right">Ir</a>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12 col-sm-6">
+                                <div class="ribbon-wrapper card">
+                                    <div class="ribbon ribbon-default">Deuda</div>
+                                    <p class="ribbon-content" id="clientDebtText">${{ $client->debt }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xl-4">
                 <div class="row">
-                    <div class="col-lg-4 col-md-6 col-xlg-4 col-xs-12">
-                        <div class="ribbon-wrapper card">
-                            <div class="ribbon ribbon-default">Facturación</div>
-                            <a href="{{ route('client.invoice', ['id' => $client->id]) }}" class="btn btn-danger btn-rounded m-t-10 float-right">Ir</a>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-xlg-4 col-xs-12">
-                        <div class="ribbon-wrapper card">
-                            <div class="ribbon ribbon-default">Deuda</div>
-                            <p class="ribbon-content">${{ $client->debt }}</p>
+                    <div class="col-xl">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-8">
+                                        <h3 class="card-title">Productos asociados</h3>
+                                    </div>
+                                    <div class="col-4 text-right mb-3">
+                                        <button id="btnEditProducts" class="btn btn-sm btn-danger btn-rounded px-3">Editar</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <form role="form" method="POST" action="{{ url('/client/updateProducts') }}" id="form-products">
+                                        <input type="hidden" name="client_id" value="{{ $client->id }}">
+                                        @csrf
+                                        <table class="table table-hover table-bordered table-grey" id="products_table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="col-1">Asociar</th>
+                                                    <th scope="col" class="col-11">Nombre</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($client_products as $product)
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <input id="product_{{ $product["id"] }}" name="product_{{ $product["id"] }}" type="checkbox" class="form-control" {{ $product["active"] === true ? "checked" : ""}} disabled>
+                                                            <label for="product_{{ $product["id"] }}" class="pl-3 mb-0"></label>
+                                                        </td>
+                                                        <td>{{ $product["name"] }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        <div class="row" id="divSaveProducts" style="display: none">
+                                            <div class="col-md-12 d-flex justify-content-end">
+                                                <button type="button" id="btnSaveProducts" class="btn btn-sm btn-danger btn-rounded px-3">Guardar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -204,7 +254,7 @@
                             event.stopPropagation();
                         } else {
                             event.preventDefault();
-                            sendForm();
+                            sendClientDataForm();
                         }
                         form.classList.add('was-validated');
                     }, false);
@@ -212,7 +262,7 @@
             }, false);
         })();
 
-        function sendForm() {
+        function sendClientDataForm() {
             // Enviar solicitud AJAX
             $.ajax({
                 url: $("#form-edit").attr('action'), // Utiliza la ruta del formulario
@@ -220,6 +270,7 @@
                 data: $("#form-edit").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     $("#btnEditInputs").click();
+                    $("#clientDebtText").text("$" + $("#clientDebt").val());
                     Swal.fire(
                         'OK',
                         'Acción correcta',
@@ -236,6 +287,7 @@
         }
     </script>
 
+    {{-- Datos del cliente --}}
     <script>
         $("#btnEditInputs").on("click", function() {
             $("#form-edit :input:not(:button)").prop('disabled', function(i, val) {
@@ -279,12 +331,55 @@
         });
     </script>
 
+
+    {{-- Productos del cliente --}}
+    <style>
+        .table-grey tbody td:first-child {
+            background-color: #f6f6f6;
+        }
+    </style>
     <script>
-        //DATA GRAFICO
+        $("#btnEditProducts").on("click", function() {
+            $("#form-products :input[type='checkbox']").prop('disabled', function(i, val) {
+                return !val;
+            });
+            $("#divSaveProducts").toggle();
+
+            if ($("#products_table").hasClass("table-grey"))
+                $("#products_table").removeClass("table-grey");
+            else
+                $("#products_table").addClass("table-grey");
+        });
+
+        $("#btnSaveProducts").on("click", function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $("#form-products").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-products").attr('method'), // Utiliza el método del formulario
+                data: $("#form-products").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnEditProducts").click();
+                    Swal.fire(
+                        'OK',
+                        'Acción correcta',
+                        'success'
+                        );
+                    },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // DATA GRAFICO
         $(function () {
             let data = [];
             data = @json($graph);
-            console.log(data)
             if (data.length > 0) {
                 var plotObj = $.plot($("#flot-pie-chart"), data, {
                     series: {

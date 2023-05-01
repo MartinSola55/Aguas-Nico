@@ -9,10 +9,12 @@ use App\Models\Client;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductCart;
+use App\Models\ProductsClient;
 use App\Models\Route;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RouteController extends Controller
 {
@@ -52,10 +54,10 @@ class RouteController extends Controller
     /*
         Get all the products from a specific cart (when opening the modal)
     */
-    public function getProductCarts(Request $request)
+    public function getProductsClient(Request $request)
     {
-        $cart = Cart::where('id', $request->input('id'))->with('ProductsCart.Product')->first();
-        return response()->json(['cart' => $cart]);
+        $products = ProductsClient::where('client_id', $request->input('client_id'))->with('Product')->get();
+        return response()->json(['products' => $products]);
     }
 
     /**
@@ -108,9 +110,45 @@ class RouteController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $static_route = Route::find($request->input('id'))->with('Carts')->first();
+            $static_carts = $static_route->Carts;
+
+            $newCarts = [];
+            $newRoute = Route::create([
+                'user_id' => $static_route->user_id,
+                'day_of_week' => $static_route->day_of_week,
+                'start_date' => today(),
+                'end_date' => null,
+                'is_static' => false,
+            ]);
+            foreach ($static_carts as $cart) {
+                $newCarts[] = [
+                    'route_id' => $newRoute->id,
+                    'client_id' => $cart->client_id,
+                    'priority' => $cart->priority,
+                    'state' => 0,
+                    'is_static' => false,
+                ];
+            }
+            DB::table('carts')->insert($newCarts);
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Route created successfully.',
+                'data' => route('route.details', ['id' => $newRoute->id])
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Route creation failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 
     /**
