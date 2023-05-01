@@ -39,6 +39,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/client/create', [App\Http\Controllers\ClientController::class, 'store']);
     Route::get('/client/searchSales', [App\Http\Controllers\ClientController::class, 'searchSales']);
     Route::post('/client/edit', [App\Http\Controllers\ClientController::class, 'update']);
+    Route::get('/client/products/{client}', [App\Http\Controllers\ClientController::class, 'getProducts']);
 
     // ROUTE
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
@@ -51,17 +52,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/route/getProductCarts', [App\Http\Controllers\RouteController::class, 'getProductCarts']);
     //Confirmar pedido
     Route::post('/route/confirm', [App\Http\Controllers\RouteController::class, 'confirm']);
-    
+
     // CART
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
     Route::post('/cart/create', [App\Http\Controllers\CartController::class, 'store']);
     Route::post('/cart/edit', [App\Http\Controllers\CartController::class, 'update']);
-    
+
 });
 
 // EMPLOYEE
 Route::middleware(['auth'])->group(function () {
-    
+
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details']);

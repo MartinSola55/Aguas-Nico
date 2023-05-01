@@ -8,9 +8,9 @@ use App\Http\Requests\Client\ClientUpdateRequest;
 use App\Http\Requests\Client\SearchSalesRequest;
 use App\Models\Cart;
 use App\Models\Client;
+use App\Models\Product;
 use App\Models\ProductsCart;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
@@ -166,6 +166,25 @@ class ClientController extends Controller
                 'message' => 'Client edition failed: ' . $e->getMessage(),
             ], 400);
         }
+    }
+
+    public function getProducts(Client $client) {
+        $products = Product::all();
+        $productList = [];
+        foreach ($products as $key => $product) {
+            $productList[$key]['id'] = $product->id;
+            $productList[$key]['product'] = $product->name;
+            $client_products = $client->Products; // Colección de productos del cliente
+
+            $exists = $client_products->contains('id',$product->id); // Comprueba si existe un producto con el ID dado
+
+            if ($exists) {
+                $productList[$key]['active'] = true;
+            } else {
+                $productList[$key]['active'] = false;
+            }
+        }
+        return $productList;
     }
 
     /**
