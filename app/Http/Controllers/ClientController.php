@@ -174,9 +174,9 @@ class ClientController extends Controller
         foreach ($products as $key => $product) {
             $productList[$key]['id'] = $product->id;
             $productList[$key]['product'] = $product->name;
-            $client_products = $client->Products; // Colección de productos del cliente
+            $client_products = $client->Products;
 
-            $exists = $client_products->contains('id',$product->id); // Comprueba si existe un producto con el ID dado
+            $exists = $client_products->contains('id',$product->id);
 
             if ($exists) {
                 $productList[$key]['active'] = true;
