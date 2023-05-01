@@ -67,6 +67,7 @@ class RouteController extends Controller
     private function getRoutesByDate(int $day)
     {
         return Route::where('day_of_week', $day)
+            ->where('is_static', true)
             ->with(['Carts' => function($query) {
                 $query->orderBy('priority');
             }])
