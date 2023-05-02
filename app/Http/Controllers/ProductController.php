@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Product\ProductCreateRequest;
 use App\Http\Requests\Product\ProductUpdateRequest;
 use App\Models\Product;
-use App\Models\ProductCart;
+use App\Models\ProductsCart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -65,18 +65,17 @@ class ProductController extends Controller
     public function stats($id)
     {
         $product = Product::find($id);
-        $products = ProductCart::select('quantity_sent', 'updated_at', 'setted_price')
+        $products = ProductsCart::select('quantity', 'setted_price', 'updated_at')
             ->where('product_id', $id)
-            ->whereNotNull('quantity_sent')
             ->get();
 
         $graph = array_fill(0, 12, 0);
         $total_earnings = 0;
 
         foreach ($products as $prod) {
-            $total_earnings += $prod->quantity_sent * $prod->setted_price;
+            $total_earnings += $prod->quantity * $prod->setted_price;
             $mes = date('n', strtotime($prod->updated_at)) - 1;
-            $graph[$mes] += $prod->quantity_sent;
+            $graph[$mes] += $prod->quantity;
         };
 
         return view('products.stats', compact('product','graph','total_earnings'))->with('graph', json_encode($graph));

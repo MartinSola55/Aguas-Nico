@@ -43,6 +43,7 @@
                                 <form method="GET" action="{{ url('/route/showRoutes') }}" id="formSearchRoutes" novalidate>
                                     <label for="day_of_week" class="mb-0">Día</label>
                                     <select name="day_of_week" class="form-control" id="day_of_week">
+                                        <option disabled>Seleccione un día</option>
                                         <option value="1">Lunes</option>
                                         <option value="2">Martes</option>
                                         <option value="3">Miércoles</option>
@@ -57,9 +58,7 @@
                                 <thead>
                                     <tr>
                                         <th colspan="2">Nombre</th>
-                                        <th>Envíos completados</th>
-                                        <th>Estado</th>
-                                        <th>Recaudado</th>
+                                        <th>Envíos a realizar</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody">
@@ -84,15 +83,7 @@
                                                 <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
                                             @endif
                                             </td>
-                                            <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
-                                            @if ($route->Info()['state'] === "En depósito")
-                                                <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
-                                            @elseif ($route->Info()['state'] === "En reparto")
-                                                <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
-                                            @else
-                                                <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
-                                            @endif
-                                            <td>${{ $route->Info()['total_collected'] }}</td>
+                                            <td>{{ $route->Info()['total_carts'] }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -126,7 +117,10 @@
 
     <script>
         let dayOfWeek = (new Date()).getDay();
-        $("#day_of_week").val(dayOfWeek);
+        if (dayOfWeek === 0 || dayOfWeek === 6)
+            $("#day_of_week").val($('#day_of_week option:first').val());
+        else
+            $("#day_of_week").val(dayOfWeek);
     </script>
 
     <script>
@@ -142,15 +136,7 @@
                     content += '<h6>' + route.user.name + '</h6><small class="text-muted">Sin camión asignado</small>';
                 }
                 content += '</td>';
-                content += '<td>' + route.info.completed_carts + '/' + route.info.total_carts + '</td>';
-                if (route.info.state === "En depósito") {
-                    content += '<td><span class="label label-danger">' + route.info.state + '</span></td>';
-                } else if (route.info.state === "En reparto") {
-                    content += '<td><span class="label label-warning">' + route.info.state + '</span></td>';
-                } else {
-                    content += '<td><span class="label label-success">' + route.info.state + '</span></td>';
-                }
-                content += '<td>$' + route.info.total_collected + '</td>';
+                content += '<td>' + route.info.total_carts + '</td>';
                 content += "</tr>";
             });
             $("#tableBody").html(content);

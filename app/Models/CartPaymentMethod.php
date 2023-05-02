@@ -9,12 +9,13 @@ class CartPaymentMethod extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    public $incrementing = false;
     protected $fillable = [
         'cart_id',
         'payment_method_id',
         'amount',
     ];
-    
+
     public function Cart()
     {
         return $this->belongsTo(Cart::class, 'cart_id');

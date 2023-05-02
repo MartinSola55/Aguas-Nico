@@ -37,9 +37,12 @@ class HomeController extends Controller
                 ->get();
 
             // Calcular las ganancias totales del día
-            $day_earnings = 0;
-            $completed_routes = 0;
-            $in_deposit_routes = 0;
+            $data = (object) [
+                'day_earnings' => 0,
+                'completed_routes' => 0,
+                'pending_routes' => 0,
+                'in_deposit_routes' => 0,
+            ];
             foreach ($routes as $route) {
                 $counter = 0;
                 $total_carts = $route->Carts()->count();
@@ -51,30 +54,31 @@ class HomeController extends Controller
                         $completed_carts++;
                     }
                     if ($completed_carts === $total_carts) {
-                        $completed_routes++;
+                        $data->completed_routes++;
                     } else if ($counter === $total_carts && $completed_carts === 0) {
-                        $in_deposit_routes++;
+                        $data->in_deposit_routes++;
                     }
-                    
+
                     foreach ($cart->ProductsCart as $product_cart) {
-                        $day_earnings += $product_cart->setted_price * $product_cart->quantity;
+                        $data->day_earnings += $product_cart->setted_price * $product_cart->quantity;
                     }
                 }
                 if ($route->Carts()->count() === 0) {
-                    $in_deposit_routes++;
+                    $data->in_deposit_routes++;
                 }
             }
-            $pending_routes = $routes->count() - $completed_routes - $in_deposit_routes;
+            $data->pending_routes = $routes->count() - $data->completed_routes - $data->in_deposit_routes;
 
-
-            return view('home', compact('routes', 'day_earnings', 'completed_routes', 'pending_routes', 'in_deposit_routes'));
+            return view('home', compact('routes', 'data'));
         } // Repartidor
         else {
-            $routes = Route::where('user_id', $user->id)->get();
+            $routes = Route::where('user_id', $user->id)
+                ->where('is_static', true)
+                ->get();
             return view('dealerHome', compact('routes'));
         }
     }
-    
+
     public function invoice()
     {
         return view('invoice');

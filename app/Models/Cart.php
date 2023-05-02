@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\Auth\ConfirmPasswordController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,3 +38,10 @@ class Cart extends Model
         return $this->hasMany(CartPaymentMethod::class, 'cart_id');
     }
 }
+
+// state
+// 0 (por defecto) = no confirmado
+// 1 = Confirmado (bajo al menos un prod)
+// 2 = no estaba
+// 3 = no necesitaba
+// 4 = Vacaciones
