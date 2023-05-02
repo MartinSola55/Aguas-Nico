@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Cart\CartCreateRequest;
 use App\Http\Requests\Cart\CartUpdateRequest;
+use App\Http\Requests\Cart\ConfirmRequest;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\ProductsCart;
@@ -143,6 +144,11 @@ class CartController extends Controller
                 'message' => 'Cart edition failed: ' . $e->getMessage(),
             ], 400);
         }
+    }
+
+    public function confirm(ConfirmRequest $request)
+    {
+
     }
 
     /**
