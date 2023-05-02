@@ -23,10 +23,10 @@ class ConfirmRequest extends BaseFormRequest
     {
         $this->validate([
             'cart_id' => ['required', 'exists:carts,id'],
-            'products_quantity' => ['required', 'array'],
+            'products_quantity' => ['required'],
             'products_quantity.*.product_id' => ['required', 'exists:products,id'],
             'products_quantity.*.quantity' => ['required', 'integer', 'min:1'],
-            'payment_methods' => ['required', 'array'],
+            'payment_methods' => ['required'],
             'payment_methods.*.method' => ['required', 'string', 'max:255'],
             'payment_methods.*.amount' => ['required', 'numeric', 'min:0'],
         ]);

@@ -6,6 +6,7 @@ use App\Http\Requests\Cart\CartCreateRequest;
 use App\Http\Requests\Cart\CartUpdateRequest;
 use App\Http\Requests\Cart\ConfirmRequest;
 use App\Models\Cart;
+use App\Models\CartPaymentMethod;
 use App\Models\Product;
 use App\Models\ProductsCart;
 use Illuminate\Http\Request;
@@ -148,7 +149,42 @@ class CartController extends Controller
 
     public function confirm(ConfirmRequest $request)
     {
+        try {
+            $products_quantity = json_decode($request->input('products_quantity'), true);
+            $payment_methods = json_decode($request->input('payment_methods'), true);
 
+            $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
+            $prices = Product::whereIn('id', $productIds)->pluck('price', 'id');
+
+            foreach ($products_quantity as $product) {
+                ProductsCart::create([
+                    'product_id' => $product['product_id'],
+                    'cart_id' => $request->input('cart_id'),
+                    'quantity' => $product['quantity'],
+                    'setted_price' => $prices[$product['product_id']],
+                ]);
+            }
+
+            foreach ($payment_methods as $payment) {
+                CartPaymentMethod::create([
+                    'cart_id' => $request->input('cart_id'),
+                    'payment_method_id' => $payment['method'],
+                    'amount' => $payment['amount'],
+                ]);
+            }
+
+            Cart::find($request->input('cart_id'))->update(['state' => 1]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order confirmed successfully'
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cart edition failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 
     /**
