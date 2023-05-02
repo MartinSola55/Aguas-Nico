@@ -12,6 +12,7 @@ use App\Models\ProductCart;
 use App\Models\ProductsClient;
 use App\Models\Route;
 use App\Models\User;
+use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -32,11 +33,12 @@ class RouteController extends Controller
 
     public function details($id)
     {
-        $payment_methods = PaymentMethod::all();
+        $cash = PaymentMethod::where('method', 'Efectivo')->first();
+        $payment_methods = PaymentMethod::all()->except($cash->id);
         $route = Route::with(['Carts' => function ($query) {
             $query->orderBy('priority', 'asc');
         }])->find($id);
-        return view('routes.details', compact('route', 'payment_methods'));
+        return view('routes.details', compact('route', 'payment_methods', 'cash'));
     }
 
     /**
