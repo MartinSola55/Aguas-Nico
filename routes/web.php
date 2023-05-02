@@ -73,5 +73,8 @@ Route::middleware(['auth'])->group(function () {
 
     //Crear pedido
     Route::post('/route/createNew', [App\Http\Controllers\RouteController::class, 'create']);
+    
+    //Confirmar carrito
+    Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
 });
 
