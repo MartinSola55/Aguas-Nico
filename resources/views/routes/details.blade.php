@@ -185,6 +185,11 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="d-flex flex-row justify-content-end">
+                                                <p class="m-0">Total del pedido: ${{ $cart->ProductsCart->sum(function($product_cart) {
+                                                    return $product_cart->setted_price * $product_cart->quantity;
+                                                }) }}</p>
+                                            </div>
                                             <hr>
                                             @endif
                                             @if ($cart->Client->observation != "")
@@ -220,6 +225,34 @@
                                                     </div>
                                                     @endif
                                                 </div>
+                                            @else
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Método de pago</th>
+                                                                    <th>Cantidad</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($cart->CartPaymentMethod as $pm)    
+                                                                    <tr>
+                                                                        <td>{{ $pm->PaymentMethod->method}}</td>
+                                                                        <td>${{ $pm->amount }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="d-flex flex-row justify-content-end">
+                                                        <p class="m-0">Total abonado: ${{ $cart->CartPaymentMethod->sum(function($pm) {
+                                                            return $pm->amount;
+                                                        }) }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             @endif
                                         </div>
                                     </div>
@@ -295,9 +328,18 @@
                     success: function(response) {
                         $("#btnCloseModal").click();
                         Swal.fire({
-                            icon: 'success',
-                            title: response.message,
-                        });
+                                title: response.message,
+                                icon: 'success',
+                                showCancelButton: false,
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK',
+                                allowOutsideClick: false,
+                            })
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            })
                     },
                     error: function(errorThrown) {
                         Swal.fire({
@@ -524,7 +566,8 @@
                                 icon: 'success',
                                 showCancelButton: false,
                                 confirmButtonColor: '#3085d6',
-                                confirmButtonText: 'OK'
+                                confirmButtonText: 'OK',
+                                allowOutsideClick: false,
                             })
                             .then((result) => {
                                 if (result.isConfirmed) {
