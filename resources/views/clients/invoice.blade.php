@@ -182,7 +182,6 @@
                             <div class="clearfix"></div>
                             <hr>
                             <div class="text-right">
-                                <button class="btn btn-danger" type="submit">Registrar factura</button>
                                 <button id="print" class="btn btn-default btn-outline" type="button"> <span><i class="fa fa-print"></i> Imprimir</span></button>
                             </div>
                         </div>
