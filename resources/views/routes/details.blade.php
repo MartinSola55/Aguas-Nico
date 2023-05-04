@@ -156,8 +156,10 @@
                                         <div class="timeline-badge" style="background-color: #30d577"><i class="bi bi-truck"></i></div>
                                     @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
                                         <div class="timeline-badge" style="background-color: #ffc107"><i class="bi bi-truck"></i></div>
-                                    @else
+                                    @elseif ($cart->state === 0)
                                         <div class="timeline-badge" style="background-color: #fc4b6c"><i class="bi bi-truck"></i></div>
+                                    @else
+                                        <div class="timeline-badge" style="background-color: #6c757d"><i class="bi bi-truck"></i></div>
                                     @endif
                                     <div class="timeline-panel">
                                         <div class="timeline-heading">
@@ -165,8 +167,10 @@
                                                 <h4 class="timeline-title" style="color: #30d577">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
                                             @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
                                                 <h4 class="timeline-title" style="color: #ffc107">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
-                                            @else
+                                            @elseif ($cart->state === 0)
                                                 <h4 class="timeline-title" style="color: #fc4b6c">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                            @else
+                                                <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
                                             <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
                                         </div>
@@ -208,8 +212,8 @@
                                                 <p><b>Observaciones:</b> {{ $cart->Client->observation }}</p>
                                             @endif
 
-                                            @if ($cart->state === 0)
-                                                @if ($cart->Client->observation != "")
+                                            @if ($cart->state === 0 || $cart->state === null)
+                                                @if ($cart->Client->observation !== "")
                                                     <hr>
                                                 @endif
                                                 <div class="d-flex flex-row justify-content-end">

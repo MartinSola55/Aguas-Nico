@@ -24,7 +24,7 @@ class RouteController extends Controller
         $user = Auth::user();
         if ($user->rol_id == '1') {
             $routes = $this->getRoutesByDate(date('N'));
-            return view('routes.index', compact('routes'));
+            return view('routes.adminIndex', compact('routes'));
         } else {
             $routes = $this->getDealerRoutes(date('N'), $user->id);
             return view('routes.index', compact('routes'));
