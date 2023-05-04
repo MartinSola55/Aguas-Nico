@@ -156,7 +156,13 @@ class CartController extends Controller
             $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
             $prices = Product::whereIn('id', $productIds)->pluck('price', 'id');
 
+            $client = Cart::find($request->input('cart_id'))->Client;
+            $total_cart = 0;
+            $total_paid = 0;
+
+            DB::beginTransaction();
             foreach ($products_quantity as $product) {
+                $total_cart += $product['quantity'] * $prices[$product['product_id']];
                 ProductsCart::create([
                     'product_id' => $product['product_id'],
                     'cart_id' => $request->input('cart_id'),
@@ -166,6 +172,7 @@ class CartController extends Controller
             }
 
             foreach ($payment_methods as $payment) {
+                $total_paid += $payment['amount'];
                 CartPaymentMethod::create([
                     'cart_id' => $request->input('cart_id'),
                     'payment_method_id' => $payment['method'],
@@ -173,13 +180,21 @@ class CartController extends Controller
                 ]);
             }
 
+            if ($total_paid < $total_cart) {
+                $client->update(['debt' => $client->debt + $total_cart - $total_paid]);
+            } else if ($total_paid >= $total_cart) {
+                $client->update(['debt' => $client->debt + $total_cart - $total_paid]);
+            }
+
             Cart::find($request->input('cart_id'))->update(['state' => 1]);
+            DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Order confirmed successfully'
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Cart edition failed: ' . $e->getMessage(),

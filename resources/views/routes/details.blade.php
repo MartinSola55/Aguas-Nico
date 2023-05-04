@@ -6,6 +6,13 @@
         4 => 'Jueves',
         5 => 'Viernes',
     ];
+    $states = [
+        0 => 'Pendiente',
+        1 => 'Completado',
+        2 => 'No estaba',
+        3 => 'No necesitaba',
+        4 => 'De vacaciones',
+    ];
 @endphp
 
 @extends('layouts.app')
@@ -145,80 +152,125 @@
                                 @else
                                 <li class="timeline-inverted">
                                 @endif
-                                    @if ($cart->state === 0)
-                                        <div class="timeline-badge danger"><i class="bi bi-truck"></i></div>
-                                    @else
+                                    @if ($cart->state === 1)
                                         <div class="timeline-badge" style="background-color: #30d577"><i class="bi bi-truck"></i></div>
+                                    @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
+                                        <div class="timeline-badge" style="background-color: #ffc107"><i class="bi bi-truck"></i></div>
+                                    @elseif ($cart->state === 0)
+                                        <div class="timeline-badge" style="background-color: #fc4b6c"><i class="bi bi-truck"></i></div>
+                                    @else
+                                        <div class="timeline-badge" style="background-color: #6c757d"><i class="bi bi-truck"></i></div>
                                     @endif
                                     <div class="timeline-panel">
                                         <div class="timeline-heading">
-                                            @if ($cart->state !== 0)
-                                                <h4 class="timeline-title" style="color: #30d577">{{ $cart->Client->name }} - Deuda: ${{ $cart->Client->debt }}</h4>
+                                            @if ($cart->state === 1)
+                                                <h4 class="timeline-title" style="color: #30d577">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                            @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
+                                                <h4 class="timeline-title" style="color: #ffc107">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                            @elseif ($cart->state === 0)
+                                                <h4 class="timeline-title" style="color: #fc4b6c">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
                                             @else
-                                                <h4 class="timeline-title" style="color: #fc4b6c">{{ $cart->Client->name }} - Deuda: ${{ $cart->Client->debt }}</h4>
+                                                <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
                                             <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
                                         </div>
                                         <div class="timeline-body">
-                                            @if ($cart->state !== 0)
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <div class="table-responsive">
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Cantidad</th>
-                                                                    <th>Producto</th>
-                                                                    <th>Precio</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($cart->ProductsCart as $pc)    
+                                            @if ($cart->state === 1)
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
                                                                     <tr>
-                                                                        <td>{{ $pc->quantity}}</td>
-                                                                        <td>{{ $pc->product->name }}</td>
-                                                                        <td>${{ $pc->product->price }}</td>
+                                                                        <th>Cantidad</th>
+                                                                        <th>Producto</th>
+                                                                        <th>Precio</th>
                                                                     </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($cart->ProductsCart as $pc)    
+                                                                        <tr>
+                                                                            <td>{{ $pc->quantity}}</td>
+                                                                            <td>{{ $pc->product->name }}</td>
+                                                                            <td>${{ $pc->product->price }}</td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <hr>
+                                                <div class="d-flex flex-row justify-content-end">
+                                                    <p class="m-0">Total del pedido: ${{ $cart->ProductsCart->sum(function($product_cart) {
+                                                        return $product_cart->setted_price * $product_cart->quantity;
+                                                    }) }}</p>
+                                                </div>
+                                                <hr>
                                             @endif
+
                                             @if ($cart->Client->observation != "")
                                                 <p><b>Observaciones:</b> {{ $cart->Client->observation }}</p>
                                             @endif
-                                            @if ($cart->state === 0)
-                                                @if ($cart->Client->observation != "")
+
+                                            @if ($cart->state === 0 || $cart->state === null)
+                                                @if ($cart->Client->observation !== "")
                                                     <hr>
                                                 @endif
                                                 <div class="d-flex flex-row justify-content-end">
+
                                                     {{-- 2 = employee --}}
                                                     @if (auth()->user()->rol_id == '2')
-                                                    <div class="btn-group">
-                                                        <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
-                                                        <div class="dropdown-menu">
-                                                            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
-                                                            <div class="dropdown-divider"></div>
-                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(2, {{ $cart->id }}, 'no estaba')">No estaba</button>
-                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(3, {{ $cart->id }}, 'no necesitaba')">No necesitaba</button>
-                                                            <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(4, {{ $cart->id }}, 'estaba de vacaciones')">Vacaciones</button>
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
+                                                            <div class="dropdown-menu">
+                                                                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
+                                                                <div class="dropdown-divider"></div>
+                                                                <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(2, {{ $cart->id }}, 'no estaba')">No estaba</button>
+                                                                <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(3, {{ $cart->id }}, 'no necesitaba')">No necesitaba</button>
+                                                                <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(4, {{ $cart->id }}, 'estaba de vacaciones')">Vacaciones</button>
+                                                            </div>
                                                         </div>
-                                                    </div>
                                                     @endif
+
                                                     {{-- 1 = admin --}}
                                                     @if (auth()->user()->rol_id == '1') 
-                                                    <div>
-                                                        {{-- Delete Cart --}}
-                                                        <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
-                                                            @csrf
-                                                            <input type="hidden" name="id" value="{{ $cart->id }}">
-                                                            <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar</button>
-                                                        </form>
-                                                    </div>
+                                                        <div>
+                                                            {{-- Delete Cart --}}
+                                                            <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" name="id" value="{{ $cart->id }}">
+                                                                <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar</button>
+                                                            </form>
+                                                        </div>
                                                     @endif
+                                                </div>
+                                            @elseif ($cart->state === 1)
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Método de pago</th>
+                                                                        <th>Cantidad</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($cart->CartPaymentMethod as $pm)    
+                                                                        <tr>
+                                                                            <td>{{ $pm->PaymentMethod->method}}</td>
+                                                                            <td>${{ $pm->amount }}</td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="d-flex flex-row justify-content-end">
+                                                            <p class="m-0">Total abonado: ${{ $cart->CartPaymentMethod->sum(function($pm) {
+                                                                return $pm->amount;
+                                                            }) }}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             @endif
                                         </div>
@@ -295,9 +347,18 @@
                     success: function(response) {
                         $("#btnCloseModal").click();
                         Swal.fire({
-                            icon: 'success',
-                            title: response.message,
-                        });
+                                title: response.message,
+                                icon: 'success',
+                                showCancelButton: false,
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK',
+                                allowOutsideClick: false,
+                            })
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            })
                     },
                     error: function(errorThrown) {
                         Swal.fire({
@@ -524,7 +585,8 @@
                                 icon: 'success',
                                 showCancelButton: false,
                                 confirmButtonColor: '#3085d6',
-                                confirmButtonText: 'OK'
+                                confirmButtonText: 'OK',
+                                allowOutsideClick: false,
                             })
                             .then((result) => {
                                 if (result.isConfirmed) {

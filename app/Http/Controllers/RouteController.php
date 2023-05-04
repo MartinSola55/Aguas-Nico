@@ -24,7 +24,7 @@ class RouteController extends Controller
         $user = Auth::user();
         if ($user->rol_id == '1') {
             $routes = $this->getRoutesByDate(date('N'));
-            return view('routes.index', compact('routes'));
+            return view('routes.adminIndex', compact('routes'));
         } else {
             $routes = $this->getDealerRoutes(date('N'), $user->id);
             return view('routes.index', compact('routes'));
@@ -46,11 +46,20 @@ class RouteController extends Controller
      */
     public function show(Request $request)
     {
-        $routes = $this->getRoutesByDate($request->input('day_of_week'))->load(['Carts', 'User']);
-        foreach ($routes as $route) {
-            $route->info = $route->Info();
+        $user = Auth::user();
+        if ($user->rol_id == '1') {
+            $routes = $this->getRoutesByDate($request->input('day_of_week'))->load(['Carts', 'User']);
+            foreach ($routes as $route) {
+                $route->info = $route->Info();
+            }
+            return response()->json(['routes' => $routes]);
+        } else {
+            $routes = $this->getDealerRoutes($request->input('day_of_week'), $user->id)->load(['Carts', 'User']);
+            foreach ($routes as $route) {
+                $route->info = $route->Info();
+            }
+            return response()->json(['routes' => $routes]);
         }
-        return response()->json(['routes' => $routes]);
     }
 
     /*
@@ -87,12 +96,18 @@ class RouteController extends Controller
      */
     private function getDealerRoutes(int $day, int $id)
     {
-        return Route::where('user_id', $id)
-            ->where('day_of_week', $day)
-            ->with(['Carts' => function($query) {
-                $query->orderBy('priority');
-            }])
-            ->get();
+        $route = Route::where('user_id', $id)
+        ->limit(10)
+        ->orderBy('start_date', 'desc')
+        ->where('is_static', false)
+        ->where('day_of_week', $day)
+        ->with(['Carts' => function($query) {
+            $query->orderBy('priority');
+        }])
+        ->get();
+
+        //dd($route);
+        return $route;
     }
 
     public function new()
