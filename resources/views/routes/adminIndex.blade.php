@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
     <div class="container-fluid">
         <!-- ============================================================== -->
         <!-- Bread crumb and right sidebar toggle -->
@@ -63,9 +62,7 @@
                                             <th>Envíos a realizar</th>
                                         @else
                                             <th>Envíos completados</th>
-                                            <th>Estado</th>
-                                            <th>Recaudado</th>
-                                            <th>Fecha</th>
+                                            <th>Envíos a realizar</th>
                                         @endif
                                     </tr>
                                 </thead>
@@ -75,34 +72,25 @@
                                     ?>
                                     @foreach ($routes as $route)
                                     <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
-                                        @php
-                                        $i++;
-                                        $names = explode(" ", $route->User->name);
-                                        $initials = '';
-                                        foreach ($names as $name) {
-                                            $initials .= strtoupper(substr($name, 0, 1));
-                                        }
-                                        @endphp
+                                        <?php
+                                            $i++;
+                                            $names = explode(" ", $route->user->name);
+                                            $initials = '';
+                                            foreach ($names as $name) {
+                                                $initials .= strtoupper(substr($name, 0, 1));
+                                            }
+                                        ?>
                                         <td style="width:50px;"><span class="round">{{ $initials }}</span></td>
                                         <td>
-                                        @if ($route->User->truck_number !== null)
-                                            <h6>{{ $route->User->name }}</h6><small class="text-muted">Camión {{ $route->User->truck_number }}</small>
+                                        @if ($route->user->truck_number !== null)
+                                            <h6>{{ $route->user->name }}</h6><small class="text-muted">Camión {{ $route->user->truck_number }}</small>
                                         @else
-                                            <h6>{{ $route->User->name }}</h6><small class="text-muted">Sin camión asignado</small>
+                                            <h6>{{ $route->user->name }}</h6><small class="text-muted">Sin camión asignado</small>
                                         @endif
                                         </td>
-                                        <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
-                                        @if ($route->Info()['state'] === "En depósito")
-                                            <td><span class="label label-danger">{{ $route->Info()['state'] }}</span></td>
-                                        @elseif ($route->Info()['state'] === "En reparto")
-                                            <td><span class="label label-warning">{{ $route->Info()['state'] }}</span></td>
-                                        @else
-                                            <td><span class="label label-success">{{ $route->Info()['state'] }}</span></td>
-                                        @endif
-                                        <td>${{ $route->Info()['total_collected'] }}</td>
-                                        <td>{{ date('d/m/Y', strtotime($route->start_date)) }}</td>
+                                        <td>{{ $route->Info()['total_carts'] }}</td>
                                     </tr>
-                                @endforeach
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -153,15 +141,7 @@
                     content += '<h6>' + route.user.name + '</h6><small class="text-muted">Sin camión asignado</small>';
                 }
                 content += '</td>';
-                content += '<td>' + route.info.completed_carts + "/" + route.info.total_carts + '</td>';
-                if (route.info.state === "En depósito")
-                    content += '<td><span class="label label-danger">' + route.info.state + '</span></td>';
-                else if (route.info.state === "En reparto")
-                    content += '<td><span class="label label-warning">' + route.info.state + '</span></td>';
-                else
-                    content += '<td><span class="label label-success">' + route.info.state + '</span></td>';
-                content += '<td>$' + route.info.total_collected + '</td>';
-                content += '<td>' + moment(route.start_date).format('DD/MM/YYYY') + '</td>';
+                content += '<td>' + route.info.total_carts + '</td>';
                 content += "</tr>";
             });
             $("#tableBody").html(content);

@@ -309,6 +309,9 @@
                             <li>
                                 <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
                             </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/route/index') }}" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Mis repartos</span></a>
+                            </li>
                             @endif
                         </ul>
                     </nav>

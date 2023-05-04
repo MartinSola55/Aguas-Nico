@@ -36,8 +36,8 @@ class Route extends Model
         $info['total_collected'] = 0;
         $carts = $this->Carts->Load('ProductsCart', 'ProductsCart.Product');
         foreach ($carts as $cart) {
-            foreach ($cart->ProductsCart as $pc) {
-                $info['total_collected'] += ($pc->quantity_sent * $pc->Product->price) ?? 0;
+            foreach ($cart->CartPaymentMethod as $pm) {
+                $info['total_collected'] += ($pm->amount) ?? 0;
             }
             if ($cart->state !== 0) {
                 $info['state'] = "En reparto";

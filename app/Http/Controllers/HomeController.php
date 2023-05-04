@@ -59,8 +59,8 @@ class HomeController extends Controller
                         $data->in_deposit_routes++;
                     }
 
-                    foreach ($cart->ProductsCart as $product_cart) {
-                        $data->day_earnings += $product_cart->setted_price * $product_cart->quantity;
+                    foreach ($cart->CartPaymentMethod as $pm) {
+                        $data->day_earnings += $pm->amount;
                     }
                 }
                 if ($route->Carts()->count() === 0) {
