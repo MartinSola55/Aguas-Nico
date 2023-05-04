@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DealerController extends Controller
 {
@@ -21,7 +22,13 @@ class DealerController extends Controller
      */
     public function show($id)
     {
-        $dealer = User::find($id);
-        return view('dealers.details', compact('dealer'));
+        $user = Auth::user();
+        if ($user->rol_id == '1') {
+            $dealer = User::find($id);
+            return view('dealers.details', compact('dealer'));
+        } else {
+            $dealer = User::find(auth()->user()->id);
+            return view('dealers.details', compact('dealer'));
+        }
     }
 }

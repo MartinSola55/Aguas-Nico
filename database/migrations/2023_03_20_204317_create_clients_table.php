@@ -20,7 +20,9 @@ return new class extends Migration
             $table->double('debt', 8, 2)->default(0);
             $table->string('dni');
             $table->boolean('invoice')->default(0);
+            $table->boolean('is_active')->default(1);
             $table->text('observation')->nullable();
+            $table->foreignId('user_id')->constrained('users')->nullable();
             $table->timestamps();
         });
     }

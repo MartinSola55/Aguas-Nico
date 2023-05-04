@@ -6,24 +6,39 @@ use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Cart;
 use App\Models\Client;
+use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductCart;
+use App\Models\ProductsClient;
 use App\Models\Route;
 use App\Models\User;
+use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RouteController extends Controller
 {
     public function index()
     {
-        $routes = $this->getRoutesByDate(today()->toDateString());
-        return view('routes.index', compact('routes'));
+        $user = Auth::user();
+        if ($user->rol_id == '1') {
+            $routes = $this->getRoutesByDate(date('N'));
+            return view('routes.index', compact('routes'));
+        } else {
+            $routes = $this->getDealerRoutes(date('N'), $user->id);
+            return view('routes.index', compact('routes'));
+        }
     }
 
     public function details($id)
     {
-        $route = Route::find($id);
-        return view('routes.details', compact('route'));
+        $cash = PaymentMethod::where('method', 'Efectivo')->first();
+        $payment_methods = PaymentMethod::all()->except($cash->id);
+        $route = Route::with(['Carts' => function ($query) {
+            $query->orderBy('priority', 'asc');
+        }])->find($id);
+        return view('routes.details', compact('route', 'payment_methods', 'cash'));
     }
 
     /**
@@ -31,9 +46,9 @@ class RouteController extends Controller
      */
     public function show(Request $request)
     {
-        $routes = $this->getRoutesByDate($request->input('start_daytime'))->load(['Carts', 'User']);
+        $routes = $this->getRoutesByDate($request->input('day_of_week'))->load(['Carts', 'User']);
         foreach ($routes as $route) {
-                $route->info = $route->Info();
+            $route->info = $route->Info();
         }
         return response()->json(['routes' => $routes]);
     }
@@ -41,21 +56,43 @@ class RouteController extends Controller
     /*
         Get all the products from a specific cart (when opening the modal)
     */
-    public function getProductCarts(Request $request)
+    public function getProductsClient(Request $request)
     {
-        $cart = Cart::where('id', $request->input('id'))->with('ProductsCart.Product')->first();
-        return response()->json(['cart' => $cart]);
+        $products = ProductsClient::where('client_id', $request->input('client_id'))->with('Product')->get();
+        return response()->json(['products' => $products]);
     }
 
     /**
      * Get routes by date.
      *
-     * @param  string  $date
+     * @param  int  $date
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    private function getRoutesByDate(string $date)
+    private function getRoutesByDate(int $day)
     {
-        return Route::whereDate('start_daytime', $date)->get();
+        return Route::where('day_of_week', $day)
+            ->where('is_static', true)
+            ->with(['Carts' => function($query) {
+                $query->orderBy('priority');
+            }])
+            ->get();
+    }
+
+    /**
+     * Get routes by date and user_id.
+     *
+     * @param  int  $day
+     * @param  int  $user_id
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getDealerRoutes(int $day, int $id)
+    {
+        return Route::where('user_id', $id)
+            ->where('day_of_week', $day)
+            ->with(['Carts' => function($query) {
+                $query->orderBy('priority');
+            }])
+            ->get();
     }
 
     public function new()
@@ -75,9 +112,45 @@ class RouteController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $static_route = Route::find($request->input('id'))->with('Carts')->first();
+            $static_carts = $static_route->Carts;
+
+            $newCarts = [];
+            $newRoute = Route::create([
+                'user_id' => $static_route->user_id,
+                'day_of_week' => $static_route->day_of_week,
+                'start_date' => today(),
+                'end_date' => null,
+                'is_static' => false,
+            ]);
+            foreach ($static_carts as $cart) {
+                $newCarts[] = [
+                    'route_id' => $newRoute->id,
+                    'client_id' => $cart->client_id,
+                    'priority' => $cart->priority,
+                    'state' => 0,
+                    'is_static' => false,
+                ];
+            }
+            DB::table('carts')->insert($newCarts);
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Route created successfully.',
+                'data' => route('route.details', ['id' => $newRoute->id])
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Route creation failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 
     /**
@@ -88,7 +161,8 @@ class RouteController extends Controller
         try {
             $route = Route::create([
                 'user_id' => $request->input('user_id'),
-                'start_daytime' => $request->input('start_daytime'),
+                'day_of_week' => $request->input('day_of_week'),
+                'is_static' => true,
             ]);
 
             return response()->json([

@@ -24,7 +24,6 @@
                 <h3 class="text-themecolor m-b-0 m-t-0">Clientes</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('/client/index') }}">Clientes</a></li>
                     <li class="breadcrumb-item active">Facturación</li>
                 </ol>
             </div>
@@ -36,7 +35,7 @@
         <!-- Start Page Content -->
         <!-- ============================================================== -->
         <div class="text-center">
-            <h1>{{ $client->name }}</h1>
+            <h1>Facturación general</h1>
             <hr>
         </div>
         <div class="row">
@@ -44,9 +43,8 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Intervalo de facturación</h4>
-                        <form method="GET" action="{{ url('/client/searchSales') }}" id="form-sales" class="form-material m-t-30">
+                        <form method="GET" action="{{ url('/home/searchSales') }}" id="form-sales" class="form-material m-t-30">
                             @csrf
-                            <input type="hidden" name="client_id" value="{{ $client->id }}">
                             <input type="hidden" name="dateFrom" id="dateFromFormatted" value="">
                             <input type="hidden" name="dateTo" id="dateToFormatted" value="">
                             <div class="row">
@@ -66,57 +64,12 @@
                     </div>
                 </div>
             </div>
-            <div id="InvoiceDataContainer" class="col-xlg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Datos de facturación</h4>
-                        <form class="form-material m-t-30">
-                            <div class="row">
-                                <div class="form-group col-lg-3">
-                                    <label for="invoiceType">Tipo factura</label>
-                                    <select id="invoiceType" class="form-control">
-                                        <option value="A">A</option>
-                                        <option value="B">B</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-lg-3">
-                                    <label for="invoiceNumber">Número</label>
-                                    <input id="invoiceNumber" type="number" class="form-control">
-                                </div>
-                                <div class="form-group col-lg-6">
-                                    <label for="invoiceName">Nombre y Apellido / Razón Social</label>
-                                    <input id="invoiceName" type="text" class="form-control">
-                                </div>
-                                <div class="form-group col-lg-6">
-                                    <label for="invoiceCUIT">CUIT</label>
-                                    <input id="invoiceCUIT" type="number" class="form-control">
-                                </div>
-                                <div class="form-group col-lg-6">
-                                    <label for="invoiceCondition">Condición frente al IVA</label>
-                                    <select id="invoiceCondition" class="form-control">
-                                        <option value="Responsable inscripto">Responsable inscripto</option>
-                                        <option value="Monotributista">Monotributista</option>
-                                        <option value="Excento">Excento</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-lg-6">
-                                    <label for="invoiceAdress">Domicilio</label>
-                                    <input id="invoiceAdress" type="text" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-lg-12 d-flex flex-direction-row justify-content-end">
-                                <button id="buttonInvoiceData" type="button" class="btn btn-danger">Confirmar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-body printableArea">
                     <div class="d-flex flex-row justify-content-between">
-                        <h3><b name="invoiceType">FACTURA -</b> <span id="invoiceNumberText" class="pull-right">#</span></h3>
+                        <h3><b name="invoiceType">FACTURA</b></h3>
                         <h3 class="pull-right m-0"><b>ORIGINAL</b></h3>
                     </div>
                     <hr>
@@ -140,36 +93,10 @@
                                     </div>
                                 </address>
                             </div>
-                            <hr>
-                            <div class="text-left">
-                                <address>
-                                    <h3><b>Hacia,</b></h3>
-                                    <p class="text-muted m-l-30 mb-0" name="invoiceName"><b>Apellido y Nombre / Razón Social: </b></p>
-                                    <p class="text-muted m-l-30 mb-0" name="invoiceCUIT"><b>CUIT: </b></p>
-                                    <p class="text-muted m-l-30 mb-0" name="invoiceCondition"><b>Condición frente al IVA: </b></p>
-                                    <p class="text-muted m-l-30 mb-0" name="invoice"><b>Condición de venta: </b>HAY QUE VER (Cuenta Corriente)</p>
-                                    <p class="text-muted m-l-30 mb-0" name="invoiceAdress"><b>Domicilio: </b></p>
-                                    <hr>
-                                    <p id="dateFromInvoice" class="m-t-30"><i class="fa fa-calendar"></i><b> Fecha desde : </b></p>
-                                    <p id="dateToInvoice"><i class="fa fa-calendar"></i><b> Fecha hasta : </b></p>
-                                </address>
-                            </div>
                         </div>
                         <div class="col-md-12">
                             <hr>
-                            <div class="table-responsive m-t-40" style="clear: both;">
-                                <table id="invoiceProducts" class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Descripción</th>
-                                            <th class="text-right">Cantidad</th>
-                                            <th class="text-right">Precio Unitario</th>
-                                            <th class="text-right">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
+                            <div id="tables_container" class="table-responsive m-t-40" style="clear: both;">
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -199,7 +126,7 @@
                 return number.toLocaleString('es-AR', { minimumFractionDigits: 2 });
             }
             let subtotal = 0;
-            $('#invoiceProducts .productTotal').each(function() {
+            $('#tables_container .productTotal').each(function() {
                 const valor = $(this).text().replace('$', '').trim();
                 subtotal += parseFloat(valor);
             });
@@ -254,18 +181,6 @@
         });
     </script>
 
-    <script>
-        $("#buttonInvoiceData").on("click", function() {
-            $('b[name="invoiceType"]').html("FACTURA " + $("#invoiceType").val())
-            $('#invoiceNumberText').html("#" + $("#invoiceNumber").val())
-            $('p[name="invoiceName"]').html("<b>Apellido y Nombre / Razón Social: </b>" + $("#invoiceName").val())
-            $('p[name="invoiceCUIT"]').html("<b>CUIT: </b>" + $("#invoiceCUIT").val())
-            $('p[name="invoiceCondition"]').html("<b>Condición frente al IVA: </b>" + $("#invoiceCondition").val())
-            // $('p[name="invoice"]').html($("#invoice").val())
-            $('p[name="invoiceAdress"]').html("<b>Domicilio: </b>" + $("#invoiceAdress").val())
-        })
-    </script>
-
     {{-- Buscar ventas para la facturación --}}
     <script>
         function formatDate(date) {
@@ -279,21 +194,135 @@
         $("#btnSearchSale").on("click", function() {
             $("#dateFromFormatted").val(formatDate($("#dateFrom").val()));
             $("#dateToFormatted").val(formatDate($("#dateTo").val()));
-            $.ajax({
+            let data = {
+                        clients: [
+                            {
+                                name: "Martin Sola",
+                                products: [
+                                    {
+                                        name: "Botella",
+                                        quantity: 20,
+                                        price: 150
+                                    },
+                                    {
+                                        name: "Bidon",
+                                        quantity: 10,
+                                        price: 100
+                                    },
+                                    {
+                                        name: "Sistema",
+                                        quantity: 40,
+                                        price: 3000
+                                    }
+                                ]
+                            },
+                            {
+                                name: "Agustin Bettig",
+                                products: [
+                                    {
+                                        name: "Botella",
+                                        quantity: 20,
+                                        price: 150
+                                    },
+                                    {
+                                        name: "Bidon",
+                                        quantity: 10,
+                                        price: 100
+                                    },
+                                    {
+                                        name: "Sistema",
+                                        quantity: 40,
+                                        price: 3000
+                                    }
+                                ]
+                            },
+                        ]
+                    }
+                    let content = "";
+                    Object.values(data.clients).forEach((client) => {
+                        content += "<h1 class='text-start mt-3 mb-0'>" + client.name + "</h1>";
+                        content += `
+                        <table class="table table-hover mb-3">
+                            <thead>
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th class="text-right">Cantidad</th>
+                                    <th class="text-right">Precio Unitario</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        `;
+                        client.products.forEach((item) => {
+                            content += "<tr>";
+                                content += "<td>" + item.name + "</td>";
+                                content += "<td class='text-right'>" + item.quantity + "</td>";
+                                content += "<td class='text-right'>$" + item.price + "</td>";
+                                content += "<td class='text-right productTotal'>$" + (item.quantity * item.price) + "</td>";
+                                content += "</tr>";
+                        });
+                        content += "</tbody>";
+                        content += "</table>";
+                        content += "<hr class='mb-5'>";
+                    });
+                    $("#tables_container").html(content);
+                    calculateTotal();
+            /*$.ajax({
                 url: $("#form-sales").attr('action'), // Utiliza la ruta del formulario
                 method: $("#form-sales").attr('method'), // Utiliza el método del formulario
                 data: $("#form-sales").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
+                    let data = {
+                        clients: [
+                            {
+                                name: "Martin",
+                                products: [
+                                    {
+                                        name: "Botella",
+                                        quantity: 20,
+                                        price: 150
+                                    },
+                                    {
+                                        name: "Bidon",
+                                        quantity: 10,
+                                        price: 100
+                                    },
+                                    {
+                                        name: "Sistema",
+                                        quantity: 40,
+                                        price: 3000
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                     let content = "";
-                    Object.values(response.data).forEach((item) => {
-                        content += "<tr>";
-                            content += "<td>" + item.name + "</td>";
-                            content += "<td class='text-right'>" + item.quantity + "</td>";
-                            content += "<td class='text-right'>" + item.price + "</td>";
-                            content += "<td class='text-right productTotal'>" + (item.quantity * item.price) + "</td>";
-                            content += "</tr>";
+                    Object.values(data.clients).forEach((client) => {
+                        content += "<h1 class='text-start'>" + client.name + "</h1>";
+                        content += `
+                        <table class="table table-hover mb-3">
+                            <thead>
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th class="text-right">Cantidad</th>
+                                    <th class="text-right">Precio Unitario</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        `;
+                        client.products.forEach((item) => {
+                            content += "<tr>";
+                                content += "<td>" + item.name + "</td>";
+                                content += "<td class='text-right'>" + item.quantity + "</td>";
+                                content += "<td class='text-right'>" + item.price + "</td>";
+                                content += "<td class='text-right productTotal'>" + (item.quantity * item.price) + "</td>";
+                                content += "</tr>";
+                        });
+                        content += "</tbody>";
+                        content += "</table>";
                     });
-                    $("#invoiceProducts tbody").html(content);
+                    $("#tables_container").html(content);
                     calculateTotal();
                 },
                 error: function(errorThrown) {
@@ -302,7 +331,7 @@
                         title: errorThrown.responseJSON.message,
                     });
                 }
-            });
+            });*/
         });
     </script>
 

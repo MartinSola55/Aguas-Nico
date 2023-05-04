@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('routes', function (Blueprint $table) {
+        Schema::create('carts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->smallInteger('day_of_week')->nullable();
-            $table->dateTime('start_date')->nullable();
-            $table->dateTime('end_date')->nullable();
+            $table->foreignId('route_id')->constrained('routes');
+            $table->foreignId('client_id')->constrained('clients');
+            $table->integer('priority');
+            $table->integer('state')->nullable();
             $table->boolean('is_static')->default(0);
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('routes');
+        Schema::dropIfExists('carts');
     }
 };

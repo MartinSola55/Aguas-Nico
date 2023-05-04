@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Route extends Model
 {
     use HasFactory;
+    public $timestamps = false;
     protected $fillable = [
         'user_id',
-        'start_daytime',
-        'end_daytime',
+        'day_of_week',
+        'start_date',
+        'end_date',
+        'is_static',
     ];
 
     public function Carts()

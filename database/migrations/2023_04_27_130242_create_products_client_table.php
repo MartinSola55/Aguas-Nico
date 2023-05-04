@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('carts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('route_id')->constrained('routes');
+        Schema::create('products_client', function (Blueprint $table) {
             $table->foreignId('client_id')->constrained('clients');
-            $table->integer('state')->default(0);
-            $table->dateTime('start_date')->nullable();
-            $table->dateTime('end_date')->nullable();
-            $table->timestamps();
+            $table->foreignId('product_id')->constrained('products');
         });
     }
 
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('carts');
+        Schema::dropIfExists('products_client');
     }
 };

@@ -24,6 +24,14 @@ class Users extends Seeder
             'email' => 'm@g',
             'rol_id' => 2,
             'password' => bcrypt('12345678'),
+            'truck_number' => 1,
+        ]);
+        User::create([
+            'name' => 'El Pela',
+            'email' => 'p@g',
+            'rol_id' => 2,
+            'password' => bcrypt('12345678'),
+            'truck_number' => 2,
         ]);
     }
 }
