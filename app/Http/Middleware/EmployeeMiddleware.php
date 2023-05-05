@@ -15,7 +15,7 @@ class EmployeeMiddleware
     public function handle(Request $request, Closure $next)
     {
         if ($request->user()->rol_id !== 2) {
-            return back()->with('error', 'No tienes permiso para acceder a esta página');
+            return redirect()->route('home')->with('error', 'No tienes permiso para acceder a esta página');
         }
         return $next($request);
     }

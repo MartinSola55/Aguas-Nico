@@ -106,7 +106,6 @@ class RouteController extends Controller
         }])
         ->get();
 
-        //dd($route);
         return $route;
     }
 
@@ -131,7 +130,7 @@ class RouteController extends Controller
     {
         try {
             DB::beginTransaction();
-            $static_route = Route::find($request->input('id'))->with('Carts')->first();
+            $static_route = Route::where('id', $request->input('id'))->with('Carts')->first();
             $static_carts = $static_route->Carts;
 
             $newCarts = [];
