@@ -21,7 +21,11 @@ Auth::routes();
 // ADMIN
 Route::middleware(['auth', 'admin'])->group(function () {
 
+    // HOME
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
+    Route::get('/home/searchAllSales', [App\Http\Controllers\HomeController::class, 'searchAllSales']);
+
     // DEALER
     Route::get('/dealer/index', [App\Http\Controllers\DealerController::class, 'index']);
     Route::get('/dealer/details/{id}', [App\Http\Controllers\DealerController::class, 'show'])->name('dealer.details');
@@ -66,7 +70,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
     Route::get('/route/getProductsClient', [App\Http\Controllers\RouteController::class, 'getProductsClient']);
@@ -85,6 +88,5 @@ Route::middleware(['auth'])->group(function () {
     
     //Agregar/actualizar clientes en reparto
     Route::post('/route/addClients', [App\Http\Controllers\RouteController::class, 'addClients']);
-    
 });
 

@@ -276,13 +276,15 @@ class RouteController extends Controller
             $clientsJson = json_decode($request->input('clients_array'));
 
             foreach ($clientsJson as $client) {
-                $carts[] = [
-                    'route_id' => $route->id,
-                    'client_id' => $client->id,
-                    'priority' => $client->priority,
-                    'state' => 0,
-                    'is_static' => false,
-                ];
+                if ($client->priority !== 0) {
+                    $carts[] = [
+                        'route_id' => $route->id,
+                        'client_id' => $client->id,
+                        'priority' => $client->priority,
+                        'state' => 0,
+                        'is_static' => false,
+                    ];
+                }
             }
 
             DB::beginTransaction();

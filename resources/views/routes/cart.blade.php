@@ -58,7 +58,9 @@
                                             <th>Nombre</th>
                                             <th>Dirección</th>
                                             <th>Teléfono</th>
+                                            @if (auth()->user()->rol_id == '1')
                                             <th>DNI</th>
+                                            @endif
                                             <th>Factura</th>
                                             <th>Deuda</th>
                                             <th>Observación</th>
@@ -77,7 +79,9 @@
                                                 <td>{{ $client->name }}</td>
                                                 <td>{{ $client->adress }}</td>
                                                 <td>{{ $client->phone }}</td>
+                                                @if (auth()->user()->rol_id == '1')
                                                 <td>{{ $client->dni }}</td>
+                                                @endif
                                                 <td class="text-center">
                                                     @if ( $client->invoice == true)
                                                         <i class="bi bi-check2" style="font-size: 1.5rem"></i>

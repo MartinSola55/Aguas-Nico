@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
+use App\Models\ProductsCart;
 use App\Models\Route;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,7 +32,7 @@ class HomeController extends Controller
         // Admin
         if ($user->rol_id == '1') {
             // Obtener los repartos del día
-            $routes = Route::whereDate('start_date', today('America/Buenos_Aires'))
+            $routes = Route::where('day_of_week', date('N'))
                 ->with('Carts')
                 ->with('Carts.ProductsCart')
                 ->with('Carts.ProductsCart.Product')
@@ -82,5 +85,56 @@ class HomeController extends Controller
     public function invoice()
     {
         return view('invoice');
+    }
+
+    public function searchAllSales(Request $request)
+    {
+        try {
+            $dateFrom = Carbon::createFromFormat('Y-m-d', $request->input('dateFrom'))->startOfDay();
+            $dateTo = Carbon::createFromFormat('Y-m-d', $request->input('dateTo'))->endOfDay();
+            $clients = Client::all();
+            $products = ProductsCart::whereBetween('updated_at', [$dateFrom, $dateTo])->with('Cart', 'Product')->get();
+
+            $data = [
+                'clients' => []
+            ];
+
+            foreach ($clients as $client) {
+                $clientData = [
+                    'name' => $client->name,
+                    'products' => []
+                ];
+
+                $clientProducts = $products->where('cart.client_id', $client->id);
+
+
+
+                foreach ($clientProducts as $product) {
+                    $productData = [
+                        'id' => $product->Product->id,
+                        'name' => $product->Product->name,
+                        'quantity' => $product->quantity,
+                        /*'price' => $product->sum(function($item) {
+                            return $item->quantity * $item->setted_price;
+                        }),*/
+                        'price' => $product->setted_price,
+                    ];
+
+                    $clientData['products'][] = $productData;
+                }
+
+                $data['clients'][] = $clientData;
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search sales failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 }

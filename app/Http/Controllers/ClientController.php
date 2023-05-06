@@ -127,7 +127,6 @@ class ClientController extends Controller
                 'message' => 'Search sales failed: ' . $e->getMessage(),
             ], 400);
         }
-
     }
 
     public function show_invoice($id)
