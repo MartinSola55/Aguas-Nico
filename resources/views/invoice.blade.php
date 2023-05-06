@@ -43,7 +43,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Intervalo de facturación</h4>
-                        <form method="GET" action="{{ url('/home/searchSales') }}" id="form-sales" class="form-material m-t-30">
+                        <form method="GET" action="{{ url('/home/searchAllSales') }}" id="form-sales" class="form-material m-t-30">
                             @csrf
                             <input type="hidden" name="dateFrom" id="dateFromFormatted" value="">
                             <input type="hidden" name="dateTo" id="dateToFormatted" value="">
@@ -193,52 +193,14 @@
         $("#btnSearchSale").on("click", function() {
             $("#dateFromFormatted").val(formatDate($("#dateFrom").val()));
             $("#dateToFormatted").val(formatDate($("#dateTo").val()));
-            let data = {
-                        clients: [
-                            {
-                                name: "Martin Sola",
-                                products: [
-                                    {
-                                        name: "Botella",
-                                        quantity: 20,
-                                        price: 150
-                                    },
-                                    {
-                                        name: "Bidon",
-                                        quantity: 10,
-                                        price: 100
-                                    },
-                                    {
-                                        name: "Sistema",
-                                        quantity: 40,
-                                        price: 3000
-                                    }
-                                ]
-                            },
-                            {
-                                name: "Agustin Bettig",
-                                products: [
-                                    {
-                                        name: "Botella",
-                                        quantity: 20,
-                                        price: 150
-                                    },
-                                    {
-                                        name: "Bidon",
-                                        quantity: 10,
-                                        price: 100
-                                    },
-                                    {
-                                        name: "Sistema",
-                                        quantity: 40,
-                                        price: 3000
-                                    }
-                                ]
-                            },
-                        ]
-                    }
+            $.ajax({
+                url: $("#form-sales").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-sales").attr('method'), // Utiliza el método del formulario
+                data: $("#form-sales").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    console.log(response);
                     let content = "";
-                    Object.values(data.clients).forEach((client) => {
+                    response.data.clients.forEach((client) => {
                         content += "<h1 class='text-start mt-3 mb-0'>" + client.name + "</h1>";
                         content += `
                         <table class="table table-hover mb-3">
@@ -247,6 +209,7 @@
                                     <th>Descripción</th>
                                     <th class="text-right">Cantidad</th>
                                     <th class="text-right">Precio Unitario</th>
+                                    <th class="text-right">Fecha</th>
                                     <th class="text-right">Total</th>
                                 </tr>
                             </thead>
@@ -257,69 +220,13 @@
                                 content += "<td>" + item.name + "</td>";
                                 content += "<td class='text-right'>" + item.quantity + "</td>";
                                 content += "<td class='text-right'>$" + item.price + "</td>";
+                                content += "<td class='text-right'>" + item.date + "</td>";
                                 content += "<td class='text-right productTotal'>$" + (item.quantity * item.price) + "</td>";
                                 content += "</tr>";
                         });
                         content += "</tbody>";
                         content += "</table>";
                         content += "<hr class='mb-5'>";
-                    });
-                    $("#tables_container").html(content);
-                    calculateTotal();
-            /*$.ajax({
-                url: $("#form-sales").attr('action'), // Utiliza la ruta del formulario
-                method: $("#form-sales").attr('method'), // Utiliza el método del formulario
-                data: $("#form-sales").serialize(), // Utiliza los datos del formulario
-                success: function(response) {
-                    let data = {
-                        clients: [
-                            {
-                                name: "Martin",
-                                products: [
-                                    {
-                                        name: "Botella",
-                                        quantity: 20,
-                                        price: 150
-                                    },
-                                    {
-                                        name: "Bidon",
-                                        quantity: 10,
-                                        price: 100
-                                    },
-                                    {
-                                        name: "Sistema",
-                                        quantity: 40,
-                                        price: 3000
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                    let content = "";
-                    Object.values(data.clients).forEach((client) => {
-                        content += "<h1 class='text-start'>" + client.name + "</h1>";
-                        content += `
-                        <table class="table table-hover mb-3">
-                            <thead>
-                                <tr>
-                                    <th>Descripción</th>
-                                    <th class="text-right">Cantidad</th>
-                                    <th class="text-right">Precio Unitario</th>
-                                    <th class="text-right">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                        `;
-                        client.products.forEach((item) => {
-                            content += "<tr>";
-                                content += "<td>" + item.name + "</td>";
-                                content += "<td class='text-right'>" + item.quantity + "</td>";
-                                content += "<td class='text-right'>" + item.price + "</td>";
-                                content += "<td class='text-right productTotal'>" + (item.quantity * item.price) + "</td>";
-                                content += "</tr>";
-                        });
-                        content += "</tbody>";
-                        content += "</table>";
                     });
                     $("#tables_container").html(content);
                     calculateTotal();
@@ -330,7 +237,7 @@
                         title: errorThrown.responseJSON.message,
                     });
                 }
-            });*/
+            });
         });
     </script>
 

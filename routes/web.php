@@ -21,6 +21,11 @@ Auth::routes();
 // ADMIN
 Route::middleware(['auth', 'admin'])->group(function () {
 
+    // HOME
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
+    Route::get('/home/searchAllSales', [App\Http\Controllers\HomeController::class, 'searchAllSales']);
+
     // DEALER
     Route::get('/dealer/index', [App\Http\Controllers\DealerController::class, 'index']);
     Route::get('/dealer/details/{id}', [App\Http\Controllers\DealerController::class, 'show'])->name('dealer.details');
@@ -50,6 +55,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+    //Agregar/actualizar clientes en reparto
+    Route::post('/route/updateClients', [App\Http\Controllers\RouteController::class, 'updateClients']);
 
     // CART
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
@@ -63,11 +70,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
     Route::get('/route/getProductsClient', [App\Http\Controllers\RouteController::class, 'getProductsClient']);
     Route::get('/route/showRoutes', [App\Http\Controllers\RouteController::class, 'show']);
+    Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+
 
     // Cambiar estado del carrito
     Route::post('/cart/changeState', [App\Http\Controllers\CartController::class, 'changeState']);
@@ -77,5 +85,8 @@ Route::middleware(['auth'])->group(function () {
     
     //Confirmar carrito
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
+    
+    //Agregar/actualizar clientes en reparto
+    Route::post('/route/addClients', [App\Http\Controllers\RouteController::class, 'addClients']);
 });
 

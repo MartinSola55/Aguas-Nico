@@ -172,6 +172,7 @@
                                             @else
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
+                                            <p class="m-0"><small class="text-muted">Deuda: ${{ $cart->Client->debt }}</small></p>
                                             <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
                                         </div>
                                         <div class="timeline-body">
@@ -339,7 +340,7 @@
             }
             $("#form-confirm input[name='payment_methods']").val(JSON.stringify(payment_methods));
 
-            if (products.length > 0 && payment_methods.length > 0) {
+            function payCart() {
                 $.ajax({
                     url: $("#form-confirm").attr('action'), // Utiliza la ruta del formulario
                     method: $("#form-confirm").attr('method'), // Utiliza el método del formulario
@@ -367,6 +368,27 @@
                         });
                     }
                 });
+            }
+
+            if (products.length > 0 && payment_methods.length >= 0) {
+                if (payment_methods.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'ALERTA',
+                        text: '¿Seguro que quieres cargar todo en la cuenta corriente del cliente?',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            payCart();
+                        }
+                    })
+                } else {
+                    payCart();
+                }
             } else {
                 Swal.fire({
                     icon: 'warning',

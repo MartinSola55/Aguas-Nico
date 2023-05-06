@@ -42,13 +42,13 @@
                     </div>
                     <div class="col-xl-6">
                         <div class="row">
-                            <div class="col-md-4 col-12 col-sm-6">
+                            <div class="col-12 col-sm-6">
                                 <div class="ribbon-wrapper card">
                                     <div class="ribbon ribbon-default">Facturación</div>
-                                    <a href="{{ route('client.invoice', ['id' => $client->id]) }}" class="btn btn-danger btn-rounded m-t-10 float-right">Ir</a>
+                                    <a href="{{ route('client.invoice', ['id' => $client->id]) }}" class="btn btn-danger btn-rounded m-t-10 float-right {{ $client->invoice === false ? "disabled" : "" }}">{{ $client->invoice === false ? "No habilitada" : "Ir" }}</a>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-12 col-sm-6">
+                            <div class="col-12 col-sm-6">
                                 <div class="ribbon-wrapper card">
                                     <div class="ribbon ribbon-default">Deuda</div>
                                     <p class="ribbon-content" id="clientDebtText">${{ $client->debt }}</p>
