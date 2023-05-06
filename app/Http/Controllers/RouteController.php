@@ -239,13 +239,15 @@ class RouteController extends Controller
             DB::beginTransaction();
             
             foreach ($clientsJson as $client) {
-                $carts[] = [
-                    'route_id' => $route->id,
-                    'client_id' => $client->id,
-                    'priority' => $client->priority,
-                    'state' => null,
-                    'is_static' => true,
-                ];
+                if ($client->priority !== 0) {
+                    $carts[] = [
+                        'route_id' => $route->id,
+                        'client_id' => $client->id,
+                        'priority' => $client->priority,
+                        'state' => null,
+                        'is_static' => true,
+                    ];
+                }
             }
             
             Cart::where('route_id', $route->id)->delete(); // Eliminar todos los carrtios del reparto
