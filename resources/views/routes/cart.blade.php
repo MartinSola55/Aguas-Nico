@@ -1,3 +1,12 @@
+@php
+    $diasSemana = [
+        1 => 'Lunes',
+        2 => 'Martes',
+        3 => 'Miércoles',
+        4 => 'Jueves',
+        5 => 'Viernes',
+    ];
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -31,54 +40,62 @@
 
         <div class="row">
             <div class="col-12">
-                <h2 class="text-left">Nuevo reparto para {{ $route->user->name }}</h2>
+                <h2 class="text-left">Agregar cliente al reparto del <b>{{ $diasSemana[$route->day_of_week] }}</b> de <b>{{ $route->user->name }}</b></h2>
                 <hr />
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Listado de clientes</h4>
-                        <h6 class="card-subtitle">Seleccione uno</h6>
-                        <div class="table-responsive m-t-20">
-                            <table id="clientsTable" class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Seleccionar</th>
-                                        <th>Nombre</th>
-                                        <th>Dirección</th>
-                                        <th>Teléfono</th>
-                                        <th>Email</th>
-                                        <th>DNI</th>
-                                        <th>Factura</th>
-                                        <th>Deuda</th>
-                                        <th>Observación</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($clients as $client)
-                                        <tr data-id="{{ $client->id }}" class="client_row">
-                                            <td class="text-center">
-                                                <input type="checkbox" id="check_{{ $client->id }}" class="client_checkbox form-control">
-                                                <label for="check_{{ $client->id }}"></label>
-                                                <input type="hidden" name="client_priority[]" class="client_priority" value="0">
-                                            </td>
-                                            <td>{{ $client->name }}</td>
-                                            <td>{{ $client->adress }}</td>
-                                            <td>{{ $client->phone }}</td>
-                                            <td>{{ $client->email }}</td>
-                                            <td>{{ $client->dni }}</td>
-                                            <td class="text-center">
-                                                @if ( $client->invoice == true)
-                                                    <i class="bi bi-check2" style="font-size: 1.5rem"></i>
-                                                @else
-                                                    <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
-                                                @endif
-                                            </td>
-                                            <td>${{ $client->debt }}</td>
-                                            <td>{{ $client->observation }}</td>
+                        <form role="form" method="POST" action="{{ auth()->user()->rol_id == '1' ? url('/route/updateClients') : url('/route/addClients') }}" id="form-confirm">
+                            @csrf
+                            <input type="hidden" name="route_id" value="{{ $route->id }}">
+                            <input type="hidden" name="clients_array" id="clients_array" value="">
+
+                            <div class="table-responsive">
+                                <table id="clientsTable" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Seleccionar</th>
+                                            <th>Nombre</th>
+                                            <th>Dirección</th>
+                                            <th>Teléfono</th>
+                                            <th>DNI</th>
+                                            <th>Factura</th>
+                                            <th>Deuda</th>
+                                            <th>Observación</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($clients->sortBy('priority')->sortBy(function($client) {
+                                            return is_null($client->priority) ? 1 : 0;
+                                        }) as $client)
+                                            <tr data-id="{{ $client->id }}" class="client_row">
+                                                <td class="text-center">
+                                                    <input type="checkbox" id="check_{{ $client->id }}" {{ $client->priority ? "checked" : ""}} class="client_checkbox form-control" {{ auth()->user()->rol_id != '1' && $client->priority ? "disabled" : ""}}>
+                                                    <label for="check_{{ $client->id }}">{{ $client->priority ?? ""}}</label>
+                                                    <input type="hidden" name="client_priority" class="client_priority" value="{{ $client->priority ?? 0 }}" {{ auth()->user()->rol_id != '1' && $client->priority ? "disabled" : ""}}>
+                                                </td>
+                                                <td>{{ $client->name }}</td>
+                                                <td>{{ $client->adress }}</td>
+                                                <td>{{ $client->phone }}</td>
+                                                <td>{{ $client->dni }}</td>
+                                                <td class="text-center">
+                                                    @if ( $client->invoice == true)
+                                                        <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                                    @else
+                                                        <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
+                                                    @endif
+                                                </td>
+                                                <td>${{ $client->debt }}</td>
+                                                <td>{{ $client->observation }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <div class="d-flex flex-row justify-content-end mt-4">
+                                    <button onclick="createClientsArray()" type="button" class="btn btn-danger">Guardar</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -87,7 +104,7 @@
 
     {{-- Establecer el orden de prioridad --}}
     <script>
-        let lastPriority = 0;
+        let lastPriority = $('.client_checkbox:checked').length; // Cantidad de clientes seleccionados
         document.querySelectorAll('.client_checkbox').forEach(function(checkbox) {
             checkbox.addEventListener('change', function() {
                 let input = this.parentElement.querySelector('.client_priority');
@@ -116,6 +133,7 @@
     <script>
         $(document).ready(function() {
             $('#clientsTable').DataTable({
+                "ordering": false,
                 "language": {
                     // "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json" // La url reemplaza todo al español
                     "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
@@ -134,69 +152,36 @@
         });
     </script>
 
+    {{-- Send form --}}
     <script>
-        //For validation with custom styles
-        (function() {
-            'use strict';
-            window.addEventListener('load', function() {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            form.classList.add('was-validated');
-                        } else {
-                            event.preventDefault();
-                            createClientsArray();
-                            if ($("#products_array").val() != "[]") {
-                                form.classList.add('was-validated');
-                                sendForm();
-                            } else {
-                                $("#form-create").removeClass("was-validated");
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: "Debes agregar al menos un producto al pedido",
-                                });
-                            };
-                        };
-                    }, false);
-                });
-            }, false);
-        })();
-
         function createClientsArray() {
             var clients = []; // arreglo para almacenar los clientes
     
             // para cada fila de la tabla
             $('#clientsTable tbody tr').each(function(index) {
                 var client = {}; // objeto para almacenar un cliente
-                if ($(this).find('input[name="priority"]').val() != "") {
-                    client.priority = parseInt($(this).find('input[name="priority"]').val()); // obtener la prioridad del cliente
-                    client.id = parseInt($(this).find('input[name="id"]').val()); // obtener el id del cliente
+                if ($(this).find('input[name="client_priority"]').val() != "" && !$(this).find('input[name="client_priority"]').is(':disabled')) {
+                    client.priority = parseInt($(this).find('input[name="client_priority"]').val()); // obtener la prioridad del cliente)
+                    client.id = parseInt($(this).attr('data-id')); // obtener el id del cliente
                     clients.push(client); // agregar el cliente al arreglo de clientes
                 }
             });
-            
             // agregar el arreglo de productos como un campo del formulario
             $("#clients_array").val(JSON.stringify(clients));
+            sendForm();
         };
 
         function sendForm() {
             // Enviar solicitud AJAX
             $.ajax({
-                url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
-                method: $("#form-create").attr('method'), // Utiliza el método del formulario
-                data: $("#form-create").serialize(), // Utiliza los datos del formulario
+                url: $("#form-confirm").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-confirm").attr('method'), // Utiliza el método del formulario
+                data: $("#form-confirm").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
-                    $("#btnCloseModal").click();
-                    Swal.fire(
-                        'OK',
-                        'Acción correcta',
-                        'success'
-                    );
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                    });
                 },
                 error: function(errorThrown) {
                     Swal.fire({

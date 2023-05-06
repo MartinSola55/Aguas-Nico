@@ -63,7 +63,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 // EMPLOYEE
-Route::middleware(['auth', 'employee'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
@@ -71,6 +71,8 @@ Route::middleware(['auth', 'employee'])->group(function () {
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
     Route::get('/route/getProductsClient', [App\Http\Controllers\RouteController::class, 'getProductsClient']);
     Route::get('/route/showRoutes', [App\Http\Controllers\RouteController::class, 'show']);
+    Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+
 
     // Cambiar estado del carrito
     Route::post('/cart/changeState', [App\Http\Controllers\CartController::class, 'changeState']);
@@ -82,7 +84,7 @@ Route::middleware(['auth', 'employee'])->group(function () {
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
     
     //Agregar/actualizar clientes en reparto
-    Route::post('/route/updateClients', [App\Http\Controllers\RouteController::class, 'updateClients']);
+    Route::post('/route/addClients', [App\Http\Controllers\RouteController::class, 'addClients']);
     
 });
 
