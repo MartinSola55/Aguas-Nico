@@ -30,4 +30,9 @@ class Client extends Model
     {
         return $this->hasManyThrough(Product::class, ProductsClient::class, 'client_id', 'id', 'id', 'product_id');
     }
+
+    public function Carts()
+    {
+        return $this->hasMany(Cart::class, 'client_id');
+    }
 }

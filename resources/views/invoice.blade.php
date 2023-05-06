@@ -200,7 +200,7 @@
                 success: function(response) {
                     console.log(response);
                     let content = "";
-                    Object.values(data.clients).forEach((client) => {
+                    response.data.clients.forEach((client) => {
                         content += "<h1 class='text-start mt-3 mb-0'>" + client.name + "</h1>";
                         content += `
                         <table class="table table-hover mb-3">
@@ -209,6 +209,7 @@
                                     <th>Descripción</th>
                                     <th class="text-right">Cantidad</th>
                                     <th class="text-right">Precio Unitario</th>
+                                    <th class="text-right">Fecha</th>
                                     <th class="text-right">Total</th>
                                 </tr>
                             </thead>
@@ -219,6 +220,7 @@
                                 content += "<td>" + item.name + "</td>";
                                 content += "<td class='text-right'>" + item.quantity + "</td>";
                                 content += "<td class='text-right'>$" + item.price + "</td>";
+                                content += "<td class='text-right'>" + item.date + "</td>";
                                 content += "<td class='text-right productTotal'>$" + (item.quantity * item.price) + "</td>";
                                 content += "</tr>";
                         });

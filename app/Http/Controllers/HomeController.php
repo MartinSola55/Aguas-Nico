@@ -92,8 +92,10 @@ class HomeController extends Controller
         try {
             $dateFrom = Carbon::createFromFormat('Y-m-d', $request->input('dateFrom'))->startOfDay();
             $dateTo = Carbon::createFromFormat('Y-m-d', $request->input('dateTo'))->endOfDay();
-            $clients = Client::all();
-            $products = ProductsCart::whereBetween('updated_at', [$dateFrom, $dateTo])->with('Cart', 'Product')->get();
+            $clients = Client::whereHas('Carts', function ($query) use ($dateFrom, $dateTo) {
+                $query->whereBetween('updated_at', [$dateFrom, $dateTo]);
+            })->get();
+            $products = ProductsCart::whereBetween('updated_at', [$dateFrom, $dateTo])->with('Cart', 'Product')->orderBy('updated_at', 'asc')->get();
 
             $data = [
                 'clients' => []
@@ -114,10 +116,8 @@ class HomeController extends Controller
                         'id' => $product->Product->id,
                         'name' => $product->Product->name,
                         'quantity' => $product->quantity,
-                        /*'price' => $product->sum(function($item) {
-                            return $item->quantity * $item->setted_price;
-                        }),*/
                         'price' => $product->setted_price,
+                        'date' => $product->updated_at->format('d/m/Y')
                     ];
 
                     $clientData['products'][] = $productData;
