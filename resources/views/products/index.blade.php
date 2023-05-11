@@ -85,7 +85,7 @@
             </div>
             <div class="col-md-7 col-4 align-self-center">
                 <div class="d-flex m-t-10 justify-content-end">
-                    <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                    <div class="d-flex m-r-20 m-l-10">
                         <div>
                             <a class="btn btn-danger waves-effect waves-light" href="{{ url('/product/new') }}">
                                 <i class="bi bi-plus-lg"></i>

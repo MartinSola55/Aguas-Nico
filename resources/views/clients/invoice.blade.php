@@ -156,7 +156,6 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <hr>
                             <div class="table-responsive m-t-40" style="clear: both;">
                                 <table id="invoiceProducts" class="table table-hover">
                                     <thead>

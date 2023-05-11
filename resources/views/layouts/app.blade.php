@@ -269,49 +269,57 @@
 
                             {{-- ADMIN --}}
                             @if (auth()->user()->rol_id == '1')
-                            <li class="nav-small-cap">NEGOCIO</li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
-                            </li>
-                            <li><a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
-                                <ul aria-expanded="false" class="collapse" style="height: 10px;">
-                                    <li><a href="{{ url('/product/index') }}">Inicio</a></li>
-                                    <li><a href="{{ url('/product/new') }}">Nuevo</a></li>
-                                </ul>
-                            </li>
-                            <li><a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
-                                <ul aria-expanded="false" class="collapse" style="height: 10px;">
-                                    <li><a href="{{ url('/client/index') }}">Inicio</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-devider"></li>
-                            <li class="nav-small-cap">REPARTOS</li>
-                            <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Repartos</span></a>
-                                <ul aria-expanded="false" class="collapse">
-                                    <li><a href="{{ url('/route/index') }}">Inicio</a></li>
-                                    <li><a href="{{ url('/route/new') }}">Nuevo</a></li>
-                                </ul>
-                            </li>
-                            <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartidores</span></a>
-                                <ul aria-expanded="false" class="collapse">
-                                    <li><a href="{{ url('/dealer/index') }}">Inicio</a></li>
-                                </ul>
-                            </li>
-                            
-                            <li class="nav-devider"></li>
-                            <li class="nav-small-cap">ADMINISTRACIÓN</li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/invoice') }}" aria-expanded="false"><i class="bi bi-file-earmark-text"></i><span class="hide-menu">Facturación</span></a>
-                            </li>
+                                <li class="nav-small-cap">NEGOCIO</li>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
+                                </li>
+                                <li><a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
+                                    <ul aria-expanded="false" class="collapse" style="height: 10px;">
+                                        <li><a href="{{ url('/product/index') }}">Inicio</a></li>
+                                        <li><a href="{{ url('/product/new') }}">Nuevo</a></li>
+                                    </ul>
+                                </li>
+                                <li><a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
+                                    <ul aria-expanded="false" class="collapse" style="height: 10px;">
+                                        <li><a href="{{ url('/client/index') }}">Inicio</a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-devider"></li>
+                                <li class="nav-small-cap">REPARTOS</li>
+                                <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Repartos</span></a>
+                                    <ul aria-expanded="false" class="collapse">
+                                        <li><a href="{{ url('/route/index') }}">Inicio</a></li>
+                                        <li><a href="{{ url('/route/new') }}">Nuevo</a></li>
+                                    </ul>
+                                </li>
+                                <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartidores</span></a>
+                                    <ul aria-expanded="false" class="collapse">
+                                        <li><a href="{{ url('/dealer/index') }}">Inicio</a></li>
+                                    </ul>
+                                </li>
+                                <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
+                                    <ul aria-expanded="false" class="collapse">
+                                        <li><a href="{{ url('/expense/index') }}">Inicio</a></li>
+                                    </ul>
+                                </li>
+                                
+                                <li class="nav-devider"></li>
+                                <li class="nav-small-cap">ADMINISTRACIÓN</li>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/invoice') }}" aria-expanded="false"><i class="bi bi-file-earmark-text"></i><span class="hide-menu">Facturación</span></a>
+                                </li>
 
                             {{-- REPARTIDOR --}}
                             @else
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
-                            </li>
-                            <li>
-                                <a class="waves-effect waves-dark" href="{{ url('/route/index') }}" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Mis repartos</span></a>
-                            </li>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
+                                </li>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/route/index') }}" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Mis repartos</span></a>
+                                </li>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/expense/index') }}" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
+                                </li>
                             @endif
                         </ul>
                     </nav>

@@ -65,7 +65,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
 
     // EXPENSES
-    Route::get('/expense/index', [App\Http\Controllers\ExpenseController::class, 'index']);
     Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
     Route::post('/expense/edit', [App\Http\Controllers\ExpenseController::class, 'update']);
 });
@@ -94,8 +93,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/route/addClients', [App\Http\Controllers\RouteController::class, 'addClients']);
 
     // EXPENSES
-    Route::get('/expense/index', [App\Http\Controllers\ExpenseController::class, 'employeeExpenses']);
+    Route::get('/expense/index', [App\Http\Controllers\ExpenseController::class, 'index']);
     Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
     Route::post('/expense/edit', [App\Http\Controllers\ExpenseController::class, 'update']);
+    Route::get('/expense/searchExpenses', [App\Http\Controllers\ExpenseController::class, 'searchExpenses']);
 });
 

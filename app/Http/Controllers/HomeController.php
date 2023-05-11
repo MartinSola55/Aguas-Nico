@@ -33,6 +33,8 @@ class HomeController extends Controller
         if ($user->rol_id == '1') {
             // Obtener los repartos del día
             $routes = Route::where('day_of_week', date('N'))
+                ->where('is_static', false)
+                ->whereDate('start_date', Carbon::now())
                 ->with('Carts')
                 ->with('Carts.ProductsCart')
                 ->with('Carts.ProductsCart.Product')

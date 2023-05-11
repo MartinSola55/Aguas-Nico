@@ -111,6 +111,52 @@
     </div>
     <!-- End Modal -->
 
+    <!-- Modal route products -->
+    <div id="modalProducts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+        style="display: none;">
+        <div class="modal-dialog">
+            <form role="form" class="needs-validation" method="POST" action="{{ url('') }}" id="formRouteProducts" autocomplete="off" novalidate>
+                @csrf
+                <input type="hidden" name="products_quantity" value="">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Productos cargados en el camión</h4>
+                        <button id="btnCloseModalProducts" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-responsive">
+                                    <table class="table" id="modalProductsTable">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-4">Cantidad</th>
+                                                <th>Producto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($products as $product)
+                                                <tr data-id="{{ $product->id }}">
+                                                    <td><input type="number" class="form-control" min="0" max="10000"></td>
+                                                    <td>{{ $product->name }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                        <button type="button" id="btnUpdateProducts" class="btn btn-danger waves-effect waves-light">Actualizar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End Modal -->
+
     <div class="container-fluid">
         <!-- ============================================================== -->
         <!-- Bread crumb and right sidebar toggle -->
@@ -124,6 +170,15 @@
                     <li class="breadcrumb-item active">Detalles</li>
                 </ol>
             </div>
+            @if (auth()->user()->rol_id == '1')
+                <div class="col-md-7 col-4 align-self-center">
+                    <div class="d-flex m-t-10 justify-content-end">
+                        <div class="d-flex m-r-20 m-l-10">
+                            <button id="btnAddProducts" class="btn btn-danger" data-toggle="modal" data-target="#modalProducts">Agregar productos</button>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
         <!-- ============================================================== -->
         <!-- End Bread crumb and right sidebar toggle -->
@@ -304,6 +359,75 @@
             </div>
         </div>
     </div>
+
+    {{-- Productos en el camión de un repartidor --}}
+    <script>
+        $("#modalProducts input[type='number']").on("input", function() {
+            if ($(this).val() < 0) {
+                $(this).val(0);
+            } else if ($(this).val() > 10000){
+                $(this).val(10000);
+            }
+        });
+
+        $("#btnUpdateProducts").on("click", function() {
+            // Productos
+            let products = [];
+            $('#modalProducts table tbody tr').each(function() {
+                let productId = $(this).data('id');
+                let quantity = $(this).find('input').val();
+                if (quantity !== "") {
+                    products.push({
+                        product_id: productId,
+                        quantity: quantity
+                    });
+                }
+            });
+            $("#formRouteProducts input[name='products_quantity']").val(JSON.stringify(products));
+            
+            function payCart() {
+                $.ajax({
+                    url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
+                    method: $("#formRouteProducts").attr('method'), // Utiliza el método del formulario
+                    data: $("#formRouteProducts").serialize(), // Utiliza los datos del formulario
+                    success: function(response) {
+                        $("#btnCloseModalProducts").click();
+                        Swal.fire({
+                                title: response.message,
+                                icon: 'success',
+                                showCancelButton: false,
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK',
+                                allowOutsideClick: false,
+                            })
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            })
+                    },
+                    error: function(errorThrown) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: errorThrown.responseJSON.message,
+                        });
+                    }
+                });
+            }
+
+            if (products.length <= 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ALERTA',
+                    text: 'Debes ingresar al menos un producto',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,
+                })
+            }
+        });
+    </script>
     
     {{-- Pagar un carrito --}}
     <script>
@@ -440,7 +564,7 @@
             })
         });
 
-        $("#cash_input_container input").on("input", function() {
+        $("input[type='number']").on("input", function() {
             if ($(this).val() <= 0 || !esNumero($(this).val())) {
                 $(this).val("");
             }
@@ -467,9 +591,6 @@
             // Calcular el total dentro del modal
 
             $(".quantity-input").on("input", function() {
-                if ($(this).val() <= 0 || !esNumero($(this).val())) {
-                    $(this).val("");
-                }
                 let total = 0;
                 $("#modalTable tbody tr").each(function() {
                     let precioUnit = $(this).find(".precioProducto").text().replace('$', '');

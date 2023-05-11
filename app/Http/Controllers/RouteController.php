@@ -38,7 +38,8 @@ class RouteController extends Controller
         $route = Route::with(['Carts' => function ($query) {
             $query->orderBy('priority', 'asc');
         }])->find($id);
-        return view('routes.details', compact('route', 'payment_methods', 'cash'));
+        $products = Product::all();
+        return view('routes.details', compact('route', 'payment_methods', 'cash', 'products'));
     }
 
     /**
