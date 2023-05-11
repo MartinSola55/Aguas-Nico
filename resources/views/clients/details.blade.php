@@ -45,7 +45,7 @@
                             <div class="col-12 col-sm-6">
                                 <div class="ribbon-wrapper card">
                                     <div class="ribbon ribbon-default">Facturación</div>
-                                    <a href="{{ route('client.invoice', ['id' => $client->id]) }}" class="btn btn-danger btn-rounded m-t-10 float-right {{ $client->invoice === false ? "disabled" : "" }}">{{ $client->invoice === false ? "No habilitada" : "Ir" }}</a>
+                                    <a href="{{ route('client.invoice', ['id' => $client->id]) }}" class="btn btn-info btn-rounded m-t-10 float-right {{ $client->invoice === false ? "disabled" : "" }}">{{ $client->invoice === false ? "No habilitada" : "Ir" }}</a>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
@@ -66,7 +66,7 @@
                                         <h3 class="card-title">Productos asociados</h3>
                                     </div>
                                     <div class="col-4 text-right mb-3">
-                                        <button id="btnEditProducts" class="btn btn-sm btn-danger btn-rounded px-3">Editar</button>
+                                        <button id="btnEditProducts" class="btn btn-sm btn-outline-info btn-rounded px-3">Editar</button>
                                     </div>
                                 </div>
                                 <div>
@@ -94,7 +94,7 @@
                                         </table>
                                         <div class="row" id="divSaveProducts" style="display: none">
                                             <div class="col-md-12 d-flex justify-content-end">
-                                                <button type="button" id="btnSaveProducts" class="btn btn-sm btn-danger btn-rounded px-3">Guardar</button>
+                                                <button type="button" id="btnSaveProducts" class="btn btn-sm btn-success btn-rounded px-3">Guardar</button>
                                             </div>
                                         </div>
                                     </form>
@@ -112,7 +112,7 @@
                                 <h3 class="mb-0">Cliente</h3>
                             </div>
                             <div class="col-4 text-right">
-                                <button id="btnEditInputs" class="btn btn-sm btn-danger btn-rounded px-3">Editar</button>
+                                <button id="btnEditInputs" class="btn btn-sm btn-outline-info btn-rounded px-3">Editar</button>
                             </div>
                         </div>
                     </div>
@@ -222,8 +222,8 @@
                                 </div>
                                 <div class="row" id="divSaveClient" style="display: none">
                                     <div class="col-md-12 d-flex justify-content-between">
-                                        <button type="button" id="btnDeleteClient" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar</button>
-                                        <button type="submit" class="btn btn-sm btn-danger btn-rounded px-3">Guardar</button>
+                                        <button type="button" id="btnDeleteClient" class="btn btn-sm btn-outline-danger btn-rounded px-3">Eliminar</button>
+                                        <button type="submit" class="btn btn-sm btn-success btn-rounded px-3">Guardar</button>
                                     </div>
                                 </div>
                             </div>
@@ -271,16 +271,17 @@
                 success: function(response) {
                     $("#btnEditInputs").click();
                     $("#clientDebtText").text("$" + $("#clientDebt").val());
-                    Swal.fire(
-                        'OK',
-                        'Acción correcta',
-                        'success'
-                        );
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
                     },
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
@@ -303,10 +304,13 @@
                 text: "Esta acción no se puede revertir",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Eliminar'
-                })
+                confirmButtonText: 'Eliminar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
+            })
             .then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -317,12 +321,14 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Cliente eliminado correctamente',
+                                confirmButtonColor: '#1e88e5',
                             });
                         },
                         error: function(errorThrown) {
                             Swal.fire({
                                 icon: 'error',
                                 title: errorThrown.responseJSON.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         }
                     });
@@ -359,16 +365,17 @@
                 data: $("#form-products").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     $("#btnEditProducts").click();
-                    Swal.fire(
-                        'OK',
-                        'Acción correcta',
-                        'success'
-                        );
-                    },
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                },
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });

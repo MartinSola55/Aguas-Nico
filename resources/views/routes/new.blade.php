@@ -50,7 +50,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button id="btnCreateRoute" type="submit" class="btn btn-danger waves-effect waves-light">Confirmar</button>
+                        <button id="btnCreateRoute" type="submit" class="btn btn-info waves-effect waves-light">Confirmar</button>
                     </div>
                 </div>
             </form>
@@ -83,7 +83,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h2 class="card-title">Seleccione un repartidor</h4>
-                        <div class="table-responsive m-t-40">
+                        <div class="table-responsive m-t-10">
                             <table id="dealersTable" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
@@ -147,21 +147,12 @@
                         Swal.fire({
                             icon: 'error',
                             title: errorThrown.responseJSON.message,
+                            confirmButtonColor: '#1e88e5',
                         });
                     }
                 });
             }
     </script>
-
-    {{-- <script>
-        moment.locale('es');
-        $('#dateFrom').bootstrapMaterialDatePicker({
-            format: 'DD/MM/YYYY - HH:mm',
-            minDate: new Date(),
-            cancelText: "Cancelar",
-            weekStart: 1,
-        });
-    </script> --}}
 
     <script>
         $('#dealersTable').DataTable({
@@ -189,45 +180,4 @@
             $("#day_of_week").val("");
         }
     </script>
-
-    {{-- <script>
-        function formatDate(date) {
-            let fechaHora = date;
-
-            // Dividimos la cadena en fecha y hora
-            let partes = fechaHora.split(' - ');
-            let fecha = partes[0];
-            let hora = partes[1];
-
-            // Dividimos la fecha en día, mes y año
-            let partesFecha = fecha.split('/');
-            let dia = partesFecha[0];
-            let mes = partesFecha[1];
-            let anio = partesFecha[2];
-
-            // Reordenamos la fecha al formato yyyy-mm-dd
-            let fechaFormateada = anio + '-' + mes + '-' + dia;
-
-            // Concatenamos la fecha y hora formateadas
-            let fechaHoraFormateada = fechaFormateada + ' ' + hora;
-
-            return fechaHoraFormateada;
-        };
-
-        $("#btnCreateRoute").on("click", function (e) {
-            e.preventDefault();
-            $("#start_daytime").val(formatDate($('#dateFrom').val()));
-            sendForm();
-        });
-    </script> --}}
-
-<style>
-    #dealersTable_paginate > ul > li.paginate_button.page-item.active > a,
-    #dealersTable_paginate > ul > li.paginate_button.page-item.active > a:hover
-    {
-        background-color: #fc4b6c;
-        border-color: #ff0030;
-    }
-</style>
-
 @endsection

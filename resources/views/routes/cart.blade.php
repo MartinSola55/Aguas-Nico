@@ -96,7 +96,7 @@
                                     </tbody>
                                 </table>
                                 <div class="d-flex flex-row justify-content-end mt-4">
-                                    <button onclick="createClientsArray()" type="button" class="btn btn-danger">Guardar</button>
+                                    <button onclick="createClientsArray()" type="button" class="btn btn-success">Guardar</button>
                                 </div>
                             </div>
                         </form>
@@ -178,6 +178,7 @@
                 Swal.fire({
                     icon: 'warning',
                     title: 'No se ha seleccionado ningún cliente',
+                    confirmButtonColor: '#1e88e5',
                 });
                 return;
             }
@@ -197,7 +198,7 @@
                         title: response.message,
                         icon: 'success',
                         showCancelButton: false,
-                        confirmButtonColor: '#3085d6',
+                        confirmButtonColor: '#1e88e5',
                         confirmButtonText: 'OK',
                         allowOutsideClick: window.userRol == '1' ? true : false,
                     })
@@ -211,6 +212,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
@@ -220,13 +222,6 @@
     <style>
         #clientsTable tbody tr:hover {
             background-color: #dee2e6;
-        }
-
-        #clientsTable_paginate > ul > li.paginate_button.page-item.active > a,
-        #clientsTable_paginate > ul > li.paginate_button.page-item.active > a:hover
-        {
-            background-color: #fc4b6c;
-            border-color: #ff0030;
         }
     </style>
 

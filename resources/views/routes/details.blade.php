@@ -103,7 +103,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button type="button" id="btnPayCart" class="btn btn-danger waves-effect waves-light">Pagar</button>
+                        <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Pagar</button>
                     </div>
                 </div>
             </form>
@@ -150,7 +150,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button type="button" id="btnUpdateProducts" class="btn btn-danger waves-effect waves-light">Actualizar</button>
+                        <button type="button" id="btnUpdateProducts" class="btn btn-success waves-effect waves-light">Actualizar</button>
                     </div>
                 </div>
             </form>
@@ -175,7 +175,7 @@
                 <div class="col-md-7 col-4 align-self-center">
                     <div class="d-flex m-t-10 justify-content-end">
                         <div class="d-flex m-r-20 m-l-10">
-                            <button id="btnAddProducts" class="btn btn-danger" data-toggle="modal" data-target="#modalProducts">Agregar productos</button>
+                            <button id="btnAddProducts" class="btn btn-info" data-toggle="modal" data-target="#modalProducts">Agregar productos</button>
                         </div>
                     </div>
                 </div>
@@ -193,7 +193,7 @@
                     <div class="card-header d-flex flex-row justify-content-between">
                         <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
                         @if (auth()->user()->rol_id == '1')
-                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar ruta</button>
+                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar ruta</button>
                         @endif
                     </div>
                     <div class="card-body">
@@ -212,8 +212,6 @@
                                         <div class="timeline-badge" style="background-color: #30d577"><i class="bi bi-truck"></i></div>
                                     @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
                                         <div class="timeline-badge" style="background-color: #ffc107"><i class="bi bi-truck"></i></div>
-                                    @elseif ($cart->state === 0)
-                                        <div class="timeline-badge" style="background-color: #fc4b6c"><i class="bi bi-truck"></i></div>
                                     @else
                                         <div class="timeline-badge" style="background-color: #6c757d"><i class="bi bi-truck"></i></div>
                                     @endif
@@ -224,7 +222,7 @@
                                             @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
                                                 <h4 class="timeline-title" style="color: #ffc107">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
                                             @elseif ($cart->state === 0)
-                                                <h4 class="timeline-title" style="color: #fc4b6c">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                                <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
                                             @else
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
@@ -278,7 +276,7 @@
                                                     {{-- 2 = employee --}}
                                                     @if (auth()->user()->rol_id == '2')
                                                         <div class="btn-group">
-                                                            <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
+                                                            <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                             <div class="dropdown-menu">
                                                                 <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
                                                                 <div class="dropdown-divider"></div>
@@ -296,7 +294,7 @@
                                                             <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
                                                                 @csrf
                                                                 <input type="hidden" name="id" value="{{ $cart->id }}">
-                                                                <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar</button>
+                                                                <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar</button>
                                                             </form>
                                                         </div>
                                                     @endif
@@ -336,7 +334,7 @@
                             @endforeach
                         </ul>
                         <div class="d-flex flex-row justify-content-end">
-                            <a class="btn btn-danger btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
+                            <a class="btn btn-info btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
                         </div>
                     </div>
                 </div>
@@ -397,7 +395,7 @@
                             title: response.message,
                             icon: 'success',
                             showCancelButton: false,
-                            confirmButtonColor: '#3085d6',
+                            confirmButtonColor: '#1e88e5',
                             confirmButtonText: 'OK',
                             allowOutsideClick: false,
                         })
@@ -411,6 +409,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: errorThrown.responseJSON.message,
+                            confirmButtonColor: '#1e88e5',
                         });
                     }
                 });
@@ -422,7 +421,7 @@
                     title: 'ALERTA',
                     text: 'Debes ingresar al menos un producto',
                     showCancelButton: false,
-                    confirmButtonColor: '#3085d6',
+                    confirmButtonColor: '#1e88e5',
                     confirmButtonText: 'OK',
                     allowOutsideClick: false,
                 })
@@ -476,7 +475,7 @@
                                 title: response.message,
                                 icon: 'success',
                                 showCancelButton: false,
-                                confirmButtonColor: '#3085d6',
+                                confirmButtonColor: '#1e88e5',
                                 confirmButtonText: 'OK',
                                 allowOutsideClick: false,
                             })
@@ -490,6 +489,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: errorThrown.responseJSON.message,
+                            confirmButtonColor: '#1e88e5',
                         });
                     }
                 });
@@ -502,9 +502,13 @@
                         title: 'ALERTA',
                         text: '¿Seguro que quieres cargar todo en la cuenta corriente del cliente?',
                         showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
                         confirmButtonText: 'OK',
                         allowOutsideClick: false,
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
+                            cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                        }
                     })
                     .then((result) => {
                         if (result.isConfirmed) {
@@ -518,7 +522,8 @@
                 Swal.fire({
                     icon: 'warning',
                     title: "ERROR",
-                    text: "Debes ingresar al menos un producto y un método de pago",
+                    text: "Debes ingresar al menos un producto",
+                    confirmButtonColor: '#1e88e5',
                 });
             }
         });
@@ -633,6 +638,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
@@ -640,14 +646,17 @@
 
         $("#btnDeleteRoute").on("click", function() {
             Swal.fire({
-                title: 'Seguro deseas eliminar este reparto?',
+                title: '¿Seguro deseas eliminar este reparto?',
                 text: "Esta acción no se puede revertir",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Eliminar'
-                })
+                confirmButtonText: 'Eliminar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
+            })
             .then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -661,6 +670,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: errorThrown.responseJSON.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         }
                     });
@@ -672,14 +682,17 @@
         $("button[name='btnDeleteCart']").on("click", function() {
             let id = $(this).val();
             Swal.fire({
-                title: 'Seguro deseas eliminar este pedido?',
+                title: '¿Seguro deseas eliminar este pedido?',
                 text: "Esta acción no se puede revertir",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Eliminar'
-                })
+                confirmButtonText: 'Eliminar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
+            })
             .then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -687,12 +700,17 @@
                         method: $("#formDeleteCart_" + id).attr('method'), // Utiliza el método del formulario
                         data: $("#formDeleteCart_" + id).serialize(), // Utiliza los datos del formulario
                         success: function(response) {
-                            console.log(response);
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                confirmButtonColor: '#1e88e5',
+                            });
                         },
                         error: function(errorThrown) {
                             Swal.fire({
                                 icon: 'error',
                                 title: errorThrown.responseJSON.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         }
                     });
@@ -711,10 +729,13 @@
                 title: "¿Está seguro que el cliente " + action + "?",
                 icon: 'question',
                 showCancelButton: true,
-                cancelButtonColor: '#d33',
                 cancelButtonText: "Cancelar",
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Confirmar'
+                confirmButtonText: 'Confirmar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
             })
             // Si confirma la acción, envía el formulario
             .then((result) => {
@@ -728,7 +749,7 @@
                                 title: response.message,
                                 icon: 'success',
                                 showCancelButton: false,
-                                confirmButtonColor: '#3085d6',
+                                confirmButtonColor: '#1e88e5',
                                 confirmButtonText: 'OK',
                                 allowOutsideClick: false,
                             })
@@ -742,6 +763,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: errorThrown.responseJSON.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         }
                     });

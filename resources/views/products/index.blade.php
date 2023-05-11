@@ -58,10 +58,10 @@
                     <div class="modal-footer">
                         <div class="d-flex flex-row justify-content-between w-100">
                             <div class="d-flex">
-                                <button type="button" id="btnDeleteProduct" class="btn btn-primary waves-effect waves-light">Eliminar</button>
+                                <button type="button" id="btnDeleteProduct" class="btn btn-outline-danger waves-effect waves-light">Eliminar</button>
                             </div>
                             <div class="d-flex">
-                                <button type="submit" class="btn btn-danger waves-effect waves-light">Actualizar</button>
+                                <button type="submit" class="btn btn-success waves-effect waves-light">Guardar</button>
                             </div>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                 <div class="d-flex m-t-10 justify-content-end">
                     <div class="d-flex m-r-20 m-l-10">
                         <div>
-                            <a class="btn btn-danger waves-effect waves-light" href="{{ url('/product/new') }}">
+                            <a class="btn btn-info waves-effect waves-light" href="{{ url('/product/new') }}">
                                 <i class="bi bi-plus-lg"></i>
                             </a>
                         </div>
@@ -113,10 +113,10 @@
                                     <p class="ribbon-content" id="productPrice{{ $product->id }}">Precio: ${{ $product->price }}</p>
                                 </div>
                                 <div class="d-flex flex-direction-row justify-content-between">
-                                    <button type="button" class="btn btn-danger btn-rounded mr-4" onclick="openModal({{ $product->id }}, '{{ $product->name }}', {{ $product->stock }}, {{ $product->price }})" data-toggle="modal" data-target="#modalConfirmation">
+                                    <button type="button" class="btn btn-outline-info btn-rounded mr-4 waves-effect waves-light" onclick="openModal({{ $product->id }}, '{{ $product->name }}', {{ $product->stock }}, {{ $product->price }})" data-toggle="modal" data-target="#modalConfirmation">
                                         Editar <i class="bi bi-pencil"></i>
                                     </button>
-                                    <a class="btn btn-danger btn-rounded" href="{{ route('product.stats', ['id' => $product->id]) }}">
+                                    <a class="btn btn-info btn-rounded waves-effect waves-light" href="{{ route('product.stats', ['id' => $product->id]) }}">
                                         Estadísticas <i class="bi bi-graph-up"></i>
                                     </a>
                                 </div>
@@ -131,39 +131,6 @@
             @csrf
             <input type="hidden" id="product-id" name="id" value="">
         </form>
-        {{-- 
-        <div class="row el-element-overlay">
-            @foreach ($products as $product)
-                <div class="col-lg-3 col-md-6">
-                    <div class="card">
-                        <div class="el-card-item">
-                            <div class="el-card-avatar el-overlay-1"> <img src="{{ asset('images/botella.jpg') }}"
-                                    alt="Botella" />
-                                <div class="el-overlay">
-                                    <ul class="el-info">
-                                        <li>
-                                            <a class="btn default btn-outline" href="{{ url('/products/stats') }}">
-                                                <i class="bi bi-graph-up"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="btn default btn-outline" onclick="openModal({{ $product->id }}, '{{ $product->name }}', {{ $product->stock }}, {{ $product->price }})" data-toggle="modal" data-target="#modalConfirmation">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="el-card-content">
-                                <h3 class="box-title">{{ $product->name }}</h3> <small>{{ $product->stock }} en stock</small>
-                                <br />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>    
-        --}}
     </div>
     <!-- ============================================================== -->
     <!-- End Container fluid  -->
@@ -172,14 +139,17 @@
     <script>
         $("#btnDeleteProduct").on("click", function() {
             Swal.fire({
-                title: 'Seguro deseas eliminar el producto?',
+                title: '¿Seguro deseas eliminar el producto?',
                 text: "Esta acción no se puede revertir",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Eliminar'
-                })
+                confirmButtonText: 'Eliminar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
+            })
             .then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -189,18 +159,20 @@
                         success: function(response) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Producto eliminado correctamente',
+                                title: response.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         },
                         error: function(errorThrown) {
                             Swal.fire({
                                 icon: 'error',
                                 title: errorThrown.responseJSON.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         }
                     });
-                }
-            })
+                };
+            });
         });
     </script>
 
@@ -254,10 +226,11 @@
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
-        }
+        };
 
         function updatedSuccess(response) {
             $("#btnCloseModal").click();
@@ -267,12 +240,12 @@
             $("#productStock" + id).html("Stock: " + $("#productStock").val() + " u.");
             $("#productPrice" + id).html("Precio: $" + $("#productPrice").val());
 
-            Swal.fire(
-                'OK',
-                'Acción correcta',
-                'success'
-            );
-        }
+            Swal.fire({
+                icon: 'success',
+                title: response.message,
+                confirmButtonColor: '#1e88e5',
+            });
+        };
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

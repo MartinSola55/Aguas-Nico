@@ -88,7 +88,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-danger waves-effect waves-light">Agregar</button>
+                            <button type="submit" class="btn btn-success waves-effect waves-light">Agregar</button>
                         </div>
                     </div>
                 </form>
@@ -125,7 +125,7 @@
                     <div class="card-body">
                         <div class="d-flex flex-row justify-content-between">
                             <h2 class="card-title">Listado de gastos</h4>
-                            <button id="btnAddExpense" type="button" class="btn btn-danger btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar gasto</button>
+                            <button id="btnAddExpense" type="button" class="btn btn-info btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar gasto</button>
                         </div>
                         <h4 id="totalTable">Total: $</h4>
                         <div class="table-responsive m-t-20">
@@ -246,6 +246,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
@@ -296,12 +297,14 @@
                     Swal.fire({
                         icon: 'success',
                         title: response.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 },
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
@@ -312,8 +315,12 @@
                 title: '¿Seguro deseas eliminar este gasto?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Eliminar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
             })
             .then((result) => {
                 if (result.isConfirmed) {
@@ -333,12 +340,14 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: response.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         },
                         error: function(errorThrown) {
                             Swal.fire({
                                 icon: 'error',
                                 title: errorThrown.responseJSON.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         }
                     });
@@ -352,15 +361,5 @@
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <style>
-        #expensesTable_paginate > ul > li.paginate_button.page-item.active > a,
-        #expensesTable_paginate > ul > li.paginate_button.page-item.active > a:hover
-        {
-            background-color: #fc4b6c;
-            border-color: #ff0030;
-        }
-    </style>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
 @endsection

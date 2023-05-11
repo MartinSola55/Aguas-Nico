@@ -58,7 +58,7 @@
                                 </div>
                             </div>
                             <div id="buttonDatesContainer" class="col-lg-12 d-flex flex-direction-row justify-content-end" style="display: none !important">
-                                <button id="btnSearchSale" type="button" class="btn btn-danger">Buscar ventas</button>
+                                <button id="btnSearchSale" type="button" class="btn btn-info">Buscar ventas</button>
                             </div>
                         </form>
                     </div>
@@ -198,7 +198,6 @@
                 method: $("#form-sales").attr('method'), // Utiliza el método del formulario
                 data: $("#form-sales").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
-                    console.log(response);
                     let content = "";
                     response.data.clients.forEach((client) => {
                         content += "<h1 class='text-start mt-3 mb-0'>" + client.name + "</h1>";
@@ -235,6 +234,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
