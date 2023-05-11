@@ -20,10 +20,10 @@
         <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Clientes</h3>
+                <h3 class="text-themecolor m-b-0 m-t-0">Gastos</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item active">Clientes</li>
+                    <li class="breadcrumb-item active">Gastos</li>
                 </ol>
             </div>
         </div>
@@ -63,21 +63,25 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">$</span>
                                                 </div>
-                                                <input type="number" step="0.01" min="0" max="1000000" class="form-control" id="expSpent" name="debt" placearia-describedby="inputGroupPrepend" required>
+                                                <input type="number" step="0.01" min="0" max="1000000" class="form-control" id="expSpent" name="spent" placearia-describedby="inputGroupPrepend" required>
                                                 <div class="invalid-feedback">
                                                     Por favor, ingrese un monto
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 mb-3">
-                                            <label for="expUser" class="mb-0">Repartidor</label>
-                                            <select name="user_id" class="form-control" id="expUser">
-                                                <option disabled selected value="">Seleccione un repartidor</option>
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                        @if (auth()->user()->rol_id == '1')    
+                                            <div class="col-12 mb-3">
+                                                <label for="expUser" class="mb-0">Repartidor</label>
+                                                <select name="user_id" class="form-control" id="expUser">
+                                                    <option disabled selected value="">Seleccione un repartidor</option>
+                                                    @foreach ($users as $user)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        @else
+                                            <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -130,8 +134,13 @@
                                     <tr>
                                         <th>Descripción</th>
                                         <th>Gasto</th>
-                                        <th>Repartidor</th>
+                                        @if (auth()->user()->rol_id == '1')
+                                            <th>Repartidor</th>
+                                        @endif
                                         <th>Fecha</th>
+                                        @if (auth()->user()->rol_id == '1')
+                                            <th></th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody id="table_body">
@@ -142,7 +151,16 @@
                 </div>
             </div>
         </div>
+
+        <form action="/expense/delete" method="post" id="form-delete">
+            @csrf
+            <input type="hidden" name="id" id="expense_id">
+        </form>
     </div>
+
+    <script>
+        window.userRol = "{{ auth()->user()->rol_id }}";
+    </script>
 
     <script>
         moment.locale('es');
@@ -190,33 +208,38 @@
                 method: $("#form-expense").attr('method'), // Utiliza el método del formulario
                 data: $("#form-expense").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
-                    console.log(response);
                     let content = "";
                     response.data.forEach((expense) => {
-                        content += "<tr>";
+                        content += "<tr data-id='" + expense.id + "'>";
                         content += "<td>" + expense.description + "</td>";
                         content += "<td class='text-right spent'>$" + expense.spent + "</td>";
-                        content += "<td class='text-right'>" + expense.user + "</td>";
+                        if (window.userRol == 1)
+                            content += "<td class='text-right'>" + expense.user + "</td>";
                         content += "<td class='text-right'>" + expense.date + "</td>";
+                        if (window.userRol == 1)
+                            content += `<td class='text-center'><button type='button' class='btn btn-danger btn-rounded btn-sm' onclick='deleteExpense(` + expense.id + `)'><i class='fas fa-trash-alt'></i></button></td>`;
                         content += "</tr>";
                     });
                     $("#table_body").html(content);
-                    $('#expensesTable').DataTable({
-                        "language": {
-                            // "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json" // La url reemplaza todo al español
-                            "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ gastos",
-                            "sInfoEmpty": "Mostrando 0 a 0 de 0 gastos",
-                            "sInfoFiltered": "(filtrado de _MAX_ gastos en total)",
-                            "sLengthMenu": "Mostrar _MENU_ gastos",
-                            "sSearch": "Buscar:",
-                            "oPaginate": {
-                                "sFirst": "Primero",
-                                "sLast": "Último",
-                                "sNext": "Siguiente",
-                                "sPrevious": "Anterior",
+                    if (!$.fn.DataTable.isDataTable('#expensesTable')) {
+                        $('#expensesTable').DataTable({
+                            "ordering": false,
+                            "language": {
+                                // "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json" // La url reemplaza todo al español
+                                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ gastos",
+                                "sInfoEmpty": "Mostrando 0 a 0 de 0 gastos",
+                                "sInfoFiltered": "(filtrado de _MAX_ gastos en total)",
+                                "sLengthMenu": "Mostrar _MENU_ gastos",
+                                "sSearch": "Buscar:",
+                                "oPaginate": {
+                                    "sFirst": "Primero",
+                                    "sLast": "Último",
+                                    "sNext": "Siguiente",
+                                    "sPrevious": "Anterior",
+                                },
                             },
-                        },
-                    });
+                        });
+                    }
                     calculateTotal();
                 },
                 error: function(errorThrown) {
@@ -270,13 +293,10 @@
                 data: $("#form-create").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     $("#btnCloseModal").click();
-                    Swal.fire(
-                        'OK',
-                        'Acción correcta',
-                        'success'
-                    );
-                    console.log(response.data);
-                    fillTable(response.data);
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                    });
                 },
                 error: function(errorThrown) {
                     Swal.fire({
@@ -285,13 +305,50 @@
                     });
                 }
             });
-        }
+        };
 
+        function deleteExpense(id) {
+            Swal.fire({
+                title: '¿Seguro deseas eliminar este gasto?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Eliminar',
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    $("#expense_id").val(id);
+                    // Enviar solicitud AJAX
+                    $.ajax({
+                        url: $("#form-delete").attr('action'), // Utiliza la ruta del formulario
+                        method: $("#form-delete").attr('method'), // Utiliza el método del formulario
+                        data: $("#form-delete").serialize(), // Utiliza los datos del formulario
+                        success: function(response) {
+                            let row = $('#expensesTable').DataTable().row(`tr[data-id='${id}']`);
+                            if (row.length) {
+                                // Si la fila existe, la eliminamos del DataTable
+                                row.remove().draw(false);
+                            }
+                            calculateTotal();
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                            });
+                        },
+                        error: function(errorThrown) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: errorThrown.responseJSON.message,
+                            });
+                        }
+                    });
+                }
+            })
+        };
         
         $("#btnAddExpense").on("click", function () {
             $("#form-create").removeClass('was-validated');
-            $("#form-create input:not([name='_token'], [type='checkbox']),textarea").val("");
-            $("#form-create input[type='checkbox']").prop("checked", false);
+            $("#form-create input:not([name='_token'], [name='user_id'])").val("");
         });
     </script>
 

@@ -156,6 +156,10 @@
         });
     </script>
 
+    <script>
+        window.userRol = "{{ auth()->user()->rol_id }}";
+    </script>
+
     {{-- Send form --}}
     <script>
         function createClientsArray() {
@@ -170,6 +174,13 @@
                     clients.push(client); // agregar el cliente al arreglo de clientes
                 }
             });
+            if (clients.length == 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se ha seleccionado ningún cliente',
+                });
+                return;
+            }
             // agregar el arreglo de productos como un campo del formulario
             $("#clients_array").val(JSON.stringify(clients));
             sendForm();
@@ -183,9 +194,18 @@
                 data: $("#form-confirm").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     Swal.fire({
-                        icon: 'success',
                         title: response.message,
-                    });
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: window.userRol == '1' ? true : false,
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed && window.userRol != '1') {
+                            window.location.href = "{{ route('route.details', ['id' => $route->id] ) }}";
+                        }
+                    })
                 },
                 error: function(errorThrown) {
                     Swal.fire({

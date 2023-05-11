@@ -279,10 +279,8 @@
                                         <li><a href="{{ url('/product/new') }}">Nuevo</a></li>
                                     </ul>
                                 </li>
-                                <li><a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
-                                    <ul aria-expanded="false" class="collapse" style="height: 10px;">
-                                        <li><a href="{{ url('/client/index') }}">Inicio</a></li>
-                                    </ul>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/client/index') }}" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
                                 </li>
                                 <li class="nav-devider"></li>
                                 <li class="nav-small-cap">REPARTOS</li>
@@ -292,15 +290,11 @@
                                         <li><a href="{{ url('/route/new') }}">Nuevo</a></li>
                                     </ul>
                                 </li>
-                                <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartidores</span></a>
-                                    <ul aria-expanded="false" class="collapse">
-                                        <li><a href="{{ url('/dealer/index') }}">Inicio</a></li>
-                                    </ul>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/dealer/index') }}" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartidores</span></a>
                                 </li>
-                                <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
-                                    <ul aria-expanded="false" class="collapse">
-                                        <li><a href="{{ url('/expense/index') }}">Inicio</a></li>
-                                    </ul>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/expense/index') }}" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
                                 </li>
                                 
                                 <li class="nav-devider"></li>

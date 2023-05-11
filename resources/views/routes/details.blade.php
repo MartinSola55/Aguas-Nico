@@ -118,6 +118,7 @@
             <form role="form" class="needs-validation" method="POST" action="{{ url('') }}" id="formRouteProducts" autocomplete="off" novalidate>
                 @csrf
                 <input type="hidden" name="products_quantity" value="">
+                <input type="hidden" name="route_id" value="{{ $route->id }}">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Productos cargados en el camión</h4>
@@ -393,18 +394,18 @@
                     success: function(response) {
                         $("#btnCloseModalProducts").click();
                         Swal.fire({
-                                title: response.message,
-                                icon: 'success',
-                                showCancelButton: false,
-                                confirmButtonColor: '#3085d6',
-                                confirmButtonText: 'OK',
-                                allowOutsideClick: false,
-                            })
-                            .then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.reload();
-                                }
-                            })
+                            title: response.message,
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false,
+                        })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        })
                     },
                     error: function(errorThrown) {
                         Swal.fire({

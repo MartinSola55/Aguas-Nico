@@ -15,7 +15,7 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        $users = User::select('name', 'id')->where('rol_id', '!=', '1')->get();
+        $users = User::select('name', 'id')->where('rol_id', '!=', '1')->orderBy('name', 'asc')->get();
         return view('expenses.index', compact('users'));
     }
 
@@ -96,9 +96,23 @@ class ExpenseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(Request $request)
     {
-        //
+        try {
+            $expense = Expense::find($request->input('id'));
+            $expense->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Expense deleted successfully.',
+                'data' => $expense
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Expense deletion failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 
     public function searchExpenses(Request $request)
@@ -108,13 +122,14 @@ class ExpenseController extends Controller
             $dateTo = Carbon::createFromFormat('Y-m-d', $request->input('dateTo'))->endOfDay();
             $user = auth()->user();
             if ($user->rol_id == '1') {
-                $expenses = Expense::whereBetween('created_at', [$dateFrom, $dateTo])->get();
+                $expenses = Expense::whereBetween('created_at', [$dateFrom, $dateTo])->orderBy('created_at', 'desc')->get();
             } else {
-                $expenses = Expense::whereBetween('created_at', [$dateFrom, $dateTo])->where('user_id', $user->id)->get();
+                $expenses = Expense::whereBetween('created_at', [$dateFrom, $dateTo])->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
             }
             $response = [];
             $i = 0;
             foreach ($expenses as $expense) {
+                $response[$i]['id'] = $expense->id;
                 $response[$i]['description'] = $expense->description;
                 $response[$i]['spent'] = $expense->spent;
                 $response[$i]['user'] = $expense->User->name;
