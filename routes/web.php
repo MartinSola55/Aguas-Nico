@@ -55,6 +55,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+    //ProductDispatchedController
+    Route::post('/route/dispatched', [App\Http\Controllers\RouteController::class, 'updateDispatched']);
     //Agregar/actualizar clientes en reparto
     Route::post('/route/updateClients', [App\Http\Controllers\RouteController::class, 'updateClients']);
 
@@ -67,6 +69,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // EXPENSES
     Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
     Route::post('/expense/delete', [App\Http\Controllers\ExpenseController::class, 'delete']);
+
 });
 
 // EMPLOYEE
