@@ -62,7 +62,7 @@
                                 </div>
                             </div>
                             <div class="d-flex flex-row justify-content-end">
-                                <button class="btn btn-danger" type="submit">Agregar</button>
+                                <button class="btn btn-success waves-effect waves-light" type="submit">Agregar</button>
                             </div>
                         </form>
                     </div>
@@ -102,17 +102,18 @@
                 data: $("#form-create").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     $("#btnCloseModal").click();
-                    Swal.fire(
-                        'OK',
-                        'Acción correcta',
-                        'success'
-                    );
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
                     limpiarCampos();
                 },
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });

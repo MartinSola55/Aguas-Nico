@@ -55,6 +55,7 @@ class CartController extends Controller
                     foreach ($productsJson as $prodJson) {
                         if ($prodJson->product_id === $product->id) {
                             $product->quantity = $prodJson->quantity;
+                            break;
                         }
                     }
                     ProductsCart::create([

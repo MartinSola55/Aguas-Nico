@@ -127,7 +127,6 @@ class ClientController extends Controller
                 'message' => 'Search sales failed: ' . $e->getMessage(),
             ], 400);
         }
-
     }
 
     public function show_invoice($id)
@@ -196,8 +195,8 @@ class ClientController extends Controller
 
     public function updateProducts(Request $request)
     {
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
             $inputValues = $request->input(); // Obtener todos los valores de los inputs del formulario
             $client_id = $request->input('client_id'); // Obtener el cliente
             

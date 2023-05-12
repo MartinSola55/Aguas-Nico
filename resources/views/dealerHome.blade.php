@@ -290,9 +290,12 @@
                     title: '¿Seguro deseas comenzar el reparto?',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Comenzar'
+                    confirmButtonText: 'Comenzar',
+                    buttonsStyling: false,
+                    customClass: {
+                        confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
+                        cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                    }
                 })
                 .then((result) => {
                     if (result.isConfirmed) {
@@ -308,6 +311,7 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: errorThrown.responseJSON.message,
+                                    confirmButtonColor: '#1e88e5',
                                 });
                             }
                         });

@@ -19,7 +19,7 @@
                 <div class="d-flex m-t-10 justify-content-end">
                     <div class="d-flex m-r-20 m-l-10 hidden-md-down">
                         <div>
-                            <a class="btn btn-danger waves-effect waves-light" href="{{ url('/route/new') }}">
+                            <a class="btn btn-info waves-effect waves-light" href="{{ url('/route/new') }}">
                                 <i class="bi bi-plus-lg"></i>
                             </a>
                         </div>
@@ -181,6 +181,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });

@@ -21,6 +21,11 @@ Auth::routes();
 // ADMIN
 Route::middleware(['auth', 'admin'])->group(function () {
 
+    // HOME
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
+    Route::get('/home/searchAllSales', [App\Http\Controllers\HomeController::class, 'searchAllSales']);
+
     // DEALER
     Route::get('/dealer/index', [App\Http\Controllers\DealerController::class, 'index']);
     Route::get('/dealer/details/{id}', [App\Http\Controllers\DealerController::class, 'show'])->name('dealer.details');
@@ -50,6 +55,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+    //ProductDispatchedController
+    Route::post('/route/updateDispatched', [App\Http\Controllers\RouteController::class, 'updateDispatched']);
+    //Agregar/actualizar clientes en reparto
+    Route::post('/route/updateClients', [App\Http\Controllers\RouteController::class, 'updateClients']);
 
     // CART
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
@@ -57,25 +66,38 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/cart/edit', [App\Http\Controllers\CartController::class, 'update']);
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
 
+    // EXPENSES
+    Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
+    Route::post('/expense/delete', [App\Http\Controllers\ExpenseController::class, 'delete']);
+
 });
 
 // EMPLOYEE
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
     Route::get('/route/getProductsClient', [App\Http\Controllers\RouteController::class, 'getProductsClient']);
     Route::get('/route/showRoutes', [App\Http\Controllers\RouteController::class, 'show']);
+    Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+
 
     // Cambiar estado del carrito
     Route::post('/cart/changeState', [App\Http\Controllers\CartController::class, 'changeState']);
 
     //Crear pedido
     Route::post('/route/createNew', [App\Http\Controllers\RouteController::class, 'create']);
-    
+
     //Confirmar carrito
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
+
+    //Agregar/actualizar clientes en reparto
+    Route::post('/route/addClients', [App\Http\Controllers\RouteController::class, 'addClients']);
+
+    // EXPENSES
+    Route::get('/expense/index', [App\Http\Controllers\ExpenseController::class, 'index']);
+    Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
+    Route::get('/expense/searchExpenses', [App\Http\Controllers\ExpenseController::class, 'searchExpenses']);
 });
 

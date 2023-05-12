@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Route\ProductDispatchedUpdateRequest;
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Cart;
@@ -9,6 +10,7 @@ use App\Models\Client;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductCart;
+use App\Models\ProductDispatched;
 use App\Models\ProductsClient;
 use App\Models\Route;
 use App\Models\User;
@@ -38,7 +40,8 @@ class RouteController extends Controller
         $route = Route::with(['Carts' => function ($query) {
             $query->orderBy('priority', 'asc');
         }])->find($id);
-        return view('routes.details', compact('route', 'payment_methods', 'cash'));
+        $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
+        return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched'));
     }
 
     /**
@@ -106,7 +109,6 @@ class RouteController extends Controller
         }])
         ->get();
 
-        //dd($route);
         return $route;
     }
 
@@ -120,6 +122,9 @@ class RouteController extends Controller
     {
         $route = Route::find($id);
         $clients = Client::all();
+        foreach ($clients as $client) {
+            $client->priority = $route->Carts()->where('client_id', $client->id)->value('priority') ?? null;
+        }
         $products = Product::all();
         return view('routes.cart', compact('route', 'clients', 'products'));
     }
@@ -131,7 +136,7 @@ class RouteController extends Controller
     {
         try {
             DB::beginTransaction();
-            $static_route = Route::find($request->input('id'))->with('Carts')->first();
+            $static_route = Route::where('id', $request->input('id'))->with('Carts')->first();
             $static_carts = $static_route->Carts;
 
             $newCarts = [];
@@ -223,6 +228,118 @@ class RouteController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Route edition failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    // For admin. Deletes and creates all static carts.
+    public function updateClients(Request $request)
+    {
+        try {
+            $route = Route::find($request->input('route_id'));
+            $clientsJson = json_decode($request->input('clients_array'));
+
+            DB::beginTransaction();
+
+            foreach ($clientsJson as $client) {
+                if ($client->priority !== 0) {
+                    $carts[] = [
+                        'route_id' => $route->id,
+                        'client_id' => $client->id,
+                        'priority' => $client->priority,
+                        'state' => null,
+                        'is_static' => true,
+                    ];
+                }
+            }
+
+            Cart::where('route_id', $route->id)->delete(); // Eliminar todos los carrtios del reparto
+            DB::table('carts')->insert($carts); // Insertar los nuevos carritos al reparto
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Clientes actualizados correctamente',
+                'data' => $route
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Clients update failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    // For employee. Adds a new cart.
+    public function addClients(Request $request)
+    {
+        try {
+            $route = Route::find($request->input('route_id'));
+            $clientsJson = json_decode($request->input('clients_array'));
+
+            foreach ($clientsJson as $client) {
+                if ($client->priority !== 0) {
+                    $carts[] = [
+                        'route_id' => $route->id,
+                        'client_id' => $client->id,
+                        'priority' => $client->priority,
+                        'state' => 0,
+                        'is_static' => false,
+                    ];
+                }
+            }
+
+            DB::beginTransaction();
+            DB::table('carts')->insert($carts); // Insertar los nuevos carritos al reparto
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Clientes agregados correctamente',
+                'data' => $route
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Clients update failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function updateDispatched(ProductDispatchedUpdateRequest $request)
+    {
+        try {
+            $products_quantity = json_decode($request->input('products_quantity'), true);
+            $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
+            $route_id = $request->input('route_id');
+            $products_dispatched = ProductDispatched::whereIn('product_id', $productIds)->where('route_id', $route_id)->get();
+
+            DB::beginTransaction();
+
+            $productUpdates = [];
+            foreach ($products_dispatched as $product) {
+                $productUpdates[] = [
+                    'id' => $product->id,
+                    'product_id' => $product->product_id,
+                    'route_id' => $route_id,
+                    'quantity' => collect($products_quantity)->where('product_id', $product->product_id)->first()['quantity'],
+                    'updated_at' => now(),
+                ];
+            }
+            DB::table('products_dispatched')->upsert($productUpdates, 'id', ['quantity', 'updated_at']);
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Products Dispatched actualizados correctamente',
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Products Dispatched update failed: ' . $e->getMessage(),
             ], 400);
         }
     }

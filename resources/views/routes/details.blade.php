@@ -103,7 +103,54 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button type="button" id="btnPayCart" class="btn btn-danger waves-effect waves-light">Pagar</button>
+                        <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Pagar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End Modal -->
+
+    <!-- Modal route products -->
+    <div id="modalProducts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+        style="display: none;">
+        <div class="modal-dialog">
+            <form role="form" class="needs-validation" method="POST" action="{{ url('/route/updateDispatched') }}" id="formRouteProducts" autocomplete="off" novalidate>
+                @csrf
+                <input type="hidden" name="products_quantity" value="">
+                <input type="hidden" name="route_id" value="{{ $route->id }}">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Productos cargados en el camión</h4>
+                        <button id="btnCloseModalProducts" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-responsive">
+                                    <table class="table" id="modalProductsTable">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-4">Cantidad</th>
+                                                <th>Producto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($productsDispatched as $product)
+                                                <tr data-id="{{ $product->product_id }}">
+                                                    <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
+                                                    <td>{{ $product->Product->name }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                        <button type="button" id="btnUpdateProducts" class="btn btn-success waves-effect waves-light">Actualizar</button>
                     </div>
                 </div>
             </form>
@@ -124,6 +171,15 @@
                     <li class="breadcrumb-item active">Detalles</li>
                 </ol>
             </div>
+            @if (auth()->user()->rol_id == '1' && $route->is_static === false)
+                <div class="col-md-7 col-4 align-self-center">
+                    <div class="d-flex m-t-10 justify-content-end">
+                        <div class="d-flex m-r-20 m-l-10">
+                            <button id="btnAddProducts" class="btn btn-info" data-toggle="modal" data-target="#modalProducts">Productos cargados</button>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
         <!-- ============================================================== -->
         <!-- End Bread crumb and right sidebar toggle -->
@@ -137,7 +193,7 @@
                     <div class="card-header d-flex flex-row justify-content-between">
                         <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
                         @if (auth()->user()->rol_id == '1')
-                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar ruta</button>
+                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar ruta</button>
                         @endif
                     </div>
                     <div class="card-body">
@@ -156,8 +212,6 @@
                                         <div class="timeline-badge" style="background-color: #30d577"><i class="bi bi-truck"></i></div>
                                     @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
                                         <div class="timeline-badge" style="background-color: #ffc107"><i class="bi bi-truck"></i></div>
-                                    @elseif ($cart->state === 0)
-                                        <div class="timeline-badge" style="background-color: #fc4b6c"><i class="bi bi-truck"></i></div>
                                     @else
                                         <div class="timeline-badge" style="background-color: #6c757d"><i class="bi bi-truck"></i></div>
                                     @endif
@@ -168,10 +222,11 @@
                                             @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
                                                 <h4 class="timeline-title" style="color: #ffc107">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
                                             @elseif ($cart->state === 0)
-                                                <h4 class="timeline-title" style="color: #fc4b6c">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                                <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
                                             @else
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
+                                            <p class="m-0"><small class="text-muted">Deuda: ${{ $cart->Client->debt }}</small></p>
                                             <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
                                         </div>
                                         <div class="timeline-body">
@@ -221,7 +276,7 @@
                                                     {{-- 2 = employee --}}
                                                     @if (auth()->user()->rol_id == '2')
                                                         <div class="btn-group">
-                                                            <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
+                                                            <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                             <div class="dropdown-menu">
                                                                 <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
                                                                 <div class="dropdown-divider"></div>
@@ -239,7 +294,7 @@
                                                             <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
                                                                 @csrf
                                                                 <input type="hidden" name="id" value="{{ $cart->id }}">
-                                                                <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-primary btn-rounded px-3">Eliminar</button>
+                                                                <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar</button>
                                                             </form>
                                                         </div>
                                                     @endif
@@ -279,7 +334,7 @@
                             @endforeach
                         </ul>
                         <div class="d-flex flex-row justify-content-end">
-                            <a class="btn btn-danger btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
+                            <a class="btn btn-info btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
                         </div>
                     </div>
                 </div>
@@ -303,6 +358,78 @@
             </div>
         </div>
     </div>
+
+    {{-- Productos en el camión de un repartidor --}}
+    <script>
+        $("#modalProducts input[type='number']").on("input", function() {
+            if ($(this).val() < 0) {
+                $(this).val(0);
+            } else if ($(this).val() > 10000){
+                $(this).val(10000);
+            }
+        });
+
+        $("#btnUpdateProducts").on("click", function() {
+            // Productos
+            let products = [];
+            $('#modalProducts table tbody tr').each(function() {
+                let productId = $(this).data('id');
+                let quantity = $(this).find('input').val();
+                if (quantity !== "") {
+                    products.push({
+                        product_id: productId,
+                        quantity: quantity
+                    });
+                }
+            });
+            $("#formRouteProducts input[name='products_quantity']").val(JSON.stringify(products));
+            
+            function updateProducts() {
+                $.ajax({
+                    url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
+                    method: $("#formRouteProducts").attr('method'), // Utiliza el método del formulario
+                    data: $("#formRouteProducts").serialize(), // Utiliza los datos del formulario
+                    success: function(response) {
+                        $("#btnCloseModalProducts").click();
+                        Swal.fire({
+                            title: response.message,
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonColor: '#1e88e5',
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false,
+                        })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        })
+                    },
+                    error: function(errorThrown) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: errorThrown.responseJSON.message,
+                            confirmButtonColor: '#1e88e5',
+                        });
+                    }
+                });
+            }
+
+            if (products.length <= 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ALERTA',
+                    text: 'Debes ingresar al menos un producto',
+                    showCancelButton: false,
+                    confirmButtonColor: '#1e88e5',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,
+                })
+            } else {
+                updateProducts();
+            }
+        });
+    </script>
     
     {{-- Pagar un carrito --}}
     <script>
@@ -339,7 +466,7 @@
             }
             $("#form-confirm input[name='payment_methods']").val(JSON.stringify(payment_methods));
 
-            if (products.length > 0 && payment_methods.length > 0) {
+            function payCart() {
                 $.ajax({
                     url: $("#form-confirm").attr('action'), // Utiliza la ruta del formulario
                     method: $("#form-confirm").attr('method'), // Utiliza el método del formulario
@@ -350,7 +477,7 @@
                                 title: response.message,
                                 icon: 'success',
                                 showCancelButton: false,
-                                confirmButtonColor: '#3085d6',
+                                confirmButtonColor: '#1e88e5',
                                 confirmButtonText: 'OK',
                                 allowOutsideClick: false,
                             })
@@ -364,14 +491,41 @@
                         Swal.fire({
                             icon: 'error',
                             title: errorThrown.responseJSON.message,
+                            confirmButtonColor: '#1e88e5',
                         });
                     }
                 });
+            }
+
+            if (products.length > 0 && payment_methods.length >= 0) {
+                if (payment_methods.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'ALERTA',
+                        text: '¿Seguro que quieres cargar todo en la cuenta corriente del cliente?',
+                        showCancelButton: true,
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
+                            cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                        }
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            payCart();
+                        }
+                    })
+                } else {
+                    payCart();
+                }
             } else {
                 Swal.fire({
                     icon: 'warning',
                     title: "ERROR",
-                    text: "Debes ingresar al menos un producto y un método de pago",
+                    text: "Debes ingresar al menos un producto",
+                    confirmButtonColor: '#1e88e5',
                 });
             }
         });
@@ -418,7 +572,7 @@
             })
         });
 
-        $("#cash_input_container input").on("input", function() {
+        $("input[type='number']").on("input", function() {
             if ($(this).val() <= 0 || !esNumero($(this).val())) {
                 $(this).val("");
             }
@@ -445,9 +599,6 @@
             // Calcular el total dentro del modal
 
             $(".quantity-input").on("input", function() {
-                if ($(this).val() <= 0 || !esNumero($(this).val())) {
-                    $(this).val("");
-                }
                 let total = 0;
                 $("#modalTable tbody tr").each(function() {
                     let precioUnit = $(this).find(".precioProducto").text().replace('$', '');
@@ -489,6 +640,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
@@ -496,14 +648,17 @@
 
         $("#btnDeleteRoute").on("click", function() {
             Swal.fire({
-                title: 'Seguro deseas eliminar este reparto?',
+                title: '¿Seguro deseas eliminar este reparto?',
                 text: "Esta acción no se puede revertir",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Eliminar'
-                })
+                confirmButtonText: 'Eliminar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
+            })
             .then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -517,6 +672,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: errorThrown.responseJSON.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         }
                     });
@@ -528,14 +684,17 @@
         $("button[name='btnDeleteCart']").on("click", function() {
             let id = $(this).val();
             Swal.fire({
-                title: 'Seguro deseas eliminar este pedido?',
+                title: '¿Seguro deseas eliminar este pedido?',
                 text: "Esta acción no se puede revertir",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Eliminar'
-                })
+                confirmButtonText: 'Eliminar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
+            })
             .then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -543,12 +702,17 @@
                         method: $("#formDeleteCart_" + id).attr('method'), // Utiliza el método del formulario
                         data: $("#formDeleteCart_" + id).serialize(), // Utiliza los datos del formulario
                         success: function(response) {
-                            console.log(response);
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                confirmButtonColor: '#1e88e5',
+                            });
                         },
                         error: function(errorThrown) {
                             Swal.fire({
                                 icon: 'error',
                                 title: errorThrown.responseJSON.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         }
                     });
@@ -567,10 +731,13 @@
                 title: "¿Está seguro que el cliente " + action + "?",
                 icon: 'question',
                 showCancelButton: true,
-                cancelButtonColor: '#d33',
                 cancelButtonText: "Cancelar",
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Confirmar'
+                confirmButtonText: 'Confirmar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
             })
             // Si confirma la acción, envía el formulario
             .then((result) => {
@@ -584,7 +751,7 @@
                                 title: response.message,
                                 icon: 'success',
                                 showCancelButton: false,
-                                confirmButtonColor: '#3085d6',
+                                confirmButtonColor: '#1e88e5',
                                 confirmButtonText: 'OK',
                                 allowOutsideClick: false,
                             })
@@ -598,6 +765,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: errorThrown.responseJSON.message,
+                                confirmButtonColor: '#1e88e5',
                             });
                         }
                     });
