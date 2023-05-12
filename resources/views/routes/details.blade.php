@@ -115,7 +115,7 @@
     <div id="modalProducts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
         style="display: none;">
         <div class="modal-dialog">
-            <form role="form" class="needs-validation" method="POST" action="{{ url('') }}" id="formRouteProducts" autocomplete="off" novalidate>
+            <form role="form" class="needs-validation" method="POST" action="{{ url('/route/updateDispatched') }}" id="formRouteProducts" autocomplete="off" novalidate>
                 @csrf
                 <input type="hidden" name="products_quantity" value="">
                 <input type="hidden" name="route_id" value="{{ $route->id }}">
@@ -136,10 +136,10 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($products as $product)
-                                                <tr data-id="{{ $product->id }}">
-                                                    <td><input type="number" class="form-control" min="0" max="10000"></td>
-                                                    <td>{{ $product->name }}</td>
+                                            @foreach ($productsDispatched as $product)
+                                                <tr data-id="{{ $product->product_id }}">
+                                                    <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
+                                                    <td>{{ $product->Product->name }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -171,11 +171,11 @@
                     <li class="breadcrumb-item active">Detalles</li>
                 </ol>
             </div>
-            @if (auth()->user()->rol_id == '1')
+            @if (auth()->user()->rol_id == '1' && $route->is_static === false)
                 <div class="col-md-7 col-4 align-self-center">
                     <div class="d-flex m-t-10 justify-content-end">
                         <div class="d-flex m-r-20 m-l-10">
-                            <button id="btnAddProducts" class="btn btn-info" data-toggle="modal" data-target="#modalProducts">Agregar productos</button>
+                            <button id="btnAddProducts" class="btn btn-info" data-toggle="modal" data-target="#modalProducts">Productos cargados</button>
                         </div>
                     </div>
                 </div>
@@ -384,7 +384,7 @@
             });
             $("#formRouteProducts input[name='products_quantity']").val(JSON.stringify(products));
             
-            function payCart() {
+            function updateProducts() {
                 $.ajax({
                     url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
                     method: $("#formRouteProducts").attr('method'), // Utiliza el método del formulario
@@ -425,6 +425,8 @@
                     confirmButtonText: 'OK',
                     allowOutsideClick: false,
                 })
+            } else {
+                updateProducts();
             }
         });
     </script>

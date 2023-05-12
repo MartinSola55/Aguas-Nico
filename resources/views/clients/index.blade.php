@@ -172,6 +172,9 @@
             if (client.invoice) {
                 invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
             }
+            if (client.observation == null) {
+                client.observation = "";
+            }
             let content = `
             <tr>
                 <td>
@@ -187,7 +190,7 @@
                 <td>$` + client.debt + `</td>
                 <td>` + client.observation + `</td>
             </tr>`;
-            $("#table_body").append(content);
+            $('#clientsTable').DataTable().row.add($(content)).draw();
         }
 
         //For validation with custom styles
