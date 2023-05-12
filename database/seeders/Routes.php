@@ -18,50 +18,11 @@ class Routes extends Seeder
             'day_of_week' => 1,
             'is_static' => true,
         ]);
-        Route::create([
-            'user_id' => 2,
-            'day_of_week' => 2,
-            'is_static' => true,
-        ]);
-        Route::create([
-            'user_id' => 2,
-            'day_of_week' => 3,
-            'is_static' => true,
-        ]);
-        Route::create([
-            'user_id' => 2,
-            'day_of_week' => 4,
-            'is_static' => true,
-        ]);
-        Route::create([
-            'user_id' => 2,
-            'day_of_week' => 5,
-            'is_static' => true,
-        ]);
+        
         // User 3
         Route::create([
             'user_id' => 3,
             'day_of_week' => 1,
-            'is_static' => true,
-        ]);
-        Route::create([
-            'user_id' => 3,
-            'day_of_week' => 2,
-            'is_static' => true,
-        ]);
-        Route::create([
-            'user_id' => 3,
-            'day_of_week' => 3,
-            'is_static' => true,
-        ]);
-        Route::create([
-            'user_id' => 3,
-            'day_of_week' => 4,
-            'is_static' => true,
-        ]);
-        Route::create([
-            'user_id' => 3,
-            'day_of_week' => 5,
             'is_static' => true,
         ]);
 

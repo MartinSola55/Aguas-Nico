@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Expense\ExpenseRequest;
 use App\Models\Expense;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -12,40 +13,10 @@ class ExpenseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        try {
-            $expenses = Expense::whereBetween('updated_at', [$request->input('dateFrom'), $request->input('dateTo')])->get();
-
-            return response()->json([
-                'success' => true,
-                'data' => $expenses
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search expenses failed: ' . $e->getMessage(),
-            ], 400);
-        }
-    }
-
-    public function employeeExpenses()
-    {
-        try {
-            $expenses = Expense::where('user_id', auth()->User()->id)
-                ->whereDate('updated_at', Carbon::today())
-                ->get();
-
-            return response()->json([
-                'success' => true,
-                'data' => $expenses
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search expenses failed: ' . $e->getMessage(),
-            ], 400);
-        }
+        $users = User::select('name', 'id')->where('rol_id', '!=', '1')->orderBy('name', 'asc')->get();
+        return view('expenses.index', compact('users'));
     }
 
     /**
@@ -125,8 +96,56 @@ class ExpenseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(Request $request)
     {
-        //
+        try {
+            $expense = Expense::find($request->input('id'));
+            $expense->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Expense deleted successfully.',
+                'data' => $expense
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Expense deletion failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function searchExpenses(Request $request)
+    {
+        try {
+            $dateFrom = Carbon::createFromFormat('Y-m-d', $request->input('dateFrom'))->startOfDay();
+            $dateTo = Carbon::createFromFormat('Y-m-d', $request->input('dateTo'))->endOfDay();
+            $user = auth()->user();
+            if ($user->rol_id == '1') {
+                $expenses = Expense::whereBetween('created_at', [$dateFrom, $dateTo])->orderBy('created_at', 'desc')->get();
+            } else {
+                $expenses = Expense::whereBetween('created_at', [$dateFrom, $dateTo])->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+            }
+            $response = [];
+            $i = 0;
+            foreach ($expenses as $expense) {
+                $response[$i]['id'] = $expense->id;
+                $response[$i]['description'] = $expense->description;
+                $response[$i]['spent'] = $expense->spent;
+                $response[$i]['user'] = $expense->User->name;
+                $response[$i]['date'] = $expense->created_at->format('d/m/Y');
+                $i++;
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $response
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search sales failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 }

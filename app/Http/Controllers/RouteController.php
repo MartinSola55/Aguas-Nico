@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Route\ProductDispatchedUpdateRequest;
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Cart;
@@ -9,6 +10,7 @@ use App\Models\Client;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductCart;
+use App\Models\ProductDispatched;
 use App\Models\ProductsClient;
 use App\Models\Route;
 use App\Models\User;
@@ -38,7 +40,9 @@ class RouteController extends Controller
         $route = Route::with(['Carts' => function ($query) {
             $query->orderBy('priority', 'asc');
         }])->find($id);
-        return view('routes.details', compact('route', 'payment_methods', 'cash'));
+        $products = Product::all();
+        $productsDispatched = ProductDispatched::where('route_id', $id)->get();
+        return view('routes.details', compact('route', 'payment_methods', 'cash', 'products', 'productsDispatched'));
     }
 
     /**
@@ -121,7 +125,7 @@ class RouteController extends Controller
         $clients = Client::all();
         foreach ($clients as $client) {
             $client->priority = $route->Carts()->where('client_id', $client->id)->value('priority') ?? null;
-        }        
+        }
         $products = Product::all();
         return view('routes.cart', compact('route', 'clients', 'products'));
     }
@@ -237,7 +241,7 @@ class RouteController extends Controller
             $clientsJson = json_decode($request->input('clients_array'));
 
             DB::beginTransaction();
-            
+
             foreach ($clientsJson as $client) {
                 if ($client->priority !== 0) {
                     $carts[] = [
@@ -249,7 +253,7 @@ class RouteController extends Controller
                     ];
                 }
             }
-            
+
             Cart::where('route_id', $route->id)->delete(); // Eliminar todos los carrtios del reparto
             DB::table('carts')->insert($carts); // Insertar los nuevos carritos al reparto
             DB::commit();
@@ -260,7 +264,7 @@ class RouteController extends Controller
                 'data' => $route
             ], 201);
         } catch (\Exception $e) {
-            DB::rollBack(); 
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Clients update failed: ' . $e->getMessage(),
@@ -297,10 +301,32 @@ class RouteController extends Controller
                 'data' => $route
             ], 201);
         } catch (\Exception $e) {
-            DB::rollBack(); 
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Clients update failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function updateDispatched(ProductDispatchedUpdateRequest $request)
+    {
+        try {
+            foreach ($request->products as $product) {
+                DB::table('products_dispatched')
+                    ->where('product_id', $product->product_id)
+                    ->where('route_id', $request->route_id)
+                    ->update(['quantity' => $product->quantity]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Products Dispatched actualizados correctamente',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Products Dispatched update failed: ' . $e->getMessage(),
             ], 400);
         }
     }

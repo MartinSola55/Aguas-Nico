@@ -96,7 +96,7 @@
                                     </tbody>
                                 </table>
                                 <div class="d-flex flex-row justify-content-end mt-4">
-                                    <button onclick="createClientsArray()" type="button" class="btn btn-danger">Guardar</button>
+                                    <button onclick="createClientsArray()" type="button" class="btn btn-success">Guardar</button>
                                 </div>
                             </div>
                         </form>
@@ -156,6 +156,10 @@
         });
     </script>
 
+    <script>
+        window.userRol = "{{ auth()->user()->rol_id }}";
+    </script>
+
     {{-- Send form --}}
     <script>
         function createClientsArray() {
@@ -170,6 +174,14 @@
                     clients.push(client); // agregar el cliente al arreglo de clientes
                 }
             });
+            if (clients.length == 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se ha seleccionado ningún cliente',
+                    confirmButtonColor: '#1e88e5',
+                });
+                return;
+            }
             // agregar el arreglo de productos como un campo del formulario
             $("#clients_array").val(JSON.stringify(clients));
             sendForm();
@@ -183,14 +195,24 @@
                 data: $("#form-confirm").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     Swal.fire({
-                        icon: 'success',
                         title: response.message,
-                    });
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#1e88e5',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: window.userRol == '1' ? true : false,
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed && window.userRol != '1') {
+                            window.location.href = "{{ route('route.details', ['id' => $route->id] ) }}";
+                        }
+                    })
                 },
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
@@ -200,13 +222,6 @@
     <style>
         #clientsTable tbody tr:hover {
             background-color: #dee2e6;
-        }
-
-        #clientsTable_paginate > ul > li.paginate_button.page-item.active > a,
-        #clientsTable_paginate > ul > li.paginate_button.page-item.active > a:hover
-        {
-            background-color: #fc4b6c;
-            border-color: #ff0030;
         }
     </style>
 

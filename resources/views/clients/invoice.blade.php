@@ -25,6 +25,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
                     <li class="breadcrumb-item"><a href="{{ url('/client/index') }}">Clientes</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('client.details', ['id' => $client->id]) }}">Detalles</a></li>
                     <li class="breadcrumb-item active">Facturación</li>
                 </ol>
             </div>
@@ -60,7 +61,7 @@
                                 </div>
                             </div>
                             <div id="buttonDatesContainer" class="col-lg-12 d-flex flex-direction-row justify-content-end" style="display: none !important">
-                                <button id="btnSearchSale" type="button" class="btn btn-danger">Buscar ventas</button>
+                                <button id="btnSearchSale" type="button" class="btn btn-info">Buscar ventas</button>
                             </div>
                         </form>
                     </div>
@@ -105,7 +106,7 @@
                                 </div>
                             </div>
                             <div class="col-lg-12 d-flex flex-direction-row justify-content-end">
-                                <button id="buttonInvoiceData" type="button" class="btn btn-danger">Confirmar</button>
+                                <button id="buttonInvoiceData" type="button" class="btn btn-info">Confirmar</button>
                             </div>
                         </form>
                     </div>
@@ -156,7 +157,6 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <hr>
                             <div class="table-responsive m-t-40" style="clear: both;">
                                 <table id="invoiceProducts" class="table table-hover">
                                     <thead>
@@ -299,6 +299,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });

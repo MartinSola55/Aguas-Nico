@@ -106,7 +106,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-danger waves-effect waves-light">Agregar</button>
+                            <button type="submit" class="btn btn-success waves-effect waves-light">Agregar</button>
                         </div>
                     </div>
                 </form>
@@ -120,9 +120,9 @@
                     <div class="card-body">
                         <div class="d-flex flex-row justify-content-between">
                             <h2 class="card-title">Listado de clientes</h4>
-                            <button id="btnAddClient" type="button" class="btn btn-danger btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar nuevo cliente</button>
+                            <button id="btnAddClient" type="button" class="btn btn-info btn-rounded waves-effect waves-light m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar nuevo cliente</button>
                         </div>
-                        <div class="table-responsive m-t-40">
+                        <div class="table-responsive m-t-10">
                             <table id="clientsTable" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
@@ -220,18 +220,18 @@
                 data: $("#form-create").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     $("#btnCloseModal").click();
-                    Swal.fire(
-                        'OK',
-                        'Acción correcta',
-                        'success'
-                    );
-                    console.log(response.data);
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
                     fillTable(response.data);
                 },
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
                     });
                 }
             });
@@ -263,15 +263,5 @@
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <style>
-        #clientsTable_paginate > ul > li.paginate_button.page-item.active > a,
-        #clientsTable_paginate > ul > li.paginate_button.page-item.active > a:hover
-        {
-            background-color: #fc4b6c;
-            border-color: #ff0030;
-        }
-    </style>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
 @endsection
