@@ -22,10 +22,10 @@ class ProductDispatchedUpdateRequest extends BaseFormRequest
     public function rules(): array
     {
         $this->validate([
-            'products' => 'required|array',
-            'products.*.product_id' => 'required|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
-            'route_id' => 'required|exists:routes,id',
+            'route_id' => ['required', 'exists:routes,id'],
+            'products_quantity' => ['required'],
+            'products_quantity.*.product_id' => ['required', 'exists:products,id'],
+            'products_quantity.*.quantity' => ['required', 'integer', 'min:1'],
         ]);
 
         return [

@@ -56,7 +56,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
     //ProductDispatchedController
-    Route::post('/route/dispatched', [App\Http\Controllers\RouteController::class, 'updateDispatched']);
+    Route::post('/route/updateDispatched', [App\Http\Controllers\RouteController::class, 'updateDispatched']);
     //Agregar/actualizar clientes en reparto
     Route::post('/route/updateClients', [App\Http\Controllers\RouteController::class, 'updateClients']);
 

@@ -58,19 +58,5 @@ class Carts extends Seeder
             'state' => 0,
             'is_static' => false,
         ]);
-        Cart::create([
-            'route_id' => 16,
-            'client_id' => 1,
-            'priority' => 1,
-            'state' => 0,
-            'is_static' => false,
-        ]);
-        Cart::create([
-            'route_id' => 16,
-            'client_id' => 2,
-            'priority' => 2,
-            'state' => 0,
-            'is_static' => false,
-        ]);
     }
 }

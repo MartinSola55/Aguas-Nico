@@ -40,9 +40,8 @@ class RouteController extends Controller
         $route = Route::with(['Carts' => function ($query) {
             $query->orderBy('priority', 'asc');
         }])->find($id);
-        $products = Product::all();
-        $productsDispatched = ProductDispatched::where('route_id', $id)->get();
-        return view('routes.details', compact('route', 'payment_methods', 'cash', 'products', 'productsDispatched'));
+        $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
+        return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched'));
     }
 
     /**
@@ -312,18 +311,32 @@ class RouteController extends Controller
     public function updateDispatched(ProductDispatchedUpdateRequest $request)
     {
         try {
-            foreach ($request->products as $product) {
-                DB::table('products_dispatched')
-                    ->where('product_id', $product->product_id)
-                    ->where('route_id', $request->route_id)
-                    ->update(['quantity' => $product->quantity]);
-            }
+            $products_quantity = json_decode($request->input('products_quantity'), true);
+            $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
+            $route_id = $request->input('route_id');
+            $products_dispatched = ProductDispatched::whereIn('product_id', $productIds)->where('route_id', $route_id)->get();
 
+            DB::beginTransaction();
+
+            $productUpdates = [];
+            foreach ($products_dispatched as $product) {
+                $productUpdates[] = [
+                    'id' => $product->id,
+                    'product_id' => $product->product_id,
+                    'route_id' => $route_id,
+                    'quantity' => collect($products_quantity)->where('product_id', $product->product_id)->first()['quantity'],
+                    'updated_at' => now(),
+                ];
+            }
+            DB::table('products_dispatched')->upsert($productUpdates, 'id', ['quantity', 'updated_at']);
+
+            DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Products Dispatched actualizados correctamente',
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Products Dispatched update failed: ' . $e->getMessage(),

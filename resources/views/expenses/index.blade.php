@@ -188,6 +188,11 @@
         $("#dateTo").on("change", function() {
             searchExpenses()
         });
+        $("#dateFrom").on("change", function() {
+            if ($("#dateTo").val() != "") {
+                searchExpenses();
+            }
+        });
     </script>
 
     {{-- Buscar ventas para la facturación --}}

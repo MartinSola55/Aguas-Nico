@@ -16,7 +16,7 @@ class RouteObserver
         $products = Product::pluck('id');
         foreach ($products as $product) {
             ProductDispatched::create([
-                'product_id' => $product->id,
+                'product_id' => $product,
                 'route_id' => $route->id
             ]);
         }
