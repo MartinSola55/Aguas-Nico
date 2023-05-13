@@ -135,7 +135,9 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Search sales failed: ' . $e->getMessage(),
+                'title' => 'Error al buscar las ventas',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }

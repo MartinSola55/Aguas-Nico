@@ -54,13 +54,15 @@ class ClientController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Client created successfully.',
+                'message' => 'Cliente creado correctamente',
                 'data' => $client
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Client creation failed: ' . $e->getMessage(),
+                'title' => 'Error al crear el cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -124,7 +126,9 @@ class ClientController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Search sales failed: ' . $e->getMessage(),
+                'title' => 'Error al buscar las ventas',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -163,13 +167,15 @@ class ClientController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Client edited successfully.',
+                'message' => 'Cliente editado correctamente',
                 'data' => $client
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Client edition failed: ' . $e->getMessage(),
+                'title' => 'Error al editar el cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -217,13 +223,15 @@ class ClientController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Products edited successfully.',
+                'message' => 'Productos actualizados correctamente',
             ], 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Products edition failed: ' . $e->getMessage(),
+                'title' => 'Error al actualizar los productos',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }

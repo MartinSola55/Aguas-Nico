@@ -130,7 +130,7 @@ class RouteController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Reparto dinámico.
      */
     public function create(Request $request)
     {
@@ -161,20 +161,22 @@ class RouteController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Route created successfully.',
+                'message' => 'Reparto creado correctamente',
                 'data' => route('route.details', ['id' => $newRoute->id])
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Route creation failed: ' . $e->getMessage(),
+                'title' => 'Error al crear el reparto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Reparto estático
      */
     public function store(RouteCreateRequest $request)
     {
@@ -221,13 +223,15 @@ class RouteController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Route edited successfully.',
+                'message' => 'Repato actualizado correctamente',
                 'data' => $route
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Route edition failed: ' . $e->getMessage(),
+                'title' => 'Error al actualizar el reparto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -266,7 +270,9 @@ class RouteController extends Controller
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Clients update failed: ' . $e->getMessage(),
+                'title' => 'Error al actualizar los clientes',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -303,7 +309,9 @@ class RouteController extends Controller
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Clients update failed: ' . $e->getMessage(),
+                'title' => 'Error al agregar los clientes',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -333,13 +341,15 @@ class RouteController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Products Dispatched actualizados correctamente',
+                'message' => 'Productos despachados actualizados correctamente',
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Products Dispatched update failed: ' . $e->getMessage(),
+                'title' => 'Error al actualizar los productos despachados',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
