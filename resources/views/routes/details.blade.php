@@ -58,7 +58,7 @@
                                             <div class="col-6 d-flex flex-row align-items-center">    
                                                 <div class="switch">
                                                     <label>
-                                                        <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-red"></span>
+                                                        <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
                                                     </label>
                                                 </div>
                                                 <div class="demo-switch-title">{{ $cash->method }}</div>
@@ -74,13 +74,13 @@
                                             <div class="col-6 d-flex flex-row align-items-center">    
                                                 <div class="switch">
                                                     <label>
-                                                        <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-red"></span>
+                                                        <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-teal"></span>
                                                     </label>
                                                 </div>
                                                 <div class="demo-switch-title">Otro</div>
                                             </div>
                                             <div id="methods_input_container" class="input-group" style="display: none">
-                                                <select name="method" id="payment_method" class="form-control" disabled>
+                                                <select name="method" id="payment_method" class="form-control mr-1" disabled>
                                                     <option value="" disabled selected>Seleccionar</option>
                                                     @foreach ($payment_methods as $pm)
                                                         <option value="{{ $pm->id }}">{{ $pm->method }}</option>      

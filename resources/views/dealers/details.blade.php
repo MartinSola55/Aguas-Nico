@@ -7,7 +7,7 @@
     <!--Morris JavaScript -->
     <script src="{{ asset('plugins/raphael/raphael-min.js') }}"></script>
     <script src="{{ asset('plugins/morrisjs/morris.js') }}"></script>
-    <script src="{{ asset('js/morris-data.js') }}"></script>
+    {{-- <script src="{{ asset('js/morris-data.js') }}"></script> --}}
 
 
     <div class="container-fluid">
@@ -44,11 +44,11 @@
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
                         <div class="text-right"> <span class="text-muted">Completados</span>
-                            <h1 class="font-light"><sup></sup>784</h1>
+                            <h1 class="font-light"><sup></sup>{{ $repartos['completados'] }}</h1>
                         </div>
-                        <span class="text-dark">95%</span>
+                        <span class="text-dark">{{ round($repartos['completados'] * 100 / ($repartos['totales'] !== 0 ? $repartos['totales'] : 1)) }}%</span>
                         <div class="progress">
-                            <div class="progress-bar bg-success wow animated progress-animated" role="progressbar" style="width: 95%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-success wow animated progress-animated" role="progressbar" style="width: {{ $repartos['completados'] * 100 / ($repartos['totales'] !== 0 ? $repartos['totales'] : 1) }}%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
                 </div>
@@ -57,12 +57,12 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
-                        <div class="text-right"> <span class="text-muted">Cancelados</span>
-                            <h1 class="font-light"><sup></sup>38</h1>
+                        <div class="text-right"> <span class="text-muted">Cancelados / pendientes</span>
+                            <h1 class="font-light"><sup></sup>{{ $repartos['pendientes'] }}</h1>
                         </div>
-                        <span class="text-dark">5%</span>
+                        <span class="text-dark">{{ round($repartos['pendientes'] * 100 / ($repartos['totales'] !== 0 ? $repartos['totales'] : 1)) }}%</span>
                         <div class="progress">
-                            <div class="progress-bar bg-danger wow animated progress-animated" role="progressbar" style="width: 5%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-danger wow animated progress-animated" role="progressbar" style="width: {{ $repartos['pendientes'] * 100 / ($repartos['totales'] !== 0 ? $repartos['totales'] : 1) }}%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
                 </div>
@@ -71,12 +71,12 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Producto más vendido</h4>
-                        <div class="text-right"> <span class="text-muted">Bidón de agua 15L</span>
-                            <h1 class="font-light"><sup></sup>3597</h1>
+                        <div class="text-right"> <span class="text-muted">{{ $stats['product'] }}</span>
+                            <h1 class="font-light"><sup></sup>{{ $stats['product_sales'] }}</h1>
                         </div>
-                        <span class="text-dark">68% respecto del total</span>
+                        <span class="text-dark">{{ round($stats['product_sales'] * 100 / ($stats['totalSold'] !== 0 ? $stats['totalSold'] : 1 )) }}% respecto del total</span>
                         <div class="progress">
-                            <div class="progress-bar bg-dark wow animated progress-animated" role="progressbar" style="width: 68%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-dark wow animated progress-animated" role="progressbar" style="width: {{ round($stats['product_sales'] * 100 / ($stats['totalSold'] !== 0 ? $stats['totalSold'] : 1 )) }}%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
                 </div>
@@ -108,6 +108,52 @@
                 </div>
             </div>
         </div>
-
     </div>
+
+    {{-- Ganancias anuales --}}
+    <script>
+        let anualSales = {!! json_encode($anualSales) !!};
+        let anualJson = JSON.parse(anualSales);
+        let anualData = anualJson.data;
+
+        Morris.Area({
+                element: 'morris-area-chart',
+                data: anualData,
+                xkey: 'period',
+                ykeys: ['sold'],
+                labels: ['$'],
+                pointSize: 3,
+                fillOpacity: 0,
+                pointStrokeColors:['#2f3d4a'],
+                behaveLikeLine: true,
+                gridLineColor: '#009efb',
+                lineWidth: 3,
+                hideHover: 'auto',
+                lineColors: ['#2f3d4a'],
+                resize: true,
+            });
+    </script>
+
+    {{-- Ganancias mensuales --}}
+    <script>
+        let monthlySales = {!! json_encode($monthlySales) !!};
+        let monthJson = JSON.parse(monthlySales);
+        let monthdata = monthJson.data;
+
+        Morris.Area({
+                element: 'extra-area-chart',
+                data: monthdata,
+                lineColors: ['#2f3d4a'],
+                xkey: 'period',
+                ykeys: ['sold'],
+                labels: ['$'],
+                pointSize: 0,
+                lineWidth: 0,
+                resize:true,
+                fillOpacity: 0.8,
+                behaveLikeLine: true,
+                gridLineColor: '#e0e0e0',
+                hideHover: 'auto'
+            });   
+    </script>
 @endsection
