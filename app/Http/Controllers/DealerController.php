@@ -53,14 +53,7 @@ class DealerController extends Controller
         $anualSales = $this->anualSales($id);
         $monthlySales = $this->monthlySales($id);
 
-        $user = Auth::user();
-        if ($user->rol_id == '1') {
-            $dealer = User::find($id);
-            return view('dealers.details', compact('dealer', 'repartos', 'stats', 'anualSales', 'monthlySales'));
-        } else {
-            $dealer = User::find(auth()->user()->id);
-            return view('dealers.details', compact('dealer'));
-        }
+        return view('dealers.details', compact('dealer', 'repartos', 'stats', 'anualSales', 'monthlySales'));
     }
 
     private function anualSales($id)
