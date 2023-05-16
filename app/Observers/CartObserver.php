@@ -28,6 +28,7 @@ class CartObserver
     public function deleted(Cart $cart): void
     {
         $cart->ProductsCart()->delete();
+        $cart->CartPaymentMethod()->delete();
     }
 
     /**
