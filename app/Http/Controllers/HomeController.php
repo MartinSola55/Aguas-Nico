@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Expense;
 use App\Models\ProductsCart;
 use App\Models\Route;
 use Carbon\Carbon;
@@ -43,7 +44,8 @@ class HomeController extends Controller
 
             // Calcular las ganancias totales del día
             $data = (object) [
-                'day_earnings' => 0,
+                'day_collected' => 0,
+                'day_expenses' => Expense::whereDate('created_at', today())->get()->sum('spent'),
                 'completed_routes' => 0,
                 'pending_routes' => 0,
                 'in_deposit_routes' => 0,
@@ -65,7 +67,7 @@ class HomeController extends Controller
                     }
 
                     foreach ($cart->CartPaymentMethod as $pm) {
-                        $data->day_earnings += $pm->amount;
+                        $data->day_collected += $pm->amount;
                     }
                 }
                 if ($route->Carts()->count() === 0) {

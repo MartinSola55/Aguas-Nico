@@ -234,6 +234,7 @@
                                 "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ gastos",
                                 "sInfoEmpty": "Mostrando 0 a 0 de 0 gastos",
                                 "sInfoFiltered": "(filtrado de _MAX_ gastos en total)",
+                                "emptyTable": 'No hay gastos que coincidan con la búsqueda',
                                 "sLengthMenu": "Mostrar _MENU_ gastos",
                                 "sSearch": "Buscar:",
                                 "oPaginate": {
