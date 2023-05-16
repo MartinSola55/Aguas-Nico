@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('priority');
             $table->integer('state')->nullable();
             $table->boolean('is_static')->default(0);
+            $table->softDeletes();
         });
     }
 

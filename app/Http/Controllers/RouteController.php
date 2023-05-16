@@ -347,8 +347,20 @@ class RouteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Route $route)
+    public function delete(Request $request)
     {
-        //
+        try {
+            Route::find($request->input('id'))->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Route deleted successfully.',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Route deletion failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 }

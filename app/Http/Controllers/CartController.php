@@ -206,8 +206,20 @@ class CartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Cart $cart)
+    public function delete(Request $request)
     {
-        //
+        try {
+            Cart::find($request->input('id'))->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cart deleted successfully.',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cart deletion failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 }
