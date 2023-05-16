@@ -36,7 +36,7 @@ class RouteObserver
      */
     public function deleted(Route $route): void
     {
-        //
+        $route->Carts()->delete();
     }
 
     /**
