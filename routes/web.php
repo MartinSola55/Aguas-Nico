@@ -63,8 +63,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // CART
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
-    Route::post('/cart/create', [App\Http\Controllers\CartController::class, 'store']);
-    Route::post('/cart/edit', [App\Http\Controllers\CartController::class, 'update']);
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
     Route::post('/cart/delete', [App\Http\Controllers\ExpenseController::class, 'delete']);
 

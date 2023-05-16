@@ -50,7 +50,7 @@
                                     <hr/>
                                     <div class="d-flex flex-row justify-content-between">
                                         <p id="totalAmount" class="mr-2 mb-0">Total pedido: $0</p>
-                                        <p id="modalClientDebt">Deuda: $</p>
+                                        <p id="modalClientDebt"></p>
                                     </div>
                                     <hr >
                                     <div class="d-flex flex-column">
@@ -58,7 +58,7 @@
                                             <div class="col-6 d-flex flex-row align-items-center">    
                                                 <div class="switch">
                                                     <label>
-                                                        <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-red"></span>
+                                                        <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
                                                     </label>
                                                 </div>
                                                 <div class="demo-switch-title">{{ $cash->method }}</div>
@@ -74,13 +74,13 @@
                                             <div class="col-6 d-flex flex-row align-items-center">    
                                                 <div class="switch">
                                                     <label>
-                                                        <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-red"></span>
+                                                        <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-teal"></span>
                                                     </label>
                                                 </div>
                                                 <div class="demo-switch-title">Otro</div>
                                             </div>
                                             <div id="methods_input_container" class="input-group" style="display: none">
-                                                <select name="method" id="payment_method" class="form-control" disabled>
+                                                <select name="method" id="payment_method" class="form-control mr-1" disabled>
                                                     <option value="" disabled selected>Seleccionar</option>
                                                     @foreach ($payment_methods as $pm)
                                                         <option value="{{ $pm->id }}">{{ $pm->method }}</option>      
@@ -193,7 +193,7 @@
                     <div class="card-header d-flex flex-row justify-content-between">
                         <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
                         @if (auth()->user()->rol_id == '1')
-                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar ruta</button>
+                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar reparto</button>
                         @endif
                     </div>
                     <div class="card-body">
@@ -226,7 +226,15 @@
                                             @else
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
-                                            <p class="m-0"><small class="text-muted">Deuda: ${{ $cart->Client->debt }}</small></p>
+
+                                            {{-- Deuda / saldo a favor --}}
+                                            @if ($cart->Client->debt > 0)
+                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt }}</small></p>
+                                            @elseif ($cart->Client->debt < 0)
+                                                <p class="m-0"><small style="color: #30d577">Saldo a favor: ${{ $cart->Client->debt * -1 }}</small></p>
+                                            @else
+                                                <p class="m-0"><small class="text-muted">Sin deuda</small></p>
+                                            @endif
                                             <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
                                         </div>
                                         <div class="timeline-body">
@@ -267,8 +275,8 @@
                                                 <p><b>Observaciones:</b> {{ $cart->Client->observation }}</p>
                                             @endif
 
-                                            @if ($cart->state === 0 || $cart->state === null)
-                                                @if ($cart->Client->observation !== "")
+                                            @if ($cart->state === 0)
+                                                @if ($cart->Client->observation !== null || $cart->Client->observation !== "")
                                                     <hr>
                                                 @endif
                                                 <div class="d-flex flex-row justify-content-end">
@@ -288,7 +296,7 @@
                                                     @endif
 
                                                     {{-- 1 = admin --}}
-                                                    @if (auth()->user()->rol_id == '1') 
+                                                    @if (auth()->user()->rol_id == '1' && $cart->is_static === false) 
                                                         <div>
                                                             {{-- Delete Cart --}}
                                                             <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
@@ -325,6 +333,18 @@
                                                                 return $pm->amount;
                                                             }) }}</p>
                                                         </div>
+                                                        <hr>
+                                                        {{-- 1 = admin --}}
+                                                        @if (auth()->user()->rol_id == '1') 
+                                                            <div class="d-flex flex-row justify-content-end">
+                                                                {{-- Delete Cart --}}
+                                                                <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
+                                                                    @csrf
+                                                                    <input type="hidden" name="id" value="{{ $cart->id }}">
+                                                                    <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar</button>
+                                                                </form>
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             @endif
@@ -614,7 +634,14 @@
         function openModal(cart_id, client_id, debt) {
             // Para el modal
             $("#form-confirm input[name='cart_id']").val(cart_id);
-            $("#modalClientDebt").text("Deuda: $" + debt);
+            console.log(debt)
+            if (debt > 0) {
+                $("#modalClientDebt").text("Deuda: $" + debt);
+            } else if (debt < 0) {
+                $("#modalClientDebt").text("Saldo a favor: $" + debt * -1);
+            } else {
+                $("#modalClientDebt").text("Sin deuda");
+            }
             $("#tableBody").html("");
             $("#client_id").val(client_id);
             $("#cash_checkbox").prop("checked", true);
@@ -639,7 +666,8 @@
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
-                        title: errorThrown.responseJSON.message,
+                        title: errorThrown.responseJSON.title,
+                        text: errorThrown.responseJSON.message,
                         confirmButtonColor: '#1e88e5',
                     });
                 }

@@ -41,13 +41,15 @@ class ExpenseController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Expense created successfully.',
+                'message' => 'Gasto creado correctamente',
                 'data' => $expense
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Expense creation failed: ' . $e->getMessage(),
+                'title' => 'Error al crear el gasto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -82,13 +84,15 @@ class ExpenseController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Expense edited successfully.',
+                'message' => 'Gasto actualizado correctamente',
                 'data' => $expense
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Expense edition failed: ' . $e->getMessage(),
+                'title' => 'Error al actualizar el gasto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -104,13 +108,15 @@ class ExpenseController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Expense deleted successfully.',
+                'message' => 'Gasto eliminado correctamente',
                 'data' => $expense
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Expense deletion failed: ' . $e->getMessage(),
+                'title' => 'Error al eliminar el gasto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -144,7 +150,9 @@ class ExpenseController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Search sales failed: ' . $e->getMessage(),
+                'title' => 'Error al buscar los gastos',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
