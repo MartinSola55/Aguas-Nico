@@ -114,52 +114,54 @@
     </div>
     <!-- End Modal -->
 
-    <!-- Modal route products -->
-    <div id="modalProducts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
-        style="display: none;">
-        <div class="modal-dialog">
-            <form role="form" class="needs-validation" method="POST" action="{{ url('/route/updateDispatched') }}" id="formRouteProducts" autocomplete="off" novalidate>
-                @csrf
-                <input type="hidden" name="products_quantity" value="">
-                <input type="hidden" name="route_id" value="{{ $route->id }}">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Productos cargados en el camión</h4>
-                        <button id="btnCloseModalProducts" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="table-responsive">
-                                    <table class="table" id="modalProductsTable">
-                                        <thead>
-                                            <tr>
-                                                <th class="col-4">Cantidad</th>
-                                                <th>Producto</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($productsDispatched as $product)
-                                                <tr data-id="{{ $product->product_id }}">
-                                                    <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
-                                                    <td>{{ $product->Product->name }}</td>
+    @if (auth()->user()->rol_id == '1')
+        <!-- Modal route products -->
+        <div id="modalProducts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+            style="display: none;">
+            <div class="modal-dialog">
+                <form role="form" class="needs-validation" method="POST" action="{{ url('/route/updateDispatched') }}" id="formRouteProducts" autocomplete="off" novalidate>
+                    @csrf
+                    <input type="hidden" name="products_quantity" value="">
+                    <input type="hidden" name="route_id" value="{{ $route->id }}">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Productos cargados en el camión</h4>
+                            <button id="btnCloseModalProducts" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="table-responsive">
+                                        <table class="table" id="modalProductsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-4">Cantidad</th>
+                                                    <th>Producto</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($productsDispatched as $product)
+                                                    <tr data-id="{{ $product->product_id }}">
+                                                        <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
+                                                        <td>{{ $product->Product->name }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                            <button type="button" id="btnUpdateProducts" class="btn btn-success waves-effect waves-light">Actualizar</button>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button type="button" id="btnUpdateProducts" class="btn btn-success waves-effect waves-light">Actualizar</button>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-    <!-- End Modal -->
+        <!-- End Modal -->
+    @endif
 
     <div class="container-fluid">
         <!-- ============================================================== -->
@@ -365,8 +367,7 @@
                                             @else
                                                 <p class="m-0"><small class="text-muted">Sin deuda</small></p>
                                             @endif
-                                            <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
-                                            <p><small class="text-muted"><i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
+                                            <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                         </div>
                                         <div class="timeline-body">
                                             @if ($cart->state === 1)

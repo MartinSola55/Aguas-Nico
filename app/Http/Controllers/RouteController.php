@@ -26,7 +26,7 @@ class RouteController extends Controller
 {
     private function getDate()
     {
-        return $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+        return Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
     }
     
     public function index()
@@ -69,9 +69,12 @@ class RouteController extends Controller
 
         $data = $this->getStats($route);
 
-       //dd($products_sold);
+       if (auth()->user()->rol_id == '1') {
+            return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'products_sold', 'data'));
+        } else {
+            return view('routes.details', compact('route', 'payment_methods', 'cash'));
+        }
 
-        return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'products_sold', 'data'));
     }
 
     private function getStats($route)

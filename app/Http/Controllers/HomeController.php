@@ -15,7 +15,7 @@ class HomeController extends Controller
 {
     private function getDate()
     {
-        return $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+        return Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
     }
     /**
      * Create a new controller instance.
