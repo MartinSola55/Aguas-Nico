@@ -3,6 +3,7 @@ version: '3.1'
 services:
   api:
     image: nanoninja/php-fpm:8.1
+    restart: always
     depends_on:
       - postgres
       - mailhog
@@ -36,6 +37,7 @@ services:
 
   mailhog:
       image: 'mailhog/mailhog:latest'
+      restart: always
       ports:
         - '1025:1025'
         - '8025:8025'

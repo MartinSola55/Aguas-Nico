@@ -13,6 +13,7 @@ class ProductsClient extends Model
     protected $fillable = [
         'client_id',
         'product_id',
+        'stock',
     ];
 
     

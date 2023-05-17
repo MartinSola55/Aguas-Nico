@@ -6,26 +6,39 @@ use App\Http\Requests\Route\ProductDispatchedUpdateRequest;
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Cart;
+use App\Models\CartPaymentMethod;
 use App\Models\Client;
+use App\Models\Expense;
 use App\Models\PaymentMethod;
 use App\Models\Product;
-use App\Models\ProductCart;
 use App\Models\ProductDispatched;
+use App\Models\ProductsCart;
 use App\Models\ProductsClient;
 use App\Models\Route;
 use App\Models\User;
-use Faker\Provider\ar_EG\Payment;
+use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RouteController extends Controller
 {
+    private function getDate()
+    {
+        return Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+    }
+    
     public function index()
     {
         $user = Auth::user();
         if ($user->rol_id == '1') {
-            $routes = $this->getRoutesByDate(date('N'));
+            $routes = Route::whereDate('start_date', $this->getDate())
+                ->where('is_static', true)
+                ->with(['Carts' => function($query) {
+                    $query->orderBy('priority');
+                }])
+                ->get();
             return view('routes.adminIndex', compact('routes'));
         } else {
             $routes = $this->getDealerRoutes(date('N'), $user->id);
@@ -37,11 +50,82 @@ class RouteController extends Controller
     {
         $cash = PaymentMethod::where('method', 'Efectivo')->first();
         $payment_methods = PaymentMethod::all()->except($cash->id);
+
         $route = Route::with(['Carts' => function ($query) {
             $query->orderBy('priority', 'asc');
         }])->find($id);
+
         $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
-        return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched'));
+        $products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+            ->with('product:id,name,price')
+            ->whereHas('cart', function ($query) use ($id) {
+                $query->whereHas('route', function ($query) use ($id) {
+                    $query->where('id', $id);
+                });
+            })
+            ->groupBy('product_id')
+            ->orderBy('total_quantity', 'desc')
+            ->get();
+
+        $data = $this->getStats($route);
+
+       if (auth()->user()->rol_id == '1') {
+            return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'products_sold', 'data'));
+        } else {
+            return view('routes.details', compact('route', 'payment_methods', 'cash'));
+        }
+
+    }
+
+    private function getStats($route)
+    {
+        $data = (object) [
+            'day_collected' => 0,
+            'day_expenses' => Expense::whereDate('created_at', $this->getDate())->where('user_id', $route->user_id)->get()->sum('spent'),
+            'completed_carts' => 0,
+            'pending_carts' => 0,
+            'payment_used' => [],
+        ];
+
+        foreach ($route->Carts as $cart) {
+            // Calcular la cantidad de repartos completados
+            if ($cart->state !== 0) {
+                $data->completed_carts++;
+            } else {
+                $data->pending_carts++;
+            }
+            
+            foreach ($cart->CartPaymentMethod as $pm) {
+                $paymentMethodName = $pm->PaymentMethod->method;
+
+                // Verificar si ya se agregó este método de pago al arreglo payment_used
+                $foundPayment = false;
+                foreach ($data->payment_used as &$payment) {
+                    if ($payment['name'] === $paymentMethodName) {
+                        $payment['total'] += $pm->amount;
+                        $foundPayment = true;
+                        break;
+                    }
+                }
+
+                // Si no se encontró, agregarlo al arreglo payment_used
+                if (!$foundPayment) {
+                    $data->payment_used[] = [
+                        'name' => $paymentMethodName,
+                        'total' => $pm->amount,
+                    ];
+                }
+
+                // Sumar al total de day_collected
+                $data->day_collected += $pm->amount;
+            }
+        }
+        
+        if ($route->Carts()->count() === 0) {
+            $data->in_deposit_routes++;
+        }
+        //dd($data->payment_used);
+        return $data;
     }
 
     /**
@@ -143,7 +227,7 @@ class RouteController extends Controller
             $newRoute = Route::create([
                 'user_id' => $static_route->user_id,
                 'day_of_week' => $static_route->day_of_week,
-                'start_date' => today(),
+                'start_date' => $this->getDate(),
                 'end_date' => null,
                 'is_static' => false,
             ]);
@@ -257,7 +341,7 @@ class RouteController extends Controller
                 }
             }
 
-            Cart::where('route_id', $route->id)->delete(); // Eliminar todos los carrtios del reparto
+            Cart::where('route_id', $route->id)->where('is_static', true)->delete(); // Eliminar todos los carrtios del reparto
             DB::table('carts')->insert($carts); // Insertar los nuevos carritos al reparto
             DB::commit();
 
@@ -364,12 +448,14 @@ class RouteController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Route deleted successfully.',
+                'message' => 'Reparto eliminado correctamente',
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Route deletion failed: ' . $e->getMessage(),
+                'title' => 'Error al eliminar el reparto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }

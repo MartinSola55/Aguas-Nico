@@ -1,4 +1,7 @@
 @php
+    use Carbon\Carbon;
+    $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+
     $diasSemana = [
         1 => 'Lunes',
         2 => 'Martes',
@@ -111,52 +114,54 @@
     </div>
     <!-- End Modal -->
 
-    <!-- Modal route products -->
-    <div id="modalProducts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
-        style="display: none;">
-        <div class="modal-dialog">
-            <form role="form" class="needs-validation" method="POST" action="{{ url('/route/updateDispatched') }}" id="formRouteProducts" autocomplete="off" novalidate>
-                @csrf
-                <input type="hidden" name="products_quantity" value="">
-                <input type="hidden" name="route_id" value="{{ $route->id }}">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Productos cargados en el camión</h4>
-                        <button id="btnCloseModalProducts" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="table-responsive">
-                                    <table class="table" id="modalProductsTable">
-                                        <thead>
-                                            <tr>
-                                                <th class="col-4">Cantidad</th>
-                                                <th>Producto</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($productsDispatched as $product)
-                                                <tr data-id="{{ $product->product_id }}">
-                                                    <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
-                                                    <td>{{ $product->Product->name }}</td>
+    @if (auth()->user()->rol_id == '1')
+        <!-- Modal route products -->
+        <div id="modalProducts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+            style="display: none;">
+            <div class="modal-dialog">
+                <form role="form" class="needs-validation" method="POST" action="{{ url('/route/updateDispatched') }}" id="formRouteProducts" autocomplete="off" novalidate>
+                    @csrf
+                    <input type="hidden" name="products_quantity" value="">
+                    <input type="hidden" name="route_id" value="{{ $route->id }}">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Productos cargados en el camión</h4>
+                            <button id="btnCloseModalProducts" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="table-responsive">
+                                        <table class="table" id="modalProductsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-4">Cantidad</th>
+                                                    <th>Producto</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($productsDispatched as $product)
+                                                    <tr data-id="{{ $product->product_id }}">
+                                                        <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
+                                                        <td>{{ $product->Product->name }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                            <button type="button" id="btnUpdateProducts" class="btn btn-success waves-effect waves-light">Actualizar</button>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button type="button" id="btnUpdateProducts" class="btn btn-success waves-effect waves-light">Actualizar</button>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-    <!-- End Modal -->
+        <!-- End Modal -->
+    @endif
 
     <div class="container-fluid">
         <!-- ============================================================== -->
@@ -187,6 +192,133 @@
         <!-- ============================================================== -->
         <!-- Start Page Content -->
         <!-- ============================================================== -->
+        @if ($route->is_static === false && auth()->user()->rol_id == '1')
+            <div class="row">
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex no-block">
+                                <h4 class="card-title">Productos vendidos</h4>
+                            </div>
+                            <h6 class="card-subtitle">{{ $today->format('d/m/Y') }}</h6>
+                            <div class="table-responsive">
+                                <table class="table stylish-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:90px;">Producto</th>
+                                            <th>Descriptción</th>
+                                            <th>Cantidad</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($products_sold as $item)    
+                                        <tr>
+                                            <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
+                                            <td>
+                                                <h6>{{ $item->Product->name }}</h6><small class="text-muted">Precio: ${{ $item->Product->price }}</small>
+                                            </td>
+                                            <td>
+                                                <h5>{{ $item->total_quantity }}</h5>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Column -->
+                <div class="col-lg-6 col-md-12">
+                    <div class="row">
+                        <!-- Column -->
+                        <div class="col-md-6 col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-row">
+                                        <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-currency-usd"></i></div>
+                                        <div class="m-l-10 align-self-center">
+                                            <h3 class="m-b-0 font-light">${{ $data->day_collected }}</h3>
+                                            <h5 class="text-muted m-b-0">
+                                                Ventas del día
+                                                <a class="mytooltip" href="javascript:void(0)">
+                                                    <i class="bi bi-info-circle"></i>
+                                                    <span class="tooltip-content5">
+                                                        <span class="tooltip-text3">
+                                                            <span class="tooltip-inner2">
+                                                                <div class="d-flex">
+                                                                    <table>
+                                                                        <tbody>
+                                                                            @foreach ($data->payment_used as $item)
+                                                                                <tr>
+                                                                                    <td><h6 class="text-white text-left">{{ $item["name"] }}: ${{ $item["total"] }}</h6></td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                    </table>
+                                                                </div>
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Column -->
+                        <!-- Column -->
+                        <div class="col-md-6 col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-row">
+                                        <div class="round round-lg align-self-center round-danger"><i class="mdi mdi-shopping"></i></div>
+                                        <div class="m-l-10 align-self-center">
+                                            <h3 class="m-b-0 font-lgiht">${{ $data->day_expenses }}</h3>
+                                            <h5 class="text-muted m-b-0">Gastos del día</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Column -->
+                    </div>
+                    <div class="row">
+                        <!-- Column -->
+                        <div class="col-md-6 col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-row">
+                                        <div class="round round-lg align-self-center round-success"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
+                                        <div class="m-l-10 align-self-center">
+                                            <h3 class="m-b-0 font-lgiht">{{ $data->completed_carts }}</h3>
+                                            <h5 class="text-muted m-b-0">Repartos completados</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Column -->
+                        <!-- Column -->
+                        <div class="col-md-6 col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-row">
+                                        <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-clock-fast"></i></div>
+                                        <div class="m-l-10 align-self-center">
+                                            <h3 class="m-b-0 font-lgiht">{{ $data->pending_carts }}</h3>
+                                            <h5 class="text-muted m-b-0">Repartos en curso</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Column -->
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -235,7 +367,7 @@
                                             @else
                                                 <p class="m-0"><small class="text-muted">Sin deuda</small></p>
                                             @endif
-                                            <p><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}</small></p>
+                                            <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                         </div>
                                         <div class="timeline-body">
                                             @if ($cart->state === 1)
@@ -353,9 +485,11 @@
                                 </li>
                             @endforeach
                         </ul>
-                        <div class="d-flex flex-row justify-content-end">
-                            <a class="btn btn-info btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
-                        </div>
+                        @if (($route->is_static === false && auth()->user()->rol_id == '2') || $route->is_static === true)
+                            <div class="d-flex flex-row justify-content-end">
+                                <a class="btn btn-info btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 {{-- Delete Route --}}
@@ -676,8 +810,8 @@
 
         $("#btnDeleteRoute").on("click", function() {
             Swal.fire({
-                title: '¿Seguro deseas eliminar este reparto?',
-                text: "Esta acción no se puede revertir",
+                title: "Esta acción no se puede revertir",
+                text: '¿Seguro deseas eliminar este reparto?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Eliminar',
@@ -694,7 +828,17 @@
                         method: $("#formDeleteRoute").attr('method'), // Utiliza el método del formulario
                         data: $("#formDeleteRoute").serialize(), // Utiliza los datos del formulario
                         success: function(response) {
-                            window.location.href = window.location.origin + "/route/index";
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                confirmButtonColor: '#1e88e5',
+                                allowOutsideClick: false,
+                            })
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = window.location.origin + "/home";
+                                }
+                            });
                         },
                         error: function(errorThrown) {
                             Swal.fire({
@@ -712,8 +856,8 @@
         $("button[name='btnDeleteCart']").on("click", function() {
             let id = $(this).val();
             Swal.fire({
-                title: '¿Seguro deseas eliminar este pedido?',
-                text: "Esta acción no se puede revertir",
+                title: "Esta acción no se puede revertir",
+                text: '¿Seguro deseas eliminar este cliente?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Eliminar',
@@ -734,6 +878,12 @@
                                 icon: 'success',
                                 title: response.message,
                                 confirmButtonColor: '#1e88e5',
+                                allowOutsideClick: false,
+                            })
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload();
+                                }
                             });
                         },
                         error: function(errorThrown) {

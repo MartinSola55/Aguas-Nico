@@ -72,6 +72,8 @@
     </div>
 
     <div id="main-wrapper">
+        @auth
+        
         <header class="topbar">
             <nav class="navbar top-navbar navbar-expand-md navbar-light">
                 <!-- ============================================================== -->
@@ -118,41 +120,26 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-right scale-up">
                                 <ul class="dropdown-user">
-                                    @guest
-                                        @if (Route::has('login'))
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('login') }}">{{ __('Iniciar sesión') }}</a>
-                                            </li>
-                                        @endif
-
-                                        @if (Route::has('register'))
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('register') }}">{{ __('Registrarse') }}</a>
-                                            </li>
-                                        @endif
-                                    @else
-                                        <li>
-                                            <div class="dw-user-box">
-                                                <div class="u-img"><img src="{{ asset('images/profile.png') }}" alt="user"></div>
-                                                <div class="u-text">
-                                                    <h4>{{ Auth::user()->name }}</h4>
-                                                    <p class="text-muted">{{ Auth::user()->email }}</p>
-                                                </div>
+                                    <li>
+                                        <div class="dw-user-box">
+                                            <div class="u-img"><img src="{{ asset('images/profile.png') }}" alt="user"></div>
+                                            <div class="u-text">
+                                                <h4>{{ Auth::user()->name }}</h4>
+                                                <p class="text-muted">{{ Auth::user()->email }}</p>
                                             </div>
-                                        </li>
-                                        <li role="separator" class="divider"></li>
-                                        <li>
-                                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                                <i class="fa fa-power-off"></i>
-                                                Cerrar sesión
-                                            </a>
-                                        </li>
+                                        </div>
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>
+                                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="fa fa-power-off"></i>
+                                            Cerrar sesión
+                                        </a>
+                                    </li>
 
-                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                            @csrf
-                                        </form>
-                                    @endguest
-                                    
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
                                 </ul>
                             </div>
                         </li>
@@ -161,7 +148,6 @@
             </nav>
         </header>
 
-        @auth
         <aside class="left-sidebar">
             <!-- Sidebar scroll-->
             <div class="slimScrollDiv" style="position: relative; overflow: visible; width: auto; height: 100%;">
@@ -208,6 +194,9 @@
                                 <li class="nav-small-cap">ADMINISTRACIÓN</li>
                                 <li>
                                     <a class="waves-effect waves-dark" href="{{ url('/invoice') }}" aria-expanded="false"><i class="bi bi-file-earmark-text"></i><span class="hide-menu">Facturación</span></a>
+                                </li>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/stats') }}" aria-expanded="false"><i class="bi bi-graph-up"></i><span class="hide-menu">Estadísticas</span></a>
                                 </li>
 
                             {{-- REPARTIDOR --}}

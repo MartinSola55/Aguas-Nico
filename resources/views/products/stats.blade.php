@@ -43,7 +43,7 @@
                         <div class="row">
                             <div class="col-md-6 m-b-30 m-t-20 text-center">
                                 <h1 class="m-b-0 font-light">${{ $total_earnings }}</h1>
-                                <h6 class="text-muted">Ganancias totales</h6>
+                                <h6 class="text-muted">Ventas totales</h6>
                             </div>
                             <div class="col-md-6 m-b-30 m-t-20 text-center">
                                 <h1 class="m-b-0 font-light">{{ $product->stock }}</h1>
