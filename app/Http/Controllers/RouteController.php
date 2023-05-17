@@ -7,25 +7,37 @@ use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Cart;
 use App\Models\Client;
+use App\Models\Expense;
 use App\Models\PaymentMethod;
 use App\Models\Product;
-use App\Models\ProductCart;
 use App\Models\ProductDispatched;
+use App\Models\ProductsCart;
 use App\Models\ProductsClient;
 use App\Models\Route;
 use App\Models\User;
-use Faker\Provider\ar_EG\Payment;
+use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RouteController extends Controller
 {
+    private function getDate()
+    {
+        return $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+    }
+    
     public function index()
     {
         $user = Auth::user();
         if ($user->rol_id == '1') {
-            $routes = $this->getRoutesByDate(date('N'));
+            $routes = Route::whereDate('start_date', $this->getDate())
+                ->where('is_static', true)
+                ->with(['Carts' => function($query) {
+                    $query->orderBy('priority');
+                }])
+                ->get();
             return view('routes.adminIndex', compact('routes'));
         } else {
             $routes = $this->getDealerRoutes(date('N'), $user->id);
@@ -37,11 +49,61 @@ class RouteController extends Controller
     {
         $cash = PaymentMethod::where('method', 'Efectivo')->first();
         $payment_methods = PaymentMethod::all()->except($cash->id);
+
         $route = Route::with(['Carts' => function ($query) {
             $query->orderBy('priority', 'asc');
         }])->find($id);
+
         $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
-        return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched'));
+        $products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+            ->with('product:id,name,price')
+            ->whereHas('cart', function ($query) use ($id) {
+                $query->whereHas('route', function ($query) use ($id) {
+                    $query->where('id', $id);
+                });
+            })
+            ->groupBy('product_id')
+            ->orderBy('total_quantity', 'desc')
+            ->get();
+
+        $data = $this->getStats($id);
+
+       //dd($products_sold);
+
+        return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'products_sold', 'data'));
+    }
+
+    private function getStats($id)
+    {
+        $route = Route::with('Carts')->find($id);
+        $data = (object) [
+            'day_collected' => 0,
+            'day_expenses' => Expense::whereDate('created_at', $this->getDate())->where('user_id', $route->user_id)->get()->sum('spent'),
+            'completed_carts' => 0,
+            'pending_carts' => 0,
+        ];
+
+        $counter = 0;
+        $total_carts = $route->Carts()->count();
+        $completed_carts = 0;
+
+        foreach ($route->Carts as $cart) {
+            $counter++;
+            // Calcular la cantidad de repartos completados
+            if ($cart->state !== 0) {
+                $data->completed_carts++;
+            } else {
+                $data->pending_carts++;
+            }
+            foreach ($cart->CartPaymentMethod as $pm) {
+                $data->day_collected += $pm->amount;
+            }
+        }
+        if ($route->Carts()->count() === 0) {
+            $data->in_deposit_routes++;
+        }
+
+        return $data;
     }
 
     /**
@@ -143,7 +205,7 @@ class RouteController extends Controller
             $newRoute = Route::create([
                 'user_id' => $static_route->user_id,
                 'day_of_week' => $static_route->day_of_week,
-                'start_date' => today(),
+                'start_date' => $this->getDate(),
                 'end_date' => null,
                 'is_static' => false,
             ]);
@@ -257,7 +319,7 @@ class RouteController extends Controller
                 }
             }
 
-            Cart::where('route_id', $route->id)->delete(); // Eliminar todos los carrtios del reparto
+            Cart::where('route_id', $route->id)->where('is_static', true)->delete(); // Eliminar todos los carrtios del reparto
             DB::table('carts')->insert($carts); // Insertar los nuevos carritos al reparto
             DB::commit();
 

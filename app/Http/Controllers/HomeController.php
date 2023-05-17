@@ -7,11 +7,16 @@ use App\Models\Expense;
 use App\Models\ProductsCart;
 use App\Models\Route;
 use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+    private function getDate()
+    {
+        return $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+    }
     /**
      * Create a new controller instance.
      *
@@ -33,9 +38,8 @@ class HomeController extends Controller
         // Admin
         if ($user->rol_id == '1') {
             // Obtener los repartos del día
-            $routes = Route::where('day_of_week', date('N'))
-                ->where('is_static', false)
-                ->whereDate('start_date', Carbon::now())
+            $routes = Route::where('is_static', false)
+                ->whereDate('start_date', $this->getDate())
                 ->with('Carts')
                 ->with('Carts.ProductsCart')
                 ->with('Carts.ProductsCart.Product')
@@ -45,7 +49,7 @@ class HomeController extends Controller
             // Calcular las ganancias totales del día
             $data = (object) [
                 'day_collected' => 0,
-                'day_expenses' => Expense::whereDate('created_at', today())->get()->sum('spent'),
+                'day_expenses' => Expense::whereDate('created_at', $this->getDate())->get()->sum('spent'),
                 'completed_routes' => 0,
                 'pending_routes' => 0,
                 'in_deposit_routes' => 0,

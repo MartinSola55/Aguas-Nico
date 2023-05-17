@@ -209,6 +209,9 @@
                                 <li>
                                     <a class="waves-effect waves-dark" href="{{ url('/invoice') }}" aria-expanded="false"><i class="bi bi-file-earmark-text"></i><span class="hide-menu">Facturación</span></a>
                                 </li>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/stats') }}" aria-expanded="false"><i class="bi bi-graph-up"></i><span class="hide-menu">Estadísticas</span></a>
+                                </li>
 
                             {{-- REPARTIDOR --}}
                             @else

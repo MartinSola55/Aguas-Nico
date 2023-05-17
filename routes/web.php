@@ -25,6 +25,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
     Route::get('/home/searchAllSales', [App\Http\Controllers\HomeController::class, 'searchAllSales']);
+    Route::get('/stats', [App\Http\Controllers\DealerController::class, 'statistics'])->name('stats');
 
     // DEALER
     Route::get('/dealer/index', [App\Http\Controllers\DealerController::class, 'index']);
@@ -35,7 +36,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/product/create', [App\Http\Controllers\ProductController::class, 'store']);
     Route::post('/product/edit', [App\Http\Controllers\ProductController::class, 'update']);
     Route::get('/product/stats/{id}', [App\Http\Controllers\ProductController::class, 'stats'])->name('product.stats');
-    Route::view('/product/new', 'products.new');
 
     // CLIENT
     Route::get('/client/index', [App\Http\Controllers\ClientController::class, 'index']);
@@ -59,12 +59,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/route/updateDispatched', [App\Http\Controllers\RouteController::class, 'updateDispatched']);
     //Agregar/actualizar clientes en reparto
     Route::post('/route/updateClients', [App\Http\Controllers\RouteController::class, 'updateClients']);
-    Route::post('/route/delete', [App\Http\Controllers\ExpenseController::class, 'delete']);
+    Route::post('/route/delete', [App\Http\Controllers\RouteController::class, 'delete']);
 
     // CART
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
-    Route::post('/cart/delete', [App\Http\Controllers\ExpenseController::class, 'delete']);
+    Route::post('/cart/delete', [App\Http\Controllers\CartController::class, 'delete']);
 
     // EXPENSES
     Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);

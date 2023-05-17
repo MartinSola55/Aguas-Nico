@@ -219,8 +219,8 @@
                         content += "<td>" + expense.description + "</td>";
                         content += "<td class='text-right spent'>$" + expense.spent + "</td>";
                         if (window.userRol == 1)
-                            content += "<td class='text-right'>" + expense.user + "</td>";
-                        content += "<td class='text-right'>" + expense.date + "</td>";
+                            content += "<td>" + expense.user + "</td>";
+                        content += "<td>" + expense.date + "</td>";
                         if (window.userRol == 1)
                             content += `<td class='text-center'><button type='button' class='btn btn-danger btn-rounded btn-sm' onclick='deleteExpense(` + expense.id + `)'><i class='fas fa-trash-alt'></i></button></td>`;
                         content += "</tr>";

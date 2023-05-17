@@ -42,7 +42,7 @@
                             <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-currency-usd"></i></div>
                             <div class="m-l-10 align-self-center">
                                 <h3 class="m-b-0 font-light">${{ $data->day_collected }}</h3>
-                                <h5 class="text-muted m-b-0">Cobros del día</h5>
+                                <h5 class="text-muted m-b-0">Ventas del día</h5>
                             </div>
                         </div>
                     </div>

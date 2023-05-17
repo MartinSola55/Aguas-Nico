@@ -152,12 +152,14 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Cart deleted successfully.',
+                'message' => 'Reparto eliminado correctamente',
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cart deletion failed: ' . $e->getMessage(),
+                'title' => 'Error al eliminar el reparto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }

@@ -139,8 +139,8 @@
     <script>
         $("#btnDeleteProduct").on("click", function() {
             Swal.fire({
-                title: '¿Seguro deseas eliminar el producto?',
-                text: "Esta acción no se puede revertir",
+                title: "Esta acción no se puede revertir",
+                text: '¿Seguro deseas eliminar el producto?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Eliminar',
