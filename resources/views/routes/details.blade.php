@@ -237,7 +237,28 @@
                                         <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-currency-usd"></i></div>
                                         <div class="m-l-10 align-self-center">
                                             <h3 class="m-b-0 font-light">${{ $data->day_collected }}</h3>
-                                            <h5 class="text-muted m-b-0">Ventas del día</h5>
+                                            <h5 class="text-muted m-b-0">
+                                                Ventas del día
+                                                <a class="mytooltip" href="javascript:void(0)">
+                                                    <i class="bi bi-info-circle"></i>
+                                                    <span class="tooltip-content5">
+                                                        <span class="tooltip-text3">
+                                                            <span class="tooltip-inner2">
+                                                                <div class="d-flex">
+                                                                    <table>
+                                                                        <tbody>
+                                                                            @foreach ($data->payment_used as $item)
+                                                                                <tr>
+                                                                                    <td><h6 class="text-white text-left">{{ $item["name"] }}: ${{ $item["total"] }}</h6></td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                    </table>
+                                                                </div>
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+                                            </h5>
                                         </div>
                                     </div>
                                 </div>
@@ -806,7 +827,17 @@
                         method: $("#formDeleteRoute").attr('method'), // Utiliza el método del formulario
                         data: $("#formDeleteRoute").serialize(), // Utiliza los datos del formulario
                         success: function(response) {
-                            window.location.href = window.location.origin + "/route/index";
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                confirmButtonColor: '#1e88e5',
+                                allowOutsideClick: false,
+                            })
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = window.location.origin + "/home";
+                                }
+                            });
                         },
                         error: function(errorThrown) {
                             Swal.fire({

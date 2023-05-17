@@ -6,6 +6,7 @@ use App\Http\Requests\Route\ProductDispatchedUpdateRequest;
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Cart;
+use App\Models\CartPaymentMethod;
 use App\Models\Client;
 use App\Models\Expense;
 use App\Models\PaymentMethod;
@@ -66,43 +67,61 @@ class RouteController extends Controller
             ->orderBy('total_quantity', 'desc')
             ->get();
 
-        $data = $this->getStats($id);
+        $data = $this->getStats($route);
 
        //dd($products_sold);
 
         return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'products_sold', 'data'));
     }
 
-    private function getStats($id)
+    private function getStats($route)
     {
-        $route = Route::with('Carts')->find($id);
         $data = (object) [
             'day_collected' => 0,
             'day_expenses' => Expense::whereDate('created_at', $this->getDate())->where('user_id', $route->user_id)->get()->sum('spent'),
             'completed_carts' => 0,
             'pending_carts' => 0,
+            'payment_used' => [],
         ];
 
-        $counter = 0;
-        $total_carts = $route->Carts()->count();
-        $completed_carts = 0;
-
         foreach ($route->Carts as $cart) {
-            $counter++;
             // Calcular la cantidad de repartos completados
             if ($cart->state !== 0) {
                 $data->completed_carts++;
             } else {
                 $data->pending_carts++;
             }
+            
             foreach ($cart->CartPaymentMethod as $pm) {
+                $paymentMethodName = $pm->PaymentMethod->method;
+
+                // Verificar si ya se agregó este método de pago al arreglo payment_used
+                $foundPayment = false;
+                foreach ($data->payment_used as &$payment) {
+                    if ($payment['name'] === $paymentMethodName) {
+                        $payment['total'] += $pm->amount;
+                        $foundPayment = true;
+                        break;
+                    }
+                }
+
+                // Si no se encontró, agregarlo al arreglo payment_used
+                if (!$foundPayment) {
+                    $data->payment_used[] = [
+                        'name' => $paymentMethodName,
+                        'total' => $pm->amount,
+                    ];
+                }
+
+                // Sumar al total de day_collected
                 $data->day_collected += $pm->amount;
             }
         }
+        
         if ($route->Carts()->count() === 0) {
             $data->in_deposit_routes++;
         }
-
+        //dd($data->payment_used);
         return $data;
     }
 
@@ -426,12 +445,14 @@ class RouteController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Route deleted successfully.',
+                'message' => 'Reparto eliminado correctamente',
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Route deletion failed: ' . $e->getMessage(),
+                'title' => 'Error al eliminar el reparto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
