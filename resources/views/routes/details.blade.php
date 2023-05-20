@@ -292,7 +292,7 @@
                                         <div class="round round-lg align-self-center round-success"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
                                         <div class="m-l-10 align-self-center">
                                             <h3 class="m-b-0 font-lgiht">{{ $data->completed_carts }}</h3>
-                                            <h5 class="text-muted m-b-0">Repartos completados</h5>
+                                            <h5 class="text-muted m-b-0">Clientes visitados</h5>
                                         </div>
                                     </div>
                                 </div>
@@ -307,7 +307,7 @@
                                         <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-clock-fast"></i></div>
                                         <div class="m-l-10 align-self-center">
                                             <h3 class="m-b-0 font-lgiht">{{ $data->pending_carts }}</h3>
-                                            <h5 class="text-muted m-b-0">Repartos en curso</h5>
+                                            <h5 class="text-muted m-b-0">Clientes por visitar</h5>
                                         </div>
                                     </div>
                                 </div>
@@ -404,13 +404,11 @@
                                             @endif
 
                                             @if ($cart->Client->observation != "")
+                                                <hr>
                                                 <p><b>Observaciones:</b> {{ $cart->Client->observation }}</p>
                                             @endif
 
                                             @if ($cart->state === 0)
-                                                @if ($cart->Client->observation !== null || $cart->Client->observation !== "")
-                                                    <hr>
-                                                @endif
                                                 <div class="d-flex flex-row justify-content-end">
 
                                                     {{-- 2 = employee --}}
@@ -424,18 +422,6 @@
                                                                 <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(3, {{ $cart->id }}, 'no necesitaba')">No necesitaba</button>
                                                                 <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(4, {{ $cart->id }}, 'estaba de vacaciones')">Vacaciones</button>
                                                             </div>
-                                                        </div>
-                                                    @endif
-
-                                                    {{-- 1 = admin --}}
-                                                    @if (auth()->user()->rol_id == '1' && $cart->is_static === false) 
-                                                        <div>
-                                                            {{-- Delete Cart --}}
-                                                            <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
-                                                                @csrf
-                                                                <input type="hidden" name="id" value="{{ $cart->id }}">
-                                                                <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar</button>
-                                                            </form>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -466,18 +452,19 @@
                                                             }) }}</p>
                                                         </div>
                                                         <hr>
-                                                        {{-- 1 = admin --}}
-                                                        @if (auth()->user()->rol_id == '1') 
-                                                            <div class="d-flex flex-row justify-content-end">
-                                                                {{-- Delete Cart --}}
-                                                                <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
-                                                                    @csrf
-                                                                    <input type="hidden" name="id" value="{{ $cart->id }}">
-                                                                    <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar</button>
-                                                                </form>
-                                                            </div>
-                                                        @endif
                                                     </div>
+                                                </div>
+                                            @endif
+                                            {{-- 1 = admin --}}
+                                            @if (auth()->user()->rol_id == '1' && $cart->is_static === false) 
+                                            <hr>
+                                                <div class="d-flex flex-row justify-content-end">
+                                                    {{-- Delete Cart --}}
+                                                    <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="id" value="{{ $cart->id }}">
+                                                        <button name="btnDeleteCart" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar</button>
+                                                    </form>
                                                 </div>
                                             @endif
                                         </div>
@@ -593,7 +580,7 @@
             $('.quantity-input').each(function() {
                 let productId = $(this).data('id');
                 let quantity = $(this).val();
-                if (quantity !== "") {
+                if (quantity !== "" && quantity > 0) {
                     products.push({
                         product_id: productId,
                         quantity: quantity
