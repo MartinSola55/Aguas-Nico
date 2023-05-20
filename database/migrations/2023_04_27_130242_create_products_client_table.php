@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('products_client', function (Blueprint $table) {
             $table->foreignId('client_id')->constrained('clients');
             $table->foreignId('product_id')->constrained('products');
+            $table->integer('stock')->default(0);
         });
     }
 
