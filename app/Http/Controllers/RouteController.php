@@ -85,6 +85,7 @@ class RouteController extends Controller
             'completed_carts' => 0,
             'pending_carts' => 0,
             'payment_used' => [],
+            'in_deposit_routes' => 0,
         ];
 
         foreach ($route->Carts as $cart) {

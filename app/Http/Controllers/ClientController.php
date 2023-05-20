@@ -240,8 +240,25 @@ class ClientController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Client $client)
+    public function setIsActive(Request $request)
     {
-        //
+        try {
+            $client = Client::find($request->input("id"));
+            $client = $client->update([
+                'is_active' => !$client->is_active
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Estado del cliente actualizado correctamente',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al actualizar el estado del cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
     }
 }

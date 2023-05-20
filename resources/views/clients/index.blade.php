@@ -134,6 +134,7 @@
                                         <th>Factura</th>
                                         <th>Deuda</th>
                                         <th>Observación</th>
+                                        <th>Activo</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table_body">
@@ -155,6 +156,13 @@
                                             </td>
                                             <td>${{ $client->debt }}</td>
                                             <td>{{ $client->observation }}</td>
+                                            <td class="text-center">
+                                                @if ( $client->is_active == true)
+                                                    <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                                @else
+                                                    <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -171,6 +179,10 @@
             let invoice = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
             if (client.invoice) {
                 invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
+            }
+            let active = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
+            if (client.is_active) {
+                active = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
             }
             if (client.observation == null) {
                 client.observation = "";
@@ -189,6 +201,9 @@
                 `</td>
                 <td>$` + client.debt + `</td>
                 <td>` + client.observation + `</td>
+                <td class="text-center">` +
+                    active +
+                `</td>
             </tr>`;
             $('#clientsTable').DataTable().row.add($(content)).draw();
         }

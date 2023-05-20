@@ -222,7 +222,11 @@
                                 </div>
                                 <div class="row" id="divSaveClient" style="display: none">
                                     <div class="col-md-12 d-flex justify-content-between">
-                                        <button type="button" id="btnDeleteClient" class="btn btn-sm btn-outline-danger btn-rounded px-3">Eliminar</button>
+                                        @if ($client->is_active)    
+                                        <button type="button" id="btnDeleteClient" class="btn btn-sm btn-outline-danger btn-rounded px-3">Dar de baja</button>
+                                        @else
+                                        <button type="button" id="btnDeleteClient" class="btn btn-sm btn-outline-warning btn-rounded px-3">Dar de alta</button>
+                                        @endif
                                         <button type="submit" class="btn btn-sm btn-success btn-rounded px-3">Guardar</button>
                                     </div>
                                 </div>
@@ -233,7 +237,7 @@
             </div>
         </div>
 
-        <form id="formDeleteClient" action="{{ url('/client/delete') }}" method="POST">
+        <form id="formDeleteClient" action="{{ url('/client/setIsActive') }}" method="POST">
             @csrf
             <input type="hidden" name="id" value="{{ $client->id }}">
         </form>
@@ -301,8 +305,7 @@
 
         $("#btnDeleteClient").on("click", function() {
             Swal.fire({
-                title: 'Seguro deseas eliminar este cliente?',
-                text: "Esta acción no se puede revertir",
+                title: '¿Seguro deseas cambiar el estado de este cliente?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Eliminar',
@@ -321,7 +324,7 @@
                         success: function(response) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Cliente eliminado correctamente',
+                                title: response.message,
                                 confirmButtonColor: '#1e88e5',
                             });
                         },
