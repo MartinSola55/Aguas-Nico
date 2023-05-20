@@ -152,8 +152,8 @@ class ClientController extends Controller
      */
     public function update(ClientUpdateRequest $request)
     {
-        $client = Client::find($request->input('id'));
         try {
+            $client = Client::findOrFail($request->input('id'));
             $client->update([
                 'name' => $request->input('name'),
                 'adress' => $request->input('adress'),
@@ -163,6 +163,11 @@ class ClientController extends Controller
                 'dni' => $request->input('dni'),
                 'invoice' => $request->input('invoice') == 1 ? true : false,
                 'observation' => $request->input('observation'),
+                'invoice_type' => $request->input('invoice_type'),
+                'business_name' => $request->input('business_name'),
+                'tax_condition' => $request->input('tax_condition'),
+                'cuit' => $request->input('cuit'),
+                'tax_address' => $request->input('tax_address'),
             ]);
 
             return response()->json([
@@ -205,14 +210,15 @@ class ClientController extends Controller
             DB::beginTransaction();
             $inputValues = $request->input(); // Obtener todos los valores de los inputs del formulario
             $client_id = $request->input('client_id'); // Obtener el cliente
-            
+
             $products = [];
             foreach ($inputValues as $key => $value) {
                 if (strpos($key, 'product_') === 0) { // Verificar si el input corresponde a un producto
                     $productId = substr($key, strlen('product_')); // Obtener el id del producto del nombre del input
                     $products[] = [
                         'client_id' => $client_id,
-                        'product_id' => $productId
+                        'product_id' => $productId,
+                        'stock' => $request->input('stock')
                     ];
                 }
             }
@@ -235,7 +241,6 @@ class ClientController extends Controller
             ], 400);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.

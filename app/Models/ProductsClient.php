@@ -16,7 +16,7 @@ class ProductsClient extends Model
         'stock',
     ];
 
-    
+
     public function Client()
     {
         return $this->belongsTo(Client::class, 'client_id');

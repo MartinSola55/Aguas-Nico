@@ -30,6 +30,11 @@ class ClientUpdateRequest extends BaseFormRequest
             'dni' => ['required', 'string', 'max:255'],
             'invoice' => ['boolean'],
             'observation' => ['nullable', 'string'],
+            'invoice_type' => ['nullable', 'string', 'max:255'],
+            'business_name' => ['nullable', 'string', 'max:255'],
+            'tax_condition' => ['nullable', 'string', 'max:255'],
+            'cuit' => ['nullable', 'string', 'max:255'],
+            'tax_address' => ['nullable', 'string', 'max:255'],
         ]);
 
        return [
@@ -43,6 +48,10 @@ class ClientUpdateRequest extends BaseFormRequest
             'is_active',
             'observation',
             'user_id',
+            'business_name',
+            'tax_condition',
+            'cuit',
+            'tax_address'
         ];
     }
 }
