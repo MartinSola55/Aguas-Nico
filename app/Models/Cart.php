@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\Auth\ConfirmPasswordController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
 class Cart extends Model
 {
     use HasFactory;
+    use SoftDeletes;
+
     public $timestamps = false;
     protected $fillable = [
         'route_id',

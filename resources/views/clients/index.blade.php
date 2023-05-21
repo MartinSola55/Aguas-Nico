@@ -134,6 +134,7 @@
                                         <th>Factura</th>
                                         <th>Deuda</th>
                                         <th>Observación</th>
+                                        <th>Activo</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table_body">
@@ -155,6 +156,13 @@
                                             </td>
                                             <td>${{ $client->debt }}</td>
                                             <td>{{ $client->observation }}</td>
+                                            <td class="text-center">
+                                                @if ( $client->is_active == true)
+                                                    <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                                @else
+                                                    <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -171,6 +179,10 @@
             let invoice = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
             if (client.invoice) {
                 invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
+            }
+            let active = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
+            if (client.is_active) {
+                active = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
             }
             if (client.observation == null) {
                 client.observation = "";
@@ -189,6 +201,9 @@
                 `</td>
                 <td>$` + client.debt + `</td>
                 <td>` + client.observation + `</td>
+                <td class="text-center">` +
+                    active +
+                `</td>
             </tr>`;
             $('#clientsTable').DataTable().row.add($(content)).draw();
         }
@@ -233,7 +248,8 @@
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
-                        title: errorThrown.responseJSON.message,
+                        title: errorThrown.responseJSON.title,
+                        text: errorThrown.responseJSON.message,
                         confirmButtonColor: '#1e88e5',
                     });
                 }
@@ -254,6 +270,7 @@
                 "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
                 "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
                 "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                "emptyTable": 'No hay clientes que coincidan con la búsqueda',
                 "sLengthMenu": "Mostrar _MENU_ clientes",
                 "sSearch": "Buscar:",
                 "oPaginate": {

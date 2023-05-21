@@ -54,13 +54,15 @@ class ClientController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Client created successfully.',
+                'message' => 'Cliente creado correctamente',
                 'data' => $client
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Client creation failed: ' . $e->getMessage(),
+                'title' => 'Error al crear el cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -124,7 +126,9 @@ class ClientController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Search sales failed: ' . $e->getMessage(),
+                'title' => 'Error al buscar las ventas',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -148,8 +152,8 @@ class ClientController extends Controller
      */
     public function update(ClientUpdateRequest $request)
     {
-        $client = Client::find($request->input('id'));
         try {
+            $client = Client::findOrFail($request->input('id'));
             $client->update([
                 'name' => $request->input('name'),
                 'adress' => $request->input('adress'),
@@ -159,17 +163,24 @@ class ClientController extends Controller
                 'dni' => $request->input('dni'),
                 'invoice' => $request->input('invoice') == 1 ? true : false,
                 'observation' => $request->input('observation'),
+                'invoice_type' => $request->input('invoice_type'),
+                'business_name' => $request->input('business_name'),
+                'tax_condition' => $request->input('tax_condition'),
+                'cuit' => $request->input('cuit'),
+                'tax_address' => $request->input('tax_address'),
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Client edited successfully.',
+                'message' => 'Cliente editado correctamente',
                 'data' => $client
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Client edition failed: ' . $e->getMessage(),
+                'title' => 'Error al editar el cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -199,14 +210,15 @@ class ClientController extends Controller
             DB::beginTransaction();
             $inputValues = $request->input(); // Obtener todos los valores de los inputs del formulario
             $client_id = $request->input('client_id'); // Obtener el cliente
-            
+
             $products = [];
             foreach ($inputValues as $key => $value) {
                 if (strpos($key, 'product_') === 0) { // Verificar si el input corresponde a un producto
                     $productId = substr($key, strlen('product_')); // Obtener el id del producto del nombre del input
                     $products[] = [
                         'client_id' => $client_id,
-                        'product_id' => $productId
+                        'product_id' => $productId,
+                        //'stock' => $request->input('stock')
                     ];
                 }
             }
@@ -217,23 +229,41 @@ class ClientController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Products edited successfully.',
+                'message' => 'Productos actualizados correctamente',
             ], 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Products edition failed: ' . $e->getMessage(),
+                'title' => 'Error al actualizar los productos',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
 
-
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Client $client)
+    public function setIsActive(Request $request)
     {
-        //
+        try {
+            $client = Client::find($request->input("id"));
+            $client = $client->update([
+                'is_active' => !$client->is_active
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Estado del cliente actualizado correctamente',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al actualizar el estado del cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
     }
 }

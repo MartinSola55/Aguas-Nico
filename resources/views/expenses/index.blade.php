@@ -219,8 +219,8 @@
                         content += "<td>" + expense.description + "</td>";
                         content += "<td class='text-right spent'>$" + expense.spent + "</td>";
                         if (window.userRol == 1)
-                            content += "<td class='text-right'>" + expense.user + "</td>";
-                        content += "<td class='text-right'>" + expense.date + "</td>";
+                            content += "<td>" + expense.user + "</td>";
+                        content += "<td>" + expense.date + "</td>";
                         if (window.userRol == 1)
                             content += `<td class='text-center'><button type='button' class='btn btn-danger btn-rounded btn-sm' onclick='deleteExpense(` + expense.id + `)'><i class='fas fa-trash-alt'></i></button></td>`;
                         content += "</tr>";
@@ -234,6 +234,7 @@
                                 "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ gastos",
                                 "sInfoEmpty": "Mostrando 0 a 0 de 0 gastos",
                                 "sInfoFiltered": "(filtrado de _MAX_ gastos en total)",
+                                "emptyTable": 'No hay gastos que coincidan con la búsqueda',
                                 "sLengthMenu": "Mostrar _MENU_ gastos",
                                 "sSearch": "Buscar:",
                                 "oPaginate": {
@@ -250,7 +251,8 @@
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
-                        title: errorThrown.responseJSON.message,
+                        title: errorThrown.responseJSON.title,
+                        text: errorThrown.responseJSON.message,
                         confirmButtonColor: '#1e88e5',
                     });
                 }
@@ -308,7 +310,8 @@
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
-                        title: errorThrown.responseJSON.message,
+                        title: errorThrown.responseJSON.title,
+                        text: errorThrown.responseJSON.message,
                         confirmButtonColor: '#1e88e5',
                     });
                 }

@@ -19,6 +19,11 @@ class Client extends Model
         'is_active',
         'observation',
         'user_id',
+        'invoice_type',
+        'business_name',
+        'tax_condition',
+        'cuit',
+        'tax_address',
     ];
 
     public function User()

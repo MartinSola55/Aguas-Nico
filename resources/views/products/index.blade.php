@@ -28,15 +28,6 @@
                                         </div>
                                     </div>
                                     <div class="col-12 mb-3">
-                                        <label for="productStock" class="mb-0">Stock</label>
-                                        <input type="number" class="form-control" min="0" max="1000000" id="productStock" name="stock" placeholder="X" required>
-                                        <div class="valid-feedback">
-                                        </div>
-                                        <div class="invalid-feedback">
-                                            Por favor, ingrese un stock
-                                        </div>
-                                    </div>
-                                    <div class="col-12 mb-3">
                                         <label for="productPrice" class="mb-0">Precio</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -71,6 +62,55 @@
     </div>
     <!-- End Modal -->
 
+    <!-- Modal create -->
+    <div id="modalCreateProduct" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <form role="form" class="needs-validation" method="POST" action="{{ url('/product/create') }}" id="form-create" autocomplete="off" novalidate>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Agregar producto</h4>
+                        <button type="button" class="close" id="btnCloseModal" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-column">
+                                    {{-- TOKEN --}}
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                                    
+                                    <div class="col-12 mb-3">
+                                        <label for="productName" class="mb-0">Nombre</label>
+                                        <input type="text" class="form-control" id="productName" name="name" required>
+                                        <div class="invalid-feedback">
+                                            Por favor, ingrese un nombre
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="productPrice" class="mb-0">Precio</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">$</span>
+                                            </div>
+                                            <input type="number" step="0.01" min="0" max="1000000" class="form-control" id="productPrice" name="price" placearia-describedby="inputGroupPrepend" required>
+                                            <div class="invalid-feedback">
+                                                Por favor, ingrese un precio
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal" id="btnCloseCreate">Cerrar</button>
+                        <button onclick="createProduct()" type="button" class="btn btn-success waves-effect waves-light">Agregar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End Modal -->
+
     <div class="container-fluid">
         <!-- ============================================================== -->
         <!-- Bread crumb and right sidebar toggle -->
@@ -87,9 +127,9 @@
                 <div class="d-flex m-t-10 justify-content-end">
                     <div class="d-flex m-r-20 m-l-10">
                         <div>
-                            <a class="btn btn-info waves-effect waves-light" href="{{ url('/product/new') }}">
+                            <button class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#modalCreateProduct">
                                 <i class="bi bi-plus-lg"></i>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -109,11 +149,10 @@
                             <div class="ribbon-wrapper card">
                                 <div class="ribbon ribbon-default ribbon-bookmark" id="productName{{ $product->id }}">{{ $product->name }}</div>
                                 <div class="my-4">
-                                    <p class="ribbon-content" id="productStock{{ $product->id }}">Stock: {{ $product->stock }} u.</p>
                                     <p class="ribbon-content" id="productPrice{{ $product->id }}">Precio: ${{ $product->price }}</p>
                                 </div>
                                 <div class="d-flex flex-direction-row justify-content-between">
-                                    <button type="button" class="btn btn-outline-info btn-rounded mr-4 waves-effect waves-light" onclick="openModal({{ $product->id }}, '{{ $product->name }}', {{ $product->stock }}, {{ $product->price }})" data-toggle="modal" data-target="#modalConfirmation">
+                                    <button type="button" class="btn btn-outline-info btn-rounded mr-4 waves-effect waves-light" onclick="openModal({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})" data-toggle="modal" data-target="#modalConfirmation">
                                         Editar <i class="bi bi-pencil"></i>
                                     </button>
                                     <a class="btn btn-info btn-rounded waves-effect waves-light" href="{{ route('product.stats', ['id' => $product->id]) }}">
@@ -139,8 +178,8 @@
     <script>
         $("#btnDeleteProduct").on("click", function() {
             Swal.fire({
-                title: '¿Seguro deseas eliminar el producto?',
-                text: "Esta acción no se puede revertir",
+                title: "Esta acción no se puede revertir",
+                text: '¿Seguro deseas eliminar el producto?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Eliminar',
@@ -177,14 +216,13 @@
     </script>
 
     <script>
-        function openModal(id, name, stock, price) {
+        function openModal(id, name, price) {
             //Delete product
             $("#product-id").val(id);
 
             //Edit product
             $("#productID").val(id);
             $("#productName").val(name);
-            $("#productStock").val(stock);
             $("#productPrice").val(price);
             $("#form-edit").removeClass("was-validated");
         }
@@ -196,19 +234,21 @@
             'use strict';
             window.addEventListener('load', function() {
                 // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        } else {
-                            event.preventDefault();
-                            sendForm();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
+                var forms = $('.needs-validation');
+                forms.on('submit', function(event) {
+                event.preventDefault();
+                
+                var form = $(this);
+                if (form[0].checkValidity() === false) {
+                    event.stopPropagation();
+                } else {
+                    if (form.attr('id') == "form-edit") {
+                        sendForm();
+                    } else {
+                        createProduct();
+                    }
+                }
+                form.addClass('was-validated');
                 });
             }, false);
         })();
@@ -225,7 +265,41 @@
                 error: function(errorThrown) {
                     Swal.fire({
                         icon: 'error',
-                        title: errorThrown.responseJSON.message,
+                        title: errorThrown.responseJSON.title,
+                        text: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        };
+        
+        function createProduct() {
+            // Enviar solicitud AJAX
+            $.ajax({
+                url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-create").attr('method'), // Utiliza el método del formulario
+                data: $("#form-create").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnCloseCreate").click();
+                    Swal.fire({
+                        title: response.message,
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#1e88e5',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    })
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.title,
+                        text: errorThrown.responseJSON.message,
                         confirmButtonColor: '#1e88e5',
                     });
                 }
@@ -237,7 +311,6 @@
 
             let id = $("#productID").val();
             $("#productName" + id).html($("#productName").val());
-            $("#productStock" + id).html("Stock: " + $("#productStock").val() + " u.");
             $("#productPrice" + id).html("Precio: $" + $("#productPrice").val());
 
             Swal.fire({

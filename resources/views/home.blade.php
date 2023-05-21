@@ -41,8 +41,23 @@
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-currency-usd"></i></div>
                             <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-light">${{ $data->day_earnings }}</h3>
-                                <h5 class="text-muted m-b-0">Ganancias del día</h5>
+                                <h3 class="m-b-0 font-light">${{ $data->day_collected }}</h3>
+                                <h5 class="text-muted m-b-0">Ventas del día</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Column -->
+            <!-- Column -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-row">
+                            <div class="round round-lg align-self-center round-danger"><i class="mdi mdi-shopping"></i></div>
+                            <div class="m-l-10 align-self-center">
+                                <h3 class="m-b-0 font-lgiht">${{ $data->day_expenses }}</h3>
+                                <h5 class="text-muted m-b-0">Gastos del día</h5>
                             </div>
                         </div>
                     </div>
@@ -73,21 +88,6 @@
                             <div class="m-l-10 align-self-center">
                                 <h3 class="m-b-0 font-lgiht">{{ $data->pending_routes }}</h3>
                                 <h5 class="text-muted m-b-0">Repartos en curso</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Column -->
-            <!-- Column -->
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex flex-row">
-                            <div class="round round-lg align-self-center round-danger"><i class="mdi mdi-package-variant-closed"></i></div>
-                            <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">{{ $data->in_deposit_routes }}</h3>
-                                <h5 class="text-muted m-b-0">Repartos en depósito</h5>
                             </div>
                         </div>
                     </div>

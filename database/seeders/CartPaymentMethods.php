@@ -14,15 +14,6 @@ class CartPaymentMethods extends Seeder
      */
     public function run(): void
     {
-        DB::table('cart_payment_methods')->insert([
-            'cart_id' => 5,
-            'payment_method_id' => 2,
-            'amount' => 5000,
-        ]);
-        DB::table('cart_payment_methods')->insert([
-            'cart_id' => 5,
-            'payment_method_id' => 1,
-            'amount' => 450,
-        ]);
+        //
     }
 }

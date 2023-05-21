@@ -3,14 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Expense;
 use App\Models\ProductsCart;
 use App\Models\Route;
 use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+    private function getDate()
+    {
+        return Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+    }
     /**
      * Create a new controller instance.
      *
@@ -32,9 +38,8 @@ class HomeController extends Controller
         // Admin
         if ($user->rol_id == '1') {
             // Obtener los repartos del día
-            $routes = Route::where('day_of_week', date('N'))
-                ->where('is_static', false)
-                ->whereDate('start_date', Carbon::now())
+            $routes = Route::where('is_static', false)
+                ->whereDate('start_date', $this->getDate())
                 ->with('Carts')
                 ->with('Carts.ProductsCart')
                 ->with('Carts.ProductsCart.Product')
@@ -43,7 +48,8 @@ class HomeController extends Controller
 
             // Calcular las ganancias totales del día
             $data = (object) [
-                'day_earnings' => 0,
+                'day_collected' => 0,
+                'day_expenses' => Expense::whereDate('created_at', $this->getDate())->get()->sum('spent'),
                 'completed_routes' => 0,
                 'pending_routes' => 0,
                 'in_deposit_routes' => 0,
@@ -65,7 +71,7 @@ class HomeController extends Controller
                     }
 
                     foreach ($cart->CartPaymentMethod as $pm) {
-                        $data->day_earnings += $pm->amount;
+                        $data->day_collected += $pm->amount;
                     }
                 }
                 if ($route->Carts()->count() === 0) {
@@ -95,7 +101,9 @@ class HomeController extends Controller
             $dateFrom = Carbon::createFromFormat('Y-m-d', $request->input('dateFrom'))->startOfDay();
             $dateTo = Carbon::createFromFormat('Y-m-d', $request->input('dateTo'))->endOfDay();
             $clients = Client::whereHas('Carts', function ($query) use ($dateFrom, $dateTo) {
-                $query->whereBetween('updated_at', [$dateFrom, $dateTo]);
+                $query->whereBetween('updated_at', [$dateFrom, $dateTo])
+                      ->where('state', 1)
+                      ->where('is_static', false);
             })->get();
             $products = ProductsCart::whereBetween('updated_at', [$dateFrom, $dateTo])->with('Cart', 'Product')->orderBy('updated_at', 'asc')->get();
 
@@ -104,6 +112,9 @@ class HomeController extends Controller
             ];
 
             foreach ($clients as $client) {
+                if ($client->Carts->count() === 0) {
+                    continue;
+                }
                 $clientData = [
                     'name' => $client->name,
                     'products' => []
@@ -135,7 +146,9 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Search sales failed: ' . $e->getMessage(),
+                'title' => 'Error al buscar las ventas',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }

@@ -16,11 +16,10 @@
         <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Repartidores</h3>
+                <h3 class="text-themecolor m-b-0 m-t-0">Estadísticas</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('/dealer/index') }}">Repartidores</a></li>
-                    <li class="breadcrumb-item active">Detalles</li>
+                    <li class="breadcrumb-item active">Estadísticas</li>
                 </ol>
             </div>
         </div>
@@ -31,15 +30,7 @@
         <!-- Start Page Content -->
         <!-- ============================================================== -->
         <div class="row">
-            <div class="col-12">
-                @if ($dealer->truck_number)
-                    <h2 class="text-center">{{ $dealer->name }} - Camión {{ $dealer->truck_number }}</h2>
-                @else
-                    <h2 class="text-center">{{ $dealer->name }} - Sin camión asignado</h2>
-                @endif
-                <hr />
-            </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
@@ -53,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
@@ -67,7 +58,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Producto más vendido</h4>
@@ -81,23 +72,13 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Total cobrado en el mes</h4>
-                        <div class="text-right"> <span class="text-muted">{{ \Carbon\Carbon::today()->locale('es')->isoFormat('MMM') }}</span>
-                            <h1 class="font-light"><sup></sup>$121321</h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Ventas anuales</h4>
                         <ul class="list-inline text-right">
                             <li>
-                                <h5><i class="fa fa-circle m-r-5 text-inverse"></i>{{ $dealer->name }}</h5>
+                                {{-- <h5><i class="fa fa-circle m-r-5 text-inverse"></i>{{ $dealer->name }}</h5> --}}
                             </li>
                         </ul>
                         <div id="morris-area-chart"></div>
@@ -110,7 +91,7 @@
                         <h4 class="card-title">Ventas mensuales</h4>
                         <ul class="list-inline text-center m-t-40">
                             <li>
-                                <h5><i class="fa fa-circle m-r-5 text-dark"></i>{{ $dealer->name }}</h5>
+                                {{-- <h5><i class="fa fa-circle m-r-5 text-dark"></i>{{ $dealer->name }}</h5> --}}
                             </li>
                         </ul>
                         <div id="extra-area-chart"></div>

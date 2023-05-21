@@ -6,6 +6,7 @@ use App\Http\Requests\Product\ProductCreateRequest;
 use App\Http\Requests\Product\ProductUpdateRequest;
 use App\Models\Product;
 use App\Models\ProductsCart;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -36,19 +37,20 @@ class ProductController extends Controller
         try {
             $product = Product::create([
                 'name' => $request->input('name'),
-                'stock' => $request->input('stock'),
                 'price' => $request->input('price'),
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Product created successfully.',
+                'message' => 'Producto creado correctamente',
                 'data' => $product
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Product creation failed: ' . $e->getMessage(),
+                'title' => 'Error al crear el producto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -98,19 +100,20 @@ class ProductController extends Controller
         try {
             $product->update([
                 'name' => $request->input('name'),
-                'stock' => $request->input('stock'),
                 'price' => $request->input('price'),
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Product edited successfully.',
+                'message' => 'Producto editado correctamente',
                 'data' => $product
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Product edition failed: ' . $e->getMessage(),
+                'title' => 'Error al editar el producto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
             ], 400);
         }
     }

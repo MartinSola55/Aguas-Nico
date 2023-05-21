@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignId('cart_id')->constrained('carts');
             $table->foreignId('payment_method_id')->constrained('payment_methods');
             $table->double('amount', 8, 2);
+            $table->softDeletes();
         });
     }
 

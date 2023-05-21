@@ -13,9 +13,10 @@ class ProductsClient extends Model
     protected $fillable = [
         'client_id',
         'product_id',
+        'stock',
     ];
 
-    
+
     public function Client()
     {
         return $this->belongsTo(Client::class, 'client_id');

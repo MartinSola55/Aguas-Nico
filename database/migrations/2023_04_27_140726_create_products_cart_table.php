@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->double('setted_price', 8, 2);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
