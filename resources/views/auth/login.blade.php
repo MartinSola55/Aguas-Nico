@@ -34,9 +34,9 @@
                             <label for="remember"> Recordarme </label>
                         </div> 
                     </div>
-                    <div class="d-flex justify-content-center mt-4">
+                    {{-- <div class="d-flex justify-content-center mt-4">
                         <a href="javascript:void(0)" id="to-recover" class="text-muted"><i class="fa fa-lock m-r-5"></i> ¿Olvidaste tu contraseña?</a> 
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="form-group text-center m-t-20">
                     <div class="col-xs-12">

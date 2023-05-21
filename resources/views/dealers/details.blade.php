@@ -39,7 +39,7 @@
                 @endif
                 <hr />
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-3 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-3 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
@@ -67,7 +67,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-3 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Producto más vendido</h4>
@@ -77,6 +77,16 @@
                         <span class="text-dark">{{ round($stats['product_sales'] * 100 / ($stats['totalSold'] !== 0 ? $stats['totalSold'] : 1 )) }}% respecto del total</span>
                         <div class="progress">
                             <div class="progress-bar bg-dark wow animated progress-animated" role="progressbar" style="width: {{ round($stats['product_sales'] * 100 / ($stats['totalSold'] !== 0 ? $stats['totalSold'] : 1 )) }}%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Total cobrado en el mes</h4>
+                        <div class="text-right"> <span class="text-muted">{{ \Carbon\Carbon::today()->locale('es')->isoFormat('MMM') }}</span>
+                            <h1 class="font-light"><sup></sup>$121321</h1>
                         </div>
                     </div>
                 </div>

@@ -107,6 +107,9 @@ class CartController extends Controller
                     'quantity' => $product['quantity'],
                     'setted_price' => $prices[$product['product_id']],
                 ]);
+                // if ($product["returned"] != '0') {
+                //     //
+                // }
             }
 
             foreach ($payment_methods as $payment) {

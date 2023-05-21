@@ -37,7 +37,6 @@ class ProductController extends Controller
         try {
             $product = Product::create([
                 'name' => $request->input('name'),
-                'stock' => $request->input('stock'),
                 'price' => $request->input('price'),
             ]);
 
@@ -101,7 +100,6 @@ class ProductController extends Controller
         try {
             $product->update([
                 'name' => $request->input('name'),
-                'stock' => $request->input('stock'),
                 'price' => $request->input('price'),
             ]);
 
