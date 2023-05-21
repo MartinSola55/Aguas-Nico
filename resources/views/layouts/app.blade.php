@@ -166,11 +166,8 @@
                                 <li>
                                     <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
                                 </li>
-                                <li><a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
-                                    <ul aria-expanded="false" class="collapse" style="height: 10px;">
-                                        <li><a href="{{ url('/product/index') }}">Inicio</a></li>
-                                        <li><a href="{{ url('/product/new') }}">Nuevo</a></li>
-                                    </ul>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/product/index') }}" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
                                 </li>
                                 <li>
                                     <a class="waves-effect waves-dark" href="{{ url('/client/index') }}" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>

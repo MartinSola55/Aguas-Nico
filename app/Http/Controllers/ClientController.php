@@ -218,7 +218,7 @@ class ClientController extends Controller
                     $products[] = [
                         'client_id' => $client_id,
                         'product_id' => $productId,
-                        'stock' => $request->input('stock')
+                        //'stock' => $request->input('stock')
                     ];
                 }
             }

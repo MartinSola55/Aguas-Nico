@@ -23,13 +23,11 @@ class ProductCreateRequest extends BaseFormRequest
     {
         $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'stock' => ['integer', 'min:0'],
             'price' => ['required', 'numeric', 'min:0'],
         ]);
 
        return [
             'name',
-            'stock',
             'price',
         ];
     }
