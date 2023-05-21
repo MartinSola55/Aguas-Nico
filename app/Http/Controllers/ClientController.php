@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Client\ClientCreateRequest;
 use App\Http\Requests\Client\ClientShowRequest;
+use App\Http\Requests\Client\ClientUpdateInvoiceRequest;
 use App\Http\Requests\Client\ClientUpdateRequest;
 use App\Http\Requests\Client\SearchSalesRequest;
 use App\Models\Cart;
@@ -162,12 +163,7 @@ class ClientController extends Controller
                 'debt' => $request->input('debt'),
                 'dni' => $request->input('dni'),
                 'invoice' => $request->input('invoice') == 1 ? true : false,
-                'observation' => $request->input('observation'),
-                'invoice_type' => $request->input('invoice_type'),
-                'business_name' => $request->input('business_name'),
-                'tax_condition' => $request->input('tax_condition'),
-                'cuit' => $request->input('cuit'),
-                'tax_address' => $request->input('tax_address'),
+                'observation' => $request->input('observation')
             ]);
 
             return response()->json([
@@ -179,6 +175,33 @@ class ClientController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al editar el cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+    
+    public function updateInvoiceData(ClientUpdateInvoiceRequest $request)
+    {
+        try {
+            $client = Client::findOrFail($request->input('id'));
+            $client->update([
+                'invoice_type' => $request->input('invoice_type'),
+                'business_name' => $request->input('business_name'),
+                'tax_condition' => $request->input('tax_condition'),
+                'cuit' => $request->input('cuit'),
+                'tax_address' => $request->input('tax_address')
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Datos de facturación editados correctamente',
+                'data' => $client
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al editar los datos de facturación',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);
@@ -212,16 +235,15 @@ class ClientController extends Controller
             $products_quantity = json_decode($request->input('products_quantity'), true);
             $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
             $client_id = $request->input('client_id'); // Obtener el cliente
-            $products_client = ProductsClient::whereIn('product_id', $productIds)->where('client_id', $client_id)->get();
             $productsUpdated = [];
             
             DB::beginTransaction();
             
-            foreach ($products_client as $product) {
+            foreach ($products_quantity as $product) {
                 $productsUpdated[] = [
                     'client_id' => $client_id,
-                    'product_id' => $product->product_id,
-                    'stock' => collect($products_quantity)->where('product_id', $product->product_id)->first()['quantity'],
+                    'product_id' => $product["product_id"],
+                    'stock' => $product["quantity"],
                 ];
             }
 
