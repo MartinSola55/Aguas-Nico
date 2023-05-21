@@ -47,13 +47,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <div class="d-flex flex-row justify-content-between w-100">
-                            <div class="d-flex">
-                                <button type="button" id="btnDeleteProduct" class="btn btn-outline-danger waves-effect waves-light">Eliminar</button>
-                            </div>
-                            <div class="d-flex">
-                                <button type="submit" class="btn btn-success waves-effect waves-light">Guardar</button>
-                            </div>
+                        <div class="d-flex flex-row justify-content-end w-100">
+                            <button type="submit" class="btn btn-success waves-effect waves-light">Guardar</button>
                         </div>
                     </div>
                 </div>
@@ -176,46 +171,6 @@
     <!-- ============================================================= -->
 
     <script>
-        $("#btnDeleteProduct").on("click", function() {
-            Swal.fire({
-                title: "Esta acción no se puede revertir",
-                text: '¿Seguro deseas eliminar el producto?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Eliminar',
-                buttonsStyling: false,
-                customClass: {
-                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
-                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
-                }
-            })
-            .then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: $("#formDeleteProduct").attr('action'), // Utiliza la ruta del formulario
-                        method: $("#formDeleteProduct").attr('method'), // Utiliza el método del formulario
-                        data: $("#formDeleteProduct").serialize(), // Utiliza los datos del formulario
-                        success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                confirmButtonColor: '#1e88e5',
-                            });
-                        },
-                        error: function(errorThrown) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: errorThrown.responseJSON.message,
-                                confirmButtonColor: '#1e88e5',
-                            });
-                        }
-                    });
-                };
-            });
-        });
-    </script>
-
-    <script>
         function openModal(id, name, price) {
             //Delete product
             $("#product-id").val(id);
@@ -236,19 +191,19 @@
                 // Fetch all the forms we want to apply custom Bootstrap validation styles to
                 var forms = $('.needs-validation');
                 forms.on('submit', function(event) {
-                event.preventDefault();
-                
-                var form = $(this);
-                if (form[0].checkValidity() === false) {
-                    event.stopPropagation();
-                } else {
-                    if (form.attr('id') == "form-edit") {
-                        sendForm();
+                    event.preventDefault();
+                    
+                    var form = $(this);
+                    if (form[0].checkValidity() === false) {
+                        event.stopPropagation();
                     } else {
-                        createProduct();
+                        if (form.attr('id') == "form-edit") {
+                            sendForm();
+                        } else {
+                            createProduct();
+                        }
                     }
-                }
-                form.addClass('was-validated');
+                    form.addClass('was-validated');
                 });
             }, false);
         })();

@@ -194,11 +194,13 @@ class ClientController extends Controller
             $client_products = $client->Products;
 
             $exists = $client_products->contains('id',$product->id);
-
+            
             if ($exists) {
                 $productList[$key]['active'] = true;
+                $productList[$key]['stock'] = ProductsClient::where('client_id', $client->id)->where('product_id', $product->id)->first()->stock;
             } else {
                 $productList[$key]['active'] = false;
+                $productList[$key]['stock'] = null;
             }
         }
         return $productList;
@@ -207,24 +209,24 @@ class ClientController extends Controller
     public function updateProducts(Request $request)
     {
         try {
-            DB::beginTransaction();
-            $inputValues = $request->input(); // Obtener todos los valores de los inputs del formulario
+            $products_quantity = json_decode($request->input('products_quantity'), true);
+            $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
             $client_id = $request->input('client_id'); // Obtener el cliente
-
-            $products = [];
-            foreach ($inputValues as $key => $value) {
-                if (strpos($key, 'product_') === 0) { // Verificar si el input corresponde a un producto
-                    $productId = substr($key, strlen('product_')); // Obtener el id del producto del nombre del input
-                    $products[] = [
-                        'client_id' => $client_id,
-                        'product_id' => $productId,
-                        //'stock' => $request->input('stock')
-                    ];
-                }
+            $products_client = ProductsClient::whereIn('product_id', $productIds)->where('client_id', $client_id)->get();
+            $productsUpdated = [];
+            
+            DB::beginTransaction();
+            
+            foreach ($products_client as $product) {
+                $productsUpdated[] = [
+                    'client_id' => $client_id,
+                    'product_id' => $product->product_id,
+                    'stock' => collect($products_quantity)->where('product_id', $product->product_id)->first()['quantity'],
+                ];
             }
 
             ProductsClient::where('client_id', $client_id)->delete(); // Eliminar todos los productos del cliente
-            DB::table('products_client')->insert($products); // Insertar los nuevos productos del cliente
+            DB::table('products_client')->insert($productsUpdated); // Insertar los nuevos productos del cliente
             DB::commit();
 
             return response()->json([

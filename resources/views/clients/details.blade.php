@@ -72,21 +72,24 @@
                                 <div>
                                     <form role="form" method="POST" action="{{ url('/client/updateProducts') }}" id="form-products">
                                         <input type="hidden" name="client_id" value="{{ $client->id }}">
+                                        <input type="hidden" name="products_quantity" value="">
                                         @csrf
                                         <table class="table table-hover table-bordered table-grey" id="products_table">
                                             <thead>
                                                 <tr>
                                                     <th scope="col" class="col-1">Asociar</th>
-                                                    <th scope="col" class="col-11">Nombre</th>
+                                                    <th scope="col" class="col-1">Cantidad</th>
+                                                    <th scope="col" class="col-10">Nombre</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($client_products as $product)
-                                                    <tr>
+                                                    <tr data-id="{{ $product["id"] }}">
                                                         <td class="text-center">
                                                             <input id="product_{{ $product["id"] }}" name="product_{{ $product["id"] }}" type="checkbox" class="form-control" {{ $product["active"] === true ? "checked" : ""}} disabled>
                                                             <label for="product_{{ $product["id"] }}" class="pl-3 mb-0"></label>
                                                         </td>
+                                                        <td class="text-center"><input type="number" class="form-control" disabled value="{{ $product["stock"] }}" min="0" max="10000"></td>
                                                         <td>{{ $product["name"] }}</td>
                                                     </tr>
                                                 @endforeach
@@ -344,14 +347,26 @@
 
     {{-- Productos del cliente --}}
     <style>
-        .table-grey tbody td:first-child {
+        .table-grey tbody td:not(:last-child) {
             background-color: #f6f6f6;
         }
     </style>
+
     <script>
         $("#btnEditProducts").on("click", function() {
             $("#form-products :input[type='checkbox']").prop('disabled', function(i, val) {
                 return !val;
+            });
+            $("#form-products :input[type='checkbox']").each(function() {
+                let checkbox = $(this);
+                let numberInput = checkbox.closest("tr").find("input[type='number']");
+                if (checkbox.prop('disabled')) {
+                    numberInput.prop('disabled', true);
+                } else if (checkbox.prop('checked')){
+                    numberInput.prop('disabled', false);
+                } else {
+                    numberInput.prop('disabled', true);
+                }
             });
             $("#divSaveProducts").toggle();
 
@@ -361,8 +376,32 @@
                 $("#products_table").addClass("table-grey");
         });
 
+        $("#form-products").on("change", ":checkbox", function() {
+            let checkbox = $(this);
+            let numberInput = checkbox.closest("tr").find("input[type='number']");
+
+            numberInput.prop('disabled', !checkbox.prop('checked'));
+        });
+
+        function createProductsJSON() {
+            // Productos
+            let products = [];
+            $('#form-products table tbody tr').each(function() {
+                let productId = $(this).data('id');
+                let quantity = $(this).find('input[type="number"]').val();
+                let checked = $(this).find('input[type="checkbox"]').prop('checked');
+                if (quantity !== "" && checked) {
+                    products.push({
+                        product_id: productId,
+                        quantity: quantity
+                    });
+                }
+            });
+            $("#form-products input[name='products_quantity']").val(JSON.stringify(products));
+        };
+
         $("#btnSaveProducts").on("click", function(e) {
-            e.preventDefault();
+            createProductsJSON();
             $.ajax({
                 url: $("#form-products").attr('action'), // Utiliza la ruta del formulario
                 method: $("#form-products").attr('method'), // Utiliza el método del formulario
