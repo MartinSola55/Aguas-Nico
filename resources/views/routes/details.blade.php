@@ -240,7 +240,7 @@
                                         <div class="m-l-10 align-self-center">
                                             <h3 class="m-b-0 font-light">${{ $data->day_collected }}</h3>
                                             <h5 class="text-muted m-b-0">
-                                                Ventas del día
+                                                Recaudado en el día
                                                 <a class="mytooltip" href="javascript:void(0)">
                                                     <i class="bi bi-info-circle"></i>
                                                     <span class="tooltip-content5">

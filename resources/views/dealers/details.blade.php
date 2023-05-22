@@ -84,9 +84,9 @@
             <div class="col-lg-3 col-md-6">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Total cobrado en el mes</h4>
-                        <div class="text-right"> <span class="text-muted">{{ \Carbon\Carbon::today()->locale('es')->isoFormat('MMM') }}</span>
-                            <h1 class="font-light"><sup></sup>$121321</h1>
+                        <h4 class="card-title">Total recaudado en el mes</h4>
+                        <div class="text-right"> <span class="text-muted" id="monthName"></span>
+                            <h1 class="font-light"><sup></sup>${{ number_format($stats["totalCollected"], 0, ",", ".") }}</h1>
                         </div>
                     </div>
                 </div>
@@ -165,5 +165,11 @@
                 gridLineColor: '#e0e0e0',
                 hideHover: 'auto'
             });   
+    </script>
+
+    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
+    <script>
+        let month = moment().locale('es').format('MMMM');
+        $("#monthName").text(month);
     </script>
 @endsection

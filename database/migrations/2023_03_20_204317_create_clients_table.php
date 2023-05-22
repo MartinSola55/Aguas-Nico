@@ -22,7 +22,6 @@ return new class extends Migration
             $table->boolean('invoice')->default(0);
             $table->boolean('is_active')->default(1);
             $table->text('observation')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->string('invoice_type')->nullable();
             $table->string('business_name')->nullable();
             $table->string('tax_condition')->nullable();

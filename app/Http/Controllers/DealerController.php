@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\CartPaymentMethod;
+use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductsCart;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +23,7 @@ class DealerController extends Controller
         return view('dealers.index', compact('users'));
     }
     
-    
+    // General stats
     public function statistics()
     {
         // Total repartos
@@ -214,10 +217,23 @@ class DealerController extends Controller
             $totalSold = 0;
         }
 
+        $currentMonth = Carbon::now()->month;
+
+        $totalCollected = CartPaymentMethod::whereHas('cart', function ($query) use ($id, $currentMonth) {
+            $query->where('state', 1)
+                ->where('is_static', false)
+                ->whereHas('route', function ($query) use ($id, $currentMonth) {
+                    $query->where('user_id', $id)
+                        ->whereMonth('start_date', $currentMonth);
+                });
+        })
+        ->sum('amount');
+
         $stats = [
             'product' => $product->name ?? 'Sin ventas',
             'product_sales' => $product_sales,
-            'totalSold' => $totalSold
+            'totalSold' => $totalSold,
+            'totalCollected' => $totalCollected,
         ];
         return $stats;
     }

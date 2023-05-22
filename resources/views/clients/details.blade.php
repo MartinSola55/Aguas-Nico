@@ -424,6 +424,7 @@
                 data: $("#form-invoice").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     $("#btnEditInvoice").click();
+                    $("#form-invoice").removeClass('was-validated')
                     Swal.fire({
                         icon: 'success',
                         title: response.message,
