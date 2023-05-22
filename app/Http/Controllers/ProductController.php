@@ -6,6 +6,7 @@ use App\Http\Requests\Product\ProductCreateRequest;
 use App\Http\Requests\Product\ProductUpdateRequest;
 use App\Models\Product;
 use App\Models\ProductsCart;
+use App\Models\ProductsClient;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -80,7 +81,10 @@ class ProductController extends Controller
             $graph[$mes] += $prod->quantity;
         };
 
-        return view('products.stats', compact('product','graph','total_earnings'))->with('graph', json_encode($graph));
+        $total_in_street = 0;
+        $total_in_street = ProductsClient::where('product_id', $id)->sum('stock');
+
+        return view('products.stats', compact('product','graph','total_earnings', 'total_in_street'))->with('graph', json_encode($graph));
     }
 
     /**

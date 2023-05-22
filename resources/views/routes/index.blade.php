@@ -36,7 +36,7 @@
         <!-- ============================================================== -->
         <div class="row">
             <div class="col-lg-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex no-block">
                             <h4 class="card-title">Repartos</h4>

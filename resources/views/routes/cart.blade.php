@@ -42,7 +42,7 @@
             <div class="col-12">
                 <h2 class="text-left">Agregar cliente al reparto del <b>{{ $diasSemana[$route->day_of_week] }}</b> de <b>{{ $route->user->name }}</b></h2>
                 <hr />
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Listado de clientes</h4>
                         <form role="form" method="POST" action="{{ auth()->user()->rol_id == '1' ? url('/route/updateClients') : url('/route/addClients') }}" id="form-confirm">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Client\ClientCreateRequest;
 use App\Http\Requests\Client\ClientShowRequest;
+use App\Http\Requests\Client\ClientUpdateInvoiceRequest;
 use App\Http\Requests\Client\ClientUpdateRequest;
 use App\Http\Requests\Client\SearchSalesRequest;
 use App\Models\Cart;
@@ -162,12 +163,7 @@ class ClientController extends Controller
                 'debt' => $request->input('debt'),
                 'dni' => $request->input('dni'),
                 'invoice' => $request->input('invoice') == 1 ? true : false,
-                'observation' => $request->input('observation'),
-                'invoice_type' => $request->input('invoice_type'),
-                'business_name' => $request->input('business_name'),
-                'tax_condition' => $request->input('tax_condition'),
-                'cuit' => $request->input('cuit'),
-                'tax_address' => $request->input('tax_address'),
+                'observation' => $request->input('observation')
             ]);
 
             return response()->json([
@@ -184,6 +180,33 @@ class ClientController extends Controller
             ], 400);
         }
     }
+    
+    public function updateInvoiceData(ClientUpdateInvoiceRequest $request)
+    {
+        try {
+            $client = Client::findOrFail($request->input('id'));
+            $client->update([
+                'invoice_type' => $request->input('invoice_type'),
+                'business_name' => $request->input('business_name'),
+                'tax_condition' => $request->input('tax_condition'),
+                'cuit' => $request->input('cuit'),
+                'tax_address' => $request->input('tax_address')
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Datos de facturación editados correctamente',
+                'data' => $client
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al editar los datos de facturación',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
 
     public function getProducts(Client $client) {
         $products = Product::all();
@@ -194,11 +217,13 @@ class ClientController extends Controller
             $client_products = $client->Products;
 
             $exists = $client_products->contains('id',$product->id);
-
+            
             if ($exists) {
                 $productList[$key]['active'] = true;
+                $productList[$key]['stock'] = ProductsClient::where('client_id', $client->id)->where('product_id', $product->id)->first()->stock;
             } else {
                 $productList[$key]['active'] = false;
+                $productList[$key]['stock'] = null;
             }
         }
         return $productList;
@@ -207,24 +232,23 @@ class ClientController extends Controller
     public function updateProducts(Request $request)
     {
         try {
-            DB::beginTransaction();
-            $inputValues = $request->input(); // Obtener todos los valores de los inputs del formulario
+            $products_quantity = json_decode($request->input('products_quantity'), true);
+            $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
             $client_id = $request->input('client_id'); // Obtener el cliente
-
-            $products = [];
-            foreach ($inputValues as $key => $value) {
-                if (strpos($key, 'product_') === 0) { // Verificar si el input corresponde a un producto
-                    $productId = substr($key, strlen('product_')); // Obtener el id del producto del nombre del input
-                    $products[] = [
-                        'client_id' => $client_id,
-                        'product_id' => $productId,
-                        //'stock' => $request->input('stock')
-                    ];
-                }
+            $productsUpdated = [];
+            
+            DB::beginTransaction();
+            
+            foreach ($products_quantity as $product) {
+                $productsUpdated[] = [
+                    'client_id' => $client_id,
+                    'product_id' => $product["product_id"],
+                    'stock' => $product["quantity"],
+                ];
             }
 
             ProductsClient::where('client_id', $client_id)->delete(); // Eliminar todos los productos del cliente
-            DB::table('products_client')->insert($products); // Insertar los nuevos productos del cliente
+            DB::table('products_client')->insert($productsUpdated); // Insertar los nuevos productos del cliente
             DB::commit();
 
             return response()->json([
