@@ -247,7 +247,7 @@
                         </div>
                     </div>
                 </div>
-            @else
+            @elseif ($route->is_static === false)
                 <div class="col-md-7 col-4 align-self-center">
                     <div class="d-flex m-t-10 justify-content-end">
                         <div class="d-flex m-r-20 m-l-10">
@@ -684,13 +684,13 @@
 
         $("#selectClientToReturn").on("change", function() {
             $("#client_id").val($(this).val());
+            $("#table_products_client table tbody").html("");
             $.ajax({
                 url: $("#form_search_products").attr('action'), // Utiliza la ruta del formulario
                 method: $("#form_search_products").attr('method'), // Utiliza el método del formulario
                 data: $("#form_search_products").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     $("#table_products_client").css('display', 'block');
-                    $("#table_products_client table tbody").html("");
                     let content = "";
                     response.products.forEach(product => {
                         content += `

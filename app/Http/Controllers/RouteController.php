@@ -87,7 +87,7 @@ class RouteController extends Controller
     {
         $data = (object) [
             'day_collected' => 0,
-            'day_expenses' => Expense::whereDate('created_at', $this->getDate())->where('user_id', $route->user_id)->get()->sum('spent'),
+            'day_expenses' => Expense::whereDate('created_at', $route->start_date)->where('user_id', $route->user_id)->get()->sum('spent'),
             'completed_carts' => 0,
             'pending_carts' => 0,
             'payment_used' => [],

@@ -174,7 +174,6 @@
                         </div>
                         <div class="col-md-12">
                             <div class="pull-right m-t-30 text-right">
-                                <p id="subtotalAmount">Subtotal: $</p>
                                 <p id="IVAAmount">IVA (21%) : $</p>
                                 <hr>
                                 <h3 id="totalAmount"><b>Total: </b>$</h3>
@@ -193,19 +192,17 @@
 
     {{-- Script para calcular el subtotal, iva y total automáticamente --}}
     <script>
+        const formattedNumber = (number) => {
+            return number.toLocaleString('es-AR', { minimumFractionDigits: 2 });
+        }
         function calculateTotal () {
-            const formattedNumber = (number) => {
-                return number.toLocaleString('es-AR', { minimumFractionDigits: 2 });
-            }
             let subtotal = 0;
             $('#invoiceProducts .productTotal').each(function() {
-                const valor = $(this).text().replace('$', '').trim();
+                const valor = $(this).text().replace('$', '').replace('.', '').replace(',', '.').trim();
                 subtotal += parseFloat(valor);
             });
-            $('#subtotalAmount').text("Subtotal: $" + formattedNumber(subtotal));
             $("#IVAAmount").html("IVA (21%) : $" + formattedNumber(subtotal*0.21))
-            let iva = subtotal*0.21;
-            $("#totalAmount").html("<b>Total: </b>$" + formattedNumber(subtotal+iva))
+            $("#totalAmount").html("<b>Total: </b>$" + formattedNumber(subtotal))
         }
     </script>
     
@@ -288,8 +285,8 @@
                         content += "<tr>";
                             content += "<td>" + item.name + "</td>";
                             content += "<td class='text-right'>" + item.quantity + "</td>";
-                            content += "<td class='text-right'>" + item.price + "</td>";
-                            content += "<td class='text-right productTotal'>" + (item.quantity * item.price) + "</td>";
+                            content += "<td class='text-right'>$" + formattedNumber(parseInt(item.price)) + "</td>";
+                            content += "<td class='text-right productTotal'>$" + formattedNumber(item.quantity * item.price) + "</td>";
                             content += "</tr>";
                     });
                     $("#invoiceProducts tbody").html(content);
