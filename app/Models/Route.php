@@ -30,6 +30,11 @@ class Route extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function ProductsReturned()
+    {
+        return $this->hasMany(ProductsReturned::class, 'route_id');
+    }
+
     public function Info()
     {
         $info = [];

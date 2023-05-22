@@ -21,98 +21,102 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Modal -->
-    <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
-        style="display: none;">
-        <div class="modal-dialog">
-            <form role="form" class="needs-validation" method="POST" action="{{ url('/cart/confirm') }}" id="form-confirm" autocomplete="off" novalidate>
-                @csrf
-                <input type="hidden" name="cart_id" value="">
-                <input type="hidden" name="products_quantity" value="">
-                <input type="hidden" name="payment_methods" value="">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Confirmar pedido</h4>
-                        <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="table-responsive">
-                                    <table class="table" id="modalTable">
-                                        <thead>
-                                            <tr>
-                                                <th>Cantidad</th>
-                                                <th>Producto</th>
-                                                <th>Precio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tableBody">
-                                        </tbody>
-                                    </table>
-                                    <hr/>
-                                    <div class="d-flex flex-row justify-content-between">
-                                        <p id="totalAmount" class="mr-2 mb-0">Total pedido: $0</p>
-                                        <p id="modalClientDebt"></p>
-                                    </div>
-                                    <hr >
-                                    <div class="d-flex flex-column">
-                                        <div class="d-flex flex-row justify-content-between mb-3">
-                                            <div class="col-6 d-flex flex-row align-items-center">    
-                                                <div class="switch">
-                                                    <label>
-                                                        <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
-                                                    </label>
-                                                </div>
-                                                <div class="demo-switch-title">{{ $cash->method }}</div>
-                                            </div>
-                                            <div id="cash_input_container" class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">$</span>
-                                                </div>
-                                                <input id="cash_input" type="number" min="0" class="form-control mr-1" disabled data-id="{{ $cash->id }}">
-                                            </div>
+
+    @if (auth()->user()->rol_id == '2')
+        
+        <!-- Modal confirm cart -->
+        <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+            style="display: none;">
+            <div class="modal-dialog">
+                <form role="form" class="needs-validation" method="POST" action="{{ url('/cart/confirm') }}" id="form-confirm" autocomplete="off" novalidate>
+                    @csrf
+                    <input type="hidden" name="cart_id" value="">
+                    <input type="hidden" name="products_quantity" value="">
+                    <input type="hidden" name="payment_methods" value="">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Confirmar pedido</h4>
+                            <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="table-responsive">
+                                        <table class="table" id="modalTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Cantidad</th>
+                                                    <th>Producto</th>
+                                                    <th>Precio</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tableBody">
+                                            </tbody>
+                                        </table>
+                                        <hr/>
+                                        <div class="d-flex flex-row justify-content-between">
+                                            <p id="totalAmount" class="mr-2 mb-0">Total pedido: $0</p>
+                                            <p id="modalClientDebt"></p>
                                         </div>
-                                        <div class="d-flex flex-row justify-content-between mb-3">
-                                            <div class="col-6 d-flex flex-row align-items-center">    
-                                                <div class="switch">
-                                                    <label>
-                                                        <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-teal"></span>
-                                                    </label>
+                                        <hr >
+                                        <div class="d-flex flex-column">
+                                            <div class="d-flex flex-row justify-content-between mb-3">
+                                                <div class="col-6 d-flex flex-row align-items-center">    
+                                                    <div class="switch">
+                                                        <label>
+                                                            <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="demo-switch-title">{{ $cash->method }}</div>
                                                 </div>
-                                                <div class="demo-switch-title">Otro</div>
-                                            </div>
-                                            <div id="methods_input_container" class="input-group" style="display: none">
-                                                <select name="method" id="payment_method" class="form-control mr-1" disabled>
-                                                    <option value="" disabled selected>Seleccionar</option>
-                                                    @foreach ($payment_methods as $pm)
-                                                        <option value="{{ $pm->id }}">{{ $pm->method }}</option>      
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-end">
-                                            <div id="amount_input_container" class="input-group w-50 mb-1" style="display: none">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">$</span>
+                                                <div id="cash_input_container" class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input id="cash_input" type="number" min="0" class="form-control mr-1" disabled data-id="{{ $cash->id }}">
                                                 </div>
-                                                <input id="amount_input" type="number" min="0" class="form-control mr-1" disabled>
+                                            </div>
+                                            <div class="d-flex flex-row justify-content-between mb-3">
+                                                <div class="col-6 d-flex flex-row align-items-center">    
+                                                    <div class="switch">
+                                                        <label>
+                                                            <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-teal"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="demo-switch-title">Otro</div>
+                                                </div>
+                                                <div id="methods_input_container" class="input-group" style="display: none">
+                                                    <select name="method" id="payment_method" class="form-control mr-1" disabled>
+                                                        <option value="" disabled selected>Seleccionar</option>
+                                                        @foreach ($payment_methods as $pm)
+                                                            <option value="{{ $pm->id }}">{{ $pm->method }}</option>      
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-end">
+                                                <div id="amount_input_container" class="input-group w-50 mb-1" style="display: none">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input id="amount_input" type="number" min="0" class="form-control mr-1" disabled>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                            <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Pagar</button>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Pagar</button>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-    <!-- End Modal -->
+        <!-- End Modal -->
+    @endif
 
     @if (auth()->user()->rol_id == '1')
         <!-- Modal route products -->
@@ -163,6 +167,65 @@
         <!-- End Modal -->
     @endif
 
+    @if (auth()->user()->rol_id == '2')
+        <!-- Modal route products returned -->
+        <div id="modalProductsReturned" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+            style="display: none;">
+            <div class="modal-dialog">
+                <form role="form" class="needs-validation" method="POST" action="{{ url('/route/updateReturned') }}" id="formProductsReturned" autocomplete="off" novalidate>
+                    @csrf
+                    <input type="hidden" name="client_id" value="" id="client_id_prod_returned">
+                    <input type="hidden" name="products_quantity" value="">
+                    <input type="hidden" name="route_id" value="{{ $route->id }}">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Productos devueltos</h4>
+                            <button id="btnCloseModalProductsReturned" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group col-12">
+                                        <label for="selectClientToReturn">Cliente</label>
+                                        <div>
+                                            <select id="selectClientToReturn" name="client_id" class="form-control">
+                                                <option disabled selected>Seleccione un cliente</option>
+                                                @foreach ($clients as $client)
+                                                    <option value="{{ $client->id }}">{{ $client->name }}</option>                                                                
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <form action=""></form>
+                                    </div>
+                                    <div class="table-responsive" id="table_products_client" style="display: none">
+                                        <table class="table" id="modalProductsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-4">Cantidad</th>
+                                                    <th>Producto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @if (auth()->user()->rol_id == '2')
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                                <button type="button" id="btnUpdateProductsReturned" class="btn btn-success waves-effect waves-light">Actualizar</button>
+                            </div>
+                        @endif
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- End Modal -->
+    @endif
+
     <div class="container-fluid">
         <!-- ============================================================== -->
         <!-- Bread crumb and right sidebar toggle -->
@@ -181,6 +244,14 @@
                     <div class="d-flex m-t-10 justify-content-end">
                         <div class="d-flex m-r-20 m-l-10">
                             <button id="btnAddProducts" class="btn btn-info" data-toggle="modal" data-target="#modalProducts">Productos cargados</button>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="col-md-7 col-4 align-self-center">
+                    <div class="d-flex m-t-10 justify-content-end">
+                        <div class="d-flex m-r-20 m-l-10">
+                            <button id="btnProductsReturned" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalProductsReturned">Productos devueltos</button>
                         </div>
                     </div>
                 </div>
@@ -224,6 +295,31 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                            </div>
+                            <hr>
+                            <div class="d-flex no-block">
+                                <h4 class="card-title">
+                                    Productos devueltos
+                                    <a class="mytooltip" href="javascript:void(0)">
+                                        <i class="bi bi-info-circle"></i>
+                                        <span class="tooltip-content5">
+                                            <span class="tooltip-text3">
+                                                <span class="tooltip-inner2">
+                                                    <div class="d-flex">
+                                                        <table>
+                                                            <tbody>
+                                                                @foreach ($data->products_returned as $item)
+                                                                    <tr>
+                                                                        <td><h6 class="text-white text-left">{{ $item["name"] }}: {{ $item["total"] }}</h6></td>
+                                                                    </tr>
+                                                                @endforeach
+                                                        </table>
+                                                    </div>
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </a>
+                                </h4>
                             </div>
                         </div>
                     </div>
@@ -400,7 +496,6 @@
                                                         return $product_cart->setted_price * $product_cart->quantity;
                                                     }) }}</p>
                                                 </div>
-                                                <hr>
                                             @endif
 
                                             @if ($cart->Client->observation != "" && $cart->Client->observation != null)
@@ -451,13 +546,12 @@
                                                                 return $pm->amount;
                                                             }) }}</p>
                                                         </div>
-                                                        <hr>
                                                     </div>
                                                 </div>
                                             @endif
                                             {{-- 1 = admin --}}
                                             @if (auth()->user()->rol_id == '1' && $cart->is_static === false) 
-                                            <hr>
+                                                <hr>
                                                 <div class="d-flex flex-row justify-content-end">
                                                     {{-- Delete Cart --}}
                                                     <form id="formDeleteCart_{{ $cart->id }}" action="{{ url('/cart/delete') }}" method="POST">
@@ -568,6 +662,124 @@
                 })
             } else {
                 updateProducts();
+            }
+        });
+    </script>
+
+    {{-- Productos que devuelve un cliente --}}
+    <script>
+        $("#btnProductsReturned").on('click', function() {
+            $("#table_products_client").css('display', 'none');
+            $("#modalProductsReturned input[type='number']").val("");
+            $("#modalProductsReturned select").prop('selectedIndex', 0);
+        });
+
+        $("#modalProductsReturned input[type='number']").on("input", function() {
+            if ($(this).val() < 0) {
+                $(this).val(0);
+            } else if ($(this).val() > 10000){
+                $(this).val(10000);
+            }
+        });
+
+        $("#selectClientToReturn").on("change", function() {
+            $("#client_id").val($(this).val());
+            $.ajax({
+                url: $("#form_search_products").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form_search_products").attr('method'), // Utiliza el método del formulario
+                data: $("#form_search_products").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#table_products_client").css('display', 'block');
+                    $("#table_products_client table tbody").html("");
+                    let content = "";
+                    response.products.forEach(product => {
+                        content += `
+                            <tr data-id="${product.product_id}">
+                                <td><input type="number" class="form-control" min="0" max="10000"></td>
+                                <td>${product.product.name}</td>
+                            </tr>
+                        `;
+                    });
+                    $("#table_products_client table tbody").html(content);
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        });
+
+        $("#btnUpdateProductsReturned").on("click", function() {
+            // Productos
+            let products = [];
+            $('#modalProductsReturned table tbody tr').each(function() {
+                let productId = $(this).data('id');
+                let quantity = $(this).find('input').val();
+                if (quantity !== "") {
+                    products.push({
+                        product_id: productId,
+                        quantity: quantity
+                    });
+                }
+            });
+            $("#formProductsReturned input[name='products_quantity']").val(JSON.stringify(products));
+            
+            function updateProductsReturned() {
+                $.ajax({
+                    url: $("#formProductsReturned").attr('action'), // Utiliza la ruta del formulario
+                    method: $("#formProductsReturned").attr('method'), // Utiliza el método del formulario
+                    data: $("#formProductsReturned").serialize(), // Utiliza los datos del formulario
+                    success: function(response) {
+                        $("#btnCloseModalProductsReturned").click();
+                        Swal.fire({
+                            title: response.message,
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonColor: '#1e88e5',
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false,
+                        })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        })
+                    },
+                    error: function(errorThrown) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: errorThrown.responseJSON.message,
+                            confirmButtonColor: '#1e88e5',
+                        });
+                    }
+                });
+            }
+
+            if (products.length <= 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ALERTA',
+                    text: 'Debes ingresar al menos un producto',
+                    showCancelButton: false,
+                    confirmButtonColor: '#1e88e5',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,
+                })
+            } else if ($("#selectClientToReturn").val() === null) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ALERTA',
+                    text: 'Debes ingresar un cliente',
+                    showCancelButton: false,
+                    confirmButtonColor: '#1e88e5',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,
+                })
+            } else {
+                updateProductsReturned();
             }
         });
     </script>

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Route\ProductDispatchedUpdateRequest;
+use App\Http\Requests\Route\ProductReturnedUpdateRequest;
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Cart;
-use App\Models\CartPaymentMethod;
 use App\Models\Client;
 use App\Models\Expense;
 use App\Models\PaymentMethod;
@@ -51,30 +51,36 @@ class RouteController extends Controller
         $cash = PaymentMethod::where('method', 'Efectivo')->first();
         $payment_methods = PaymentMethod::all()->except($cash->id);
 
-        $route = Route::with(['Carts' => function ($query) {
+        $route = Route::with('Carts.Client')->with(['Carts' => function ($query) {
             $query->orderBy('priority', 'asc');
         }])->find($id);
 
-        $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
-        $products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
-            ->with('product:id,name,price')
-            ->whereHas('cart', function ($query) use ($id) {
-                $query->whereHas('route', function ($query) use ($id) {
-                    $query->where('id', $id);
-                });
-            })
-            ->groupBy('product_id')
-            ->orderBy('total_quantity', 'desc')
+        if (auth()->user()->rol_id == '1')
+        {
+            $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
+            $products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+                ->with('product:id,name,price')
+                ->whereHas('cart', function ($query) use ($id) {
+                    $query->whereHas('route', function ($query) use ($id) {
+                        $query->where('id', $id);
+                    });
+                })
+                ->groupBy('product_id')
+                ->orderBy('total_quantity', 'desc')
             ->get();
 
-        $data = $this->getStats($route);
+            $data = $this->getStats($route);
 
-       if (auth()->user()->rol_id == '1') {
             return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'products_sold', 'data'));
-        } else {
-            return view('routes.details', compact('route', 'payment_methods', 'cash'));
+        } else
+        {
+            $clients = collect();
+            foreach ($route->Carts as $cart) {
+                $clients->push($cart->Client);
+            }
+            $clients = $clients->sortBy('name')->unique('id')->values();
+            return view('routes.details', compact('route', 'payment_methods', 'cash', 'clients'));
         }
-
     }
 
     private function getStats($route)
@@ -85,6 +91,7 @@ class RouteController extends Controller
             'completed_carts' => 0,
             'pending_carts' => 0,
             'payment_used' => [],
+            'products_returned' => [],
             'in_deposit_routes' => 0,
         ];
 
@@ -119,6 +126,28 @@ class RouteController extends Controller
 
                 // Sumar al total de day_collected
                 $data->day_collected += $pm->amount;
+            }
+
+        }
+        foreach ($route->ProductsReturned as $pr) {
+            $productName = $pr->Product->name;
+            
+            // Verificar si ya se agregó este producto al arreglo products_returned
+            $foundProduct = false;
+            foreach ($data->products_returned as &$product) {
+                if ($product['name'] === $productName) {
+                    $product['total'] += $pr->quantity;
+                    $foundProduct = true;
+                    break;
+                }
+            }
+            
+            // Si no se encontró, agregarlo al arreglo products_returned
+            if (!$foundProduct) {
+                $data->products_returned[] = [
+                    'name' => $productName,
+                    'total' => $pr->quantity,
+                ];
             }
         }
         
@@ -405,23 +434,23 @@ class RouteController extends Controller
     {
         try {
             $products_quantity = json_decode($request->input('products_quantity'), true);
-            $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
             $route_id = $request->input('route_id');
-            $products_dispatched = ProductDispatched::whereIn('product_id', $productIds)->where('route_id', $route_id)->get();
+            $products = Product::all();
 
             DB::beginTransaction();
 
             $productUpdates = [];
-            foreach ($products_dispatched as $product) {
+            foreach ($products as $product) {
                 $productUpdates[] = [
-                    'id' => $product->id,
-                    'product_id' => $product->product_id,
+                    'product_id' => $product->id,
                     'route_id' => $route_id,
-                    'quantity' => collect($products_quantity)->where('product_id', $product->product_id)->first()['quantity'],
+                    'quantity' => collect($products_quantity)->where('product_id', $product->id)->first()['quantity'] ?? null,
                     'updated_at' => now(),
                 ];
             }
-            DB::table('products_dispatched')->upsert($productUpdates, 'id', ['quantity', 'updated_at']);
+
+            ProductDispatched::where('route_id', $route_id)->delete();
+            DB::table('products_dispatched')->insert($productUpdates);
 
             DB::commit();
             return response()->json([
@@ -433,6 +462,52 @@ class RouteController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al actualizar los productos despachados',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+
+    public function updateReturned(ProductReturnedUpdateRequest $request)
+    {
+        try {
+            $products_quantity = json_decode($request->input('products_quantity'), true);
+            $route_id = $request->input('route_id');
+            $client_id = $request->input('client_id');
+
+            $products_returned = [];
+            foreach ($products_quantity as $product) {
+                $products_returned[] = [
+                    'product_id' => $product["product_id"],
+                    'route_id' => $route_id,
+                    'client_id' => $client_id,
+                    'quantity' => collect($products_quantity)->where('product_id', $product["product_id"])->first()['quantity'] ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            DB::beginTransaction();
+
+            DB::table('products_returned')->insert($products_returned);
+
+            foreach ($products_returned as $product) {
+                ProductsClient::where('product_id', $product['product_id'])->where('client_id', $client_id)->update([
+                    'stock' => DB::raw('stock - ' . $product['quantity'])
+                ]);
+            }
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Productos devueltos correctamente',
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al devolver los productos',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);

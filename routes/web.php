@@ -83,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/route/getProductsClient', [App\Http\Controllers\RouteController::class, 'getProductsClient']);
     Route::get('/route/showRoutes', [App\Http\Controllers\RouteController::class, 'show']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+    Route::post('/route/updateReturned', [App\Http\Controllers\RouteController::class, 'updateReturned']);
 
 
     // Cambiar estado del carrito
