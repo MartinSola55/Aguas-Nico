@@ -80,7 +80,7 @@
         <!-- ============================================================== -->
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h2 class="card-title">Seleccione un repartidor</h4>
                         <div class="table-responsive m-t-10">

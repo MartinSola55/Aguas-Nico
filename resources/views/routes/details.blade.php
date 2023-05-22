@@ -195,7 +195,7 @@
         @if ($route->is_static === false && auth()->user()->rol_id == '1')
             <div class="row">
                 <div class="col-lg-6 col-md-12">
-                    <div class="card">
+                    <div class="card shadow">
                         <div class="card-body">
                             <div class="d-flex no-block">
                                 <h4 class="card-title">Productos vendidos</h4>
@@ -233,7 +233,7 @@
                     <div class="row">
                         <!-- Column -->
                         <div class="col-md-6 col-sm-12">
-                            <div class="card">
+                            <div class="card shadow">
                                 <div class="card-body">
                                     <div class="d-flex flex-row">
                                         <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-currency-usd"></i></div>
@@ -269,7 +269,7 @@
                         <!-- Column -->
                         <!-- Column -->
                         <div class="col-md-6 col-sm-12">
-                            <div class="card">
+                            <div class="card shadow">
                                 <div class="card-body">
                                     <div class="d-flex flex-row">
                                         <div class="round round-lg align-self-center round-danger"><i class="mdi mdi-shopping"></i></div>
@@ -286,7 +286,7 @@
                     <div class="row">
                         <!-- Column -->
                         <div class="col-md-6 col-sm-12">
-                            <div class="card">
+                            <div class="card shadow">
                                 <div class="card-body">
                                     <div class="d-flex flex-row">
                                         <div class="round round-lg align-self-center round-success"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
@@ -301,7 +301,7 @@
                         <!-- Column -->
                         <!-- Column -->
                         <div class="col-md-6 col-sm-12">
-                            <div class="card">
+                            <div class="card shadow">
                                 <div class="card-body">
                                     <div class="d-flex flex-row">
                                         <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-clock-fast"></i></div>
@@ -321,7 +321,7 @@
 
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-header d-flex flex-row justify-content-between">
                         <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
                         @if (auth()->user()->rol_id == '1')
@@ -403,7 +403,7 @@
                                                 <hr>
                                             @endif
 
-                                            @if ($cart->Client->observation != "")
+                                            @if ($cart->Client->observation != "" && $cart->Client->observation != null)
                                                 <hr>
                                                 <p><b>Observaciones:</b> {{ $cart->Client->observation }}</p>
                                             @endif

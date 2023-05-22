@@ -40,7 +40,7 @@
         </div>
         <div class="row">
             <div id="datesContainer" class="col-xlg-6 col-lg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Intervalo de facturación</h4>
                         <form method="GET" action="{{ url('/home/searchAllSales') }}" id="form-sales" class="form-material m-t-30">
@@ -67,7 +67,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="card card-body printableArea">
+                <div class="card card-body printableArea shadow">
                     <div class="d-flex flex-row justify-content-between">
                         <h3><b name="invoiceType">FACTURA</b></h3>
                         <h3 class="pull-right m-0"><b>ORIGINAL</b></h3>

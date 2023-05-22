@@ -36,7 +36,7 @@
         <div class="row">
             <!-- Column -->
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-currency-usd"></i></div>
@@ -51,7 +51,7 @@
             <!-- Column -->
             <!-- Column -->
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-danger"><i class="mdi mdi-shopping"></i></div>
@@ -66,7 +66,7 @@
             <!-- Column -->
             <!-- Column -->
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-success"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
@@ -81,7 +81,7 @@
             <!-- Column -->
             <!-- Column -->
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-clock-fast"></i></div>
@@ -97,7 +97,7 @@
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Repartos de hoy</h4>
                         <div class="table-responsive m-t-20">

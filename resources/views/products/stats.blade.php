@@ -31,7 +31,7 @@
         <!-- ============================================================== -->
         <div class="row justify-content-center">
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-column no-block align-items-start">
                             <h3 class="card-title">{{ $product->name }}</h3>
