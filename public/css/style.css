@@ -6013,7 +6013,7 @@ Stylish tooltip
 .tooltip-content5 {
   position: absolute;
   z-index: 9999;
-  width: 200px;
+  width: 250px;
   left: 50%;
   top: 100%;
   font-size: 20px;
@@ -6023,7 +6023,7 @@ Stylish tooltip
   color: #ffffff;
   background: transparent;
   opacity: 0;
-  margin: 0 0 20px -100px;
+  margin: 0 0 20px -125px;
   cursor: default;
   pointer-events: none;
   -webkit-transition: opacity 0.7s, transform 0.3s;

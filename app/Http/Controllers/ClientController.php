@@ -233,7 +233,6 @@ class ClientController extends Controller
     {
         try {
             $products_quantity = json_decode($request->input('products_quantity'), true);
-            $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
             $client_id = $request->input('client_id'); // Obtener el cliente
             $productsUpdated = [];
             
