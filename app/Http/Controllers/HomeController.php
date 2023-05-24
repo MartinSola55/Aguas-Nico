@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -49,10 +50,11 @@ class HomeController extends Controller
             // Calcular las ganancias totales del día
             $data = (object) [
                 'day_collected' => 0,
-                'day_expenses' => Expense::whereDate('created_at', $this->getDate())->get()->sum('spent'),
+                'day_expenses' => Expense::whereDate('created_at', $this->getDate())->orderBy('spent', 'desc')->get(),
                 'completed_routes' => 0,
                 'pending_routes' => 0,
                 'in_deposit_routes' => 0,
+                'products_sold' => [],
             ];
             foreach ($routes as $route) {
                 $counter = 0;
@@ -79,6 +81,18 @@ class HomeController extends Controller
                 }
             }
             $data->pending_routes = $routes->count() - $data->completed_routes - $data->in_deposit_routes;
+
+            $data->products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+                ->with('product:id,name,price')
+                ->whereHas('cart', function ($query) {
+                    $query->whereHas('route', function ($query) {
+                        $query->whereDate('start_date', $this->getDate());
+                    });
+                })
+                ->groupBy('product_id')
+                ->orderBy('total_quantity', 'desc')
+            ->get();
+            //dd($data->products_sold);
 
             return view('home', compact('routes', 'data'));
         } // Repartidor

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('route_id')->constrained('routes');
             $table->foreignId('client_id')->constrained('clients');
-            $table->integer('priority');
+            $table->integer('priority')->nullable();
             $table->integer('state')->nullable();
             $table->boolean('is_static')->default(0);
             $table->softDeletes();

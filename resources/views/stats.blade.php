@@ -78,7 +78,6 @@
                         <h4 class="card-title">Ventas anuales</h4>
                         <ul class="list-inline text-right">
                             <li>
-                                {{-- <h5><i class="fa fa-circle m-r-5 text-inverse"></i>{{ $dealer->name }}</h5> --}}
                             </li>
                         </ul>
                         <div id="morris-area-chart"></div>
@@ -91,7 +90,6 @@
                         <h4 class="card-title">Ventas mensuales</h4>
                         <ul class="list-inline text-center m-t-40">
                             <li>
-                                {{-- <h5><i class="fa fa-circle m-r-5 text-dark"></i>{{ $dealer->name }}</h5> --}}
                             </li>
                         </ul>
                         <div id="extra-area-chart"></div>

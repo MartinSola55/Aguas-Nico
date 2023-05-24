@@ -53,12 +53,12 @@
                                             <tbody id="tableBody">
                                             </tbody>
                                         </table>
-                                        <hr/>
+                                        <hr>
                                         <div class="d-flex flex-row justify-content-between">
                                             <p id="totalAmount" class="mr-2 mb-0">Total pedido: $0</p>
                                             <p id="modalClientDebt"></p>
                                         </div>
-                                        <hr >
+                                        <hr>
                                         <div class="d-flex flex-column">
                                             <div class="d-flex flex-row justify-content-between mb-3">
                                                 <div class="col-6 d-flex flex-row align-items-center">    
@@ -265,7 +265,7 @@
         <!-- ============================================================== -->
         @if ($route->is_static === false && auth()->user()->rol_id == '1')
             <div class="row">
-                <div class="col-lg-6 col-md-12">
+                <div class="col-xlg-6 col-lg-12">
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="d-flex no-block">
@@ -277,55 +277,42 @@
                                     <thead>
                                         <tr>
                                             <th style="width:90px;">Producto</th>
-                                            <th>Descriptción</th>
-                                            <th>Cantidad</th>
+                                            <th>Descripción</th>
+                                            <th>Vendidos</th>
+                                            <th>Devueltos</th>
+                                            <th>Llenos</th>
+                                            <th>Vacíos</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($products_sold as $item)    
+                                        @foreach ($data->products_sold as $item)    
                                         <tr>
                                             <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
                                             <td>
                                                 <h6>{{ $item->Product->name }}</h6><small class="text-muted">Precio: ${{ $item->Product->price }}</small>
                                             </td>
                                             <td>
-                                                <h5>{{ $item->total_quantity }}</h5>
+                                                <h5>{{ $item->total_sold }}</h5>
+                                            </td>
+                                            <td>
+                                                <h5>{{ $item->total_returned }}</h5>
+                                            </td>
+                                            <td>
+                                                <h5>{{ $item->full_units }}</h5>
+                                            </td>
+                                            <td>
+                                                <h5>{{ $item->empty_units }}</h5>
                                             </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
-                            <hr>
-                            <div class="d-flex no-block">
-                                <h4 class="card-title">
-                                    Productos devueltos
-                                    <a class="mytooltip" href="javascript:void(0)">
-                                        <i class="bi bi-info-circle"></i>
-                                        <span class="tooltip-content5">
-                                            <span class="tooltip-text3">
-                                                <span class="tooltip-inner2">
-                                                    <div class="d-flex">
-                                                        <table>
-                                                            <tbody>
-                                                                @foreach ($data->products_returned as $item)
-                                                                    <tr>
-                                                                        <td><h6 class="text-white text-left">{{ $item["name"] }}: {{ $item["total"] }}</h6></td>
-                                                                    </tr>
-                                                                @endforeach
-                                                        </table>
-                                                    </div>
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </a>
-                                </h4>
-                            </div>
                         </div>
                     </div>
                 </div>
                 <!-- Column -->
-                <div class="col-lg-6 col-md-12">
+                <div class="col-xlg-6 col-lg-12">
                     <div class="row">
                         <!-- Column -->
                         <div class="col-md-6 col-sm-12">
@@ -571,6 +558,11 @@
                                 <a class="btn btn-info btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
                             </div>
                         @endif
+                        @if ($route->is_static === false && auth()->user()->rol_id == '1')
+                            <div class="d-flex flex-row justify-content-end">
+                                <a class="btn btn-info btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newManualCart') }}">Agregar venta manual</a>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 {{-- Delete Route --}}
@@ -804,14 +796,14 @@
             // Métodos de pago
             let payment_methods = [];
             let cash = $("#cash_input").val();
-            if (cash !== "") {
+            if (cash !== "" && cash > 0) {
                 payment_methods.push({
                     method: $("#cash_input").data('id'),
                     amount: cash
                 });
             }
             let other = $("#amount_input").val();
-            if (other !== "") {
+            if (other !== "" && other > 0) {
                 payment_methods.push({
                     method: $("#payment_method").val(),
                     amount: other
@@ -967,7 +959,6 @@
         function openModal(cart_id, client_id, debt) {
             // Para el modal
             $("#form-confirm input[name='cart_id']").val(cart_id);
-            console.log(debt)
             if (debt > 0) {
                 $("#modalClientDebt").text("Deuda: $" + debt);
             } else if (debt < 0) {
