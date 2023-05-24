@@ -58,20 +58,10 @@ class RouteController extends Controller
         if (auth()->user()->rol_id == '1')
         {
             $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
-            $products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
-                ->with('product:id,name,price')
-                ->whereHas('cart', function ($query) use ($id) {
-                    $query->whereHas('route', function ($query) use ($id) {
-                        $query->where('id', $id);
-                    });
-                })
-                ->groupBy('product_id')
-                ->orderBy('total_quantity', 'desc')
-            ->get();
 
-            $data = $this->getStats($route);
+            $data = $this->getStats($route, $productsDispatched);
 
-            return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'products_sold', 'data'));
+            return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'data'));
         } else
         {
             $clients = collect();
@@ -83,17 +73,64 @@ class RouteController extends Controller
         }
     }
 
-    private function getStats($route)
+    private function getStats($route, $productsDispatched)
     {
         $data = (object) [
             'day_collected' => 0,
-            'day_expenses' => Expense::whereDate('created_at', $this->getDate())->where('user_id', $route->user_id)->get()->sum('spent'),
+            'day_expenses' => Expense::whereDate('created_at', $route->start_date)->where('user_id', $route->user_id)->get()->sum('spent'),
             'completed_carts' => 0,
             'pending_carts' => 0,
             'payment_used' => [],
             'products_returned' => [],
+            'products_sold' => [],
             'in_deposit_routes' => 0,
         ];
+
+        $data->products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+            ->with('product:id,name,price')
+            ->whereHas('cart', function ($query) use ($route) {
+                $query->whereHas('route', function ($query) use ($route) {
+                    $query->where('id', $route->id);
+                });
+            })
+            ->groupBy('product_id')
+            ->orderBy('total_sold', 'desc')
+        ->get();
+
+        foreach ($data->products_sold as &$product) {
+            $product->total_returned = 0;
+        }
+
+        foreach ($route->ProductsReturned as $pr) {
+
+            // Verificar si ya se agregó este producto a la colección "products_sold"
+            $foundProduct = false;
+            foreach ($data->products_sold as &$product) {
+                if ($product->Product->id === $pr->Product->id) {
+                    $product->total_returned = $pr->quantity;
+                    $foundProduct = true;
+                    break;
+                }
+            }
+
+            // Si no se encontró, agregarlo a la colección "products_sold"
+            if (!$foundProduct) {
+                
+                $productCart = new ProductsCart();
+                $productCart->product()->associate($pr->Product);
+                $productCart->total_sold = 0;
+                $productCart->total_returned = $pr->quantity;
+                
+                $data->products_sold[] = $productCart;
+            }
+        }
+
+        foreach ($data->products_sold as &$product) {
+            $total_dispatched = $productsDispatched->where('product_id', $product->Product->id)->sum('quantity');
+
+            $product->full_units = $total_dispatched != 0 ? ($total_dispatched - $product->total_sold) : 0;
+            $product->empty_units = $product->total_returned + $product->total_sold;
+        }
 
         foreach ($route->Carts as $cart) {
             // Calcular la cantidad de repartos completados
@@ -129,27 +166,7 @@ class RouteController extends Controller
             }
 
         }
-        foreach ($route->ProductsReturned as $pr) {
-            $productName = $pr->Product->name;
-            
-            // Verificar si ya se agregó este producto al arreglo products_returned
-            $foundProduct = false;
-            foreach ($data->products_returned as &$product) {
-                if ($product['name'] === $productName) {
-                    $product['total'] += $pr->quantity;
-                    $foundProduct = true;
-                    break;
-                }
-            }
-            
-            // Si no se encontró, agregarlo al arreglo products_returned
-            if (!$foundProduct) {
-                $data->products_returned[] = [
-                    'name' => $productName,
-                    'total' => $pr->quantity,
-                ];
-            }
-        }
+        
         
         if ($route->Carts()->count() === 0) {
             $data->in_deposit_routes++;
@@ -241,6 +258,89 @@ class RouteController extends Controller
         }
         $products = Product::all();
         return view('routes.cart', compact('route', 'clients', 'products'));
+    }
+
+    public function newManualCart($id)
+    {
+        $route = Route::find($id);
+        $clients = Client::all();
+        $cash = PaymentMethod::where('method', 'Efectivo')->first();
+        $payment_methods = PaymentMethod::all()->except($cash->id);
+        return view('routes.manualCart', compact('route', 'clients', 'payment_methods', 'cash'));
+    }
+
+    public function createManualCart(Request $request)
+    {
+        try {
+            $products_quantity = json_decode($request->input('products_quantity'), true);
+            $payment_methods = json_decode($request->input('payment_methods'), true);
+            $route_id = $request->input('route_id');
+            $client_id = $request->input('client_id');
+            $products_client = ProductsClient::where('client_id', $client_id)->get();
+            $products = Product::all();
+
+            DB::beginTransaction();
+            $cart = Cart::create([
+                'route_id' => $route_id,
+                'client_id' => $client_id,
+                'priority' => null,
+                'state' => 1,
+                'is_static' => false,
+            ]);
+
+            $products_cart = [];
+            foreach ($products_quantity as $product) {
+                $products_cart[] = [
+                    'product_id' => $product["product_id"],
+                    'cart_id' => $cart->id,
+                    'quantity' => collect($products_quantity)->where('product_id', $product["product_id"])->first()['quantity'],
+                    'setted_price' => $products->where('id', $product["product_id"])->value('price'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+
+                $client_stock = $products_client->where('product_id', $product['product_id'])->first()['stock'];
+                if ($product['quantity'] > $client_stock) {
+                    ProductsClient::where('client_id', $client_id)
+                        ->where('product_id', $product['product_id'])
+                        ->update(['stock' => ($product['quantity'])]);
+                }
+            }
+
+            $total_paid = 0;
+            $cart_payment_methods = [];
+            foreach ($payment_methods as $payment) {
+                $total_paid += $payment['amount'];
+                $cart_payment_methods[] = [
+                    'cart_id' => $cart->id,
+                    'payment_method_id' => $payment['method'],
+                    'amount' => $payment['amount'],
+                ];
+            }
+
+            $total_cart = 0;
+            foreach ($products_cart as $product) {
+                $total_cart += $product['quantity'] * $product['setted_price'];
+            }
+
+            DB::table('cart_payment_methods')->insert($cart_payment_methods);
+            DB::table('products_cart')->insert($products_cart);
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Venta realizada correctamente',
+                'data' => route('route.details', ['id' => $route_id])
+            ], 201);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al crear la venta',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Models\Cart;
 use App\Models\CartPaymentMethod;
 use App\Models\Product;
 use App\Models\ProductsCart;
+use App\Models\ProductsClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -95,30 +96,40 @@ class CartController extends Controller
             $prices = Product::whereIn('id', $productIds)->pluck('price', 'id');
 
             $client = Cart::find($request->input('cart_id'))->Client;
+            $cart = Cart::find($request->input('cart_id'));
+            $products_client = ProductsClient::where('client_id', $client->id)->get();
+
             $total_cart = 0;
             $total_paid = 0;
 
             DB::beginTransaction();
+
+            $products_cart = [];
             foreach ($products_quantity as $product) {
                 $total_cart += $product['quantity'] * $prices[$product['product_id']];
-                ProductsCart::create([
+                $products_cart[] = [
                     'product_id' => $product['product_id'],
-                    'cart_id' => $request->input('cart_id'),
+                    'cart_id' => $cart->id,
                     'quantity' => $product['quantity'],
                     'setted_price' => $prices[$product['product_id']],
-                ]);
-                // if ($product["returned"] != '0') {
-                //     //
-                // }
+                ];
+
+                $client_stock = $products_client->where('product_id', $product['product_id'])->first()['stock'];
+                if ($product['quantity'] > $client_stock) {
+                    ProductsClient::where('client_id', $client->id)
+                        ->where('product_id', $product['product_id'])
+                        ->update(['stock' => ($product['quantity'])]);
+                }
             }
 
+            $cart_payment_methods = [];
             foreach ($payment_methods as $payment) {
                 $total_paid += $payment['amount'];
-                CartPaymentMethod::create([
-                    'cart_id' => $request->input('cart_id'),
+                $cart_payment_methods[] = [
+                    'cart_id' => $cart->id,
                     'payment_method_id' => $payment['method'],
                     'amount' => $payment['amount'],
-                ]);
+                ];
             }
 
             if ($total_paid < $total_cart) {
@@ -127,7 +138,9 @@ class CartController extends Controller
                 $client->update(['debt' => $client->debt + $total_cart - $total_paid]);
             }
 
-            Cart::find($request->input('cart_id'))->update(['state' => 1]);
+            $cart->update(['state' => 1]);
+            DB::table('cart_payment_methods')->insert($cart_payment_methods);
+            DB::table('products_cart')->insert($products_cart);
             DB::commit();
 
             return response()->json([
