@@ -95,9 +95,11 @@
             </div>
         </div>
         <!-- End Modal -->
+
+
         <div class="row">
             <div id="datesContainer" class="col-xlg-6 col-lg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Intervalo de gastos</h4>
                         <form method="GET" action="{{ url('/expense/searchExpenses') }}" id="form-expense" class="form-material m-t-30">
@@ -121,7 +123,7 @@
         </div>
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row justify-content-between">
                             <h2 class="card-title">Listado de gastos</h4>

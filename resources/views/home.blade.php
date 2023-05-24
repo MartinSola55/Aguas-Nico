@@ -1,3 +1,8 @@
+@php
+    use Carbon\Carbon;
+    $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -36,7 +41,7 @@
         <div class="row">
             <!-- Column -->
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-currency-usd"></i></div>
@@ -51,12 +56,12 @@
             <!-- Column -->
             <!-- Column -->
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-danger"><i class="mdi mdi-shopping"></i></div>
                             <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">${{ $data->day_expenses }}</h3>
+                                <h3 class="m-b-0 font-lgiht">${{ $data->day_expenses->sum('spent') }}</h3>
                                 <h5 class="text-muted m-b-0">Gastos del día</h5>
                             </div>
                         </div>
@@ -66,7 +71,7 @@
             <!-- Column -->
             <!-- Column -->
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-success"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
@@ -81,7 +86,7 @@
             <!-- Column -->
             <!-- Column -->
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-clock-fast"></i></div>
@@ -94,10 +99,82 @@
                 </div>
             </div>
             <!-- Column -->
+
+            
+            <div class="col-lg-6 col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex no-block">
+                            <h4 class="card-title">Productos vendidos</h4>
+                        </div>
+                        <h6 class="card-subtitle">{{ $today->format('d/m/Y') }}</h6>
+                        <div class="table-responsive">
+                            <table class="table stylish-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:90px;">Producto</th>
+                                        <th>Descripción</th>
+                                        <th>Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($data->products_sold as $item)    
+                                    <tr>
+                                        <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
+                                        <td>
+                                            <h6>{{ $item->Product->name }}</h6><small class="text-muted">Precio: ${{ $item->Product->price }}</small>
+                                        </td>
+                                        <td>
+                                            <h5>{{ $item->total_quantity }}</h5>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex no-block">
+                            <h4 class="card-title">Gastos del día</h4>
+                        </div>
+                        <h6 class="card-subtitle">{{ $today->format('d/m/Y') }}</h6>
+                        <div class="table-responsive">
+                            <table class="table stylish-table">
+                                <thead>
+                                    <tr>
+                                        <th>Repartidor</th>
+                                        <th>Descripción</th>
+                                        <th>Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($data->day_expenses as $item)    
+                                    <tr>
+                                        <td>
+                                            <h6>{{ $item->User->name }}</h6>
+                                        </td>
+                                        <td>
+                                            <h6>{{ $item->description }}</h6>
+                                        </td>
+                                        <td>
+                                            <h5>${{ $item->spent }}</h5>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Repartos de hoy</h4>
                         <div class="table-responsive m-t-20">

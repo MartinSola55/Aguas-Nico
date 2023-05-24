@@ -42,7 +42,7 @@
         </div>
         <div class="row">
             <div id="datesContainer" class="col-xlg-6 col-lg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Intervalo de facturación</h4>
                         <form method="GET" action="{{ url('/client/searchSales') }}" id="form-sales" class="form-material m-t-30">
@@ -68,7 +68,7 @@
                 </div>
             </div>
             <div id="InvoiceDataContainer" class="col-xlg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Datos de facturación</h4>
                         <form class="form-material m-t-30">
@@ -76,8 +76,8 @@
                                 <div class="form-group col-lg-3">
                                     <label for="invoiceType">Tipo factura</label>
                                     <select id="invoiceType" class="form-control">
-                                        <option value="A">A</option>
-                                        <option value="B">B</option>
+                                        <option value="A" {{ $client->invoice_type === 'A' ? 'selected' : '' }}>A</option>
+                                        <option value="B" {{ $client->invoice_type === 'B' ? 'selected' : '' }}>B</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-lg-3">
@@ -86,23 +86,23 @@
                                 </div>
                                 <div class="form-group col-lg-6">
                                     <label for="invoiceName">Nombre y Apellido / Razón Social</label>
-                                    <input id="invoiceName" type="text" class="form-control">
+                                    <input id="invoiceName" type="text" class="form-control" value="{{ $client->business_name }}">
                                 </div>
                                 <div class="form-group col-lg-6">
                                     <label for="invoiceCUIT">CUIT</label>
-                                    <input id="invoiceCUIT" type="number" class="form-control">
+                                    <input id="invoiceCUIT" type="number" class="form-control" value="{{ $client->cuit }}">
                                 </div>
                                 <div class="form-group col-lg-6">
                                     <label for="invoiceCondition">Condición frente al IVA</label>
                                     <select id="invoiceCondition" class="form-control">
-                                        <option value="Responsable inscripto">Responsable inscripto</option>
-                                        <option value="Monotributista">Monotributista</option>
-                                        <option value="Excento">Excento</option>
+                                        <option value="Responsable inscripto" {{ $client->tax_condition == 1 ? 'selected' : '' }}>Responsable inscripto</option>
+                                        <option value="Monotributista" {{ $client->tax_condition == 2 ? 'selected' : '' }}>Monotributista</option>
+                                        <option value="Excento" {{ $client->tax_condition == 3 ? 'selected' : '' }}>Excento</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-lg-6">
                                     <label for="invoiceAdress">Domicilio</label>
-                                    <input id="invoiceAdress" type="text" class="form-control">
+                                    <input id="invoiceAdress" type="text" class="form-control" value="{{ $client->tax_address }}">
                                 </div>
                             </div>
                             <div class="col-lg-12 d-flex flex-direction-row justify-content-end">
@@ -115,10 +115,10 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="card card-body printableArea">
+                <div class="card card-body printableArea shadow">
                     <div class="d-flex flex-row justify-content-between">
                         <h3><b name="invoiceType">FACTURA -</b> <span id="invoiceNumberText" class="pull-right">#</span></h3>
-                        <h3 class="pull-right m-0"><b>ORIGINAL</b></h3>
+                        <h3 class="pull-right m-0"><b>DOCUMENTO NO VÁLIDO LEGALMENTE</b></h3>
                     </div>
                     <hr>
                     <div class="row">
@@ -148,7 +148,7 @@
                                     <p class="text-muted m-l-30 mb-0" name="invoiceName"><b>Apellido y Nombre / Razón Social: </b></p>
                                     <p class="text-muted m-l-30 mb-0" name="invoiceCUIT"><b>CUIT: </b></p>
                                     <p class="text-muted m-l-30 mb-0" name="invoiceCondition"><b>Condición frente al IVA: </b></p>
-                                    <p class="text-muted m-l-30 mb-0" name="invoice"><b>Condición de venta: </b>HAY QUE VER (Cuenta Corriente)</p>
+                                    {{-- <p class="text-muted m-l-30 mb-0" name="invoice"><b>Condición de venta: </b>HAY QUE VER (Cuenta Corriente)</p> --}}
                                     <p class="text-muted m-l-30 mb-0" name="invoiceAdress"><b>Domicilio: </b></p>
                                     <hr>
                                     <p id="dateFromInvoice" class="m-t-30"><i class="fa fa-calendar"></i><b> Fecha desde : </b></p>
@@ -174,7 +174,6 @@
                         </div>
                         <div class="col-md-12">
                             <div class="pull-right m-t-30 text-right">
-                                <p id="subtotalAmount">Subtotal: $</p>
                                 <p id="IVAAmount">IVA (21%) : $</p>
                                 <hr>
                                 <h3 id="totalAmount"><b>Total: </b>$</h3>
@@ -193,19 +192,17 @@
 
     {{-- Script para calcular el subtotal, iva y total automáticamente --}}
     <script>
+        const formattedNumber = (number) => {
+            return number.toLocaleString('es-AR', { minimumFractionDigits: 2 });
+        }
         function calculateTotal () {
-            const formattedNumber = (number) => {
-                return number.toLocaleString('es-AR', { minimumFractionDigits: 2 });
-            }
             let subtotal = 0;
             $('#invoiceProducts .productTotal').each(function() {
-                const valor = $(this).text().replace('$', '').trim();
+                const valor = $(this).text().replace('$', '').replace('.', '').replace(',', '.').trim();
                 subtotal += parseFloat(valor);
             });
-            $('#subtotalAmount').text("Subtotal: $" + formattedNumber(subtotal));
             $("#IVAAmount").html("IVA (21%) : $" + formattedNumber(subtotal*0.21))
-            let iva = subtotal*0.21;
-            $("#totalAmount").html("<b>Total: </b>$" + formattedNumber(subtotal+iva))
+            $("#totalAmount").html("<b>Total: </b>$" + formattedNumber(subtotal))
         }
     </script>
     
@@ -288,8 +285,8 @@
                         content += "<tr>";
                             content += "<td>" + item.name + "</td>";
                             content += "<td class='text-right'>" + item.quantity + "</td>";
-                            content += "<td class='text-right'>" + item.price + "</td>";
-                            content += "<td class='text-right productTotal'>" + (item.quantity * item.price) + "</td>";
+                            content += "<td class='text-right'>$" + formattedNumber(parseInt(item.price)) + "</td>";
+                            content += "<td class='text-right productTotal'>$" + formattedNumber(item.quantity * item.price) + "</td>";
                             content += "</tr>";
                     });
                     $("#invoiceProducts tbody").html(content);

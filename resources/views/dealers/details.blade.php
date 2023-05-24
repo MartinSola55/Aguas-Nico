@@ -40,7 +40,7 @@
                 <hr />
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
                         <div class="text-right"> <span class="text-muted">Completados</span>
@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
                         <div class="text-right"> <span class="text-muted">Cancelados / pendientes</span>
@@ -68,7 +68,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Producto más vendido</h4>
                         <div class="text-right"> <span class="text-muted">{{ $stats['product'] }}</span>
@@ -82,17 +82,17 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Total cobrado en el mes</h4>
-                        <div class="text-right"> <span class="text-muted">{{ \Carbon\Carbon::today()->locale('es')->isoFormat('MMM') }}</span>
-                            <h1 class="font-light"><sup></sup>$121321</h1>
+                        <h4 class="card-title">Total recaudado en el mes</h4>
+                        <div class="text-right"> <span class="text-muted" id="monthName"></span>
+                            <h1 class="font-light"><sup></sup>${{ number_format($stats["totalCollected"], 0, ",", ".") }}</h1>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Ventas anuales</h4>
                         <ul class="list-inline text-right">
@@ -105,7 +105,7 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Ventas mensuales</h4>
                         <ul class="list-inline text-center m-t-40">
@@ -165,5 +165,11 @@
                 gridLineColor: '#e0e0e0',
                 hideHover: 'auto'
             });   
+    </script>
+
+    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
+    <script>
+        let month = moment().locale('es').format('MMMM');
+        $("#monthName").text(month);
     </script>
 @endsection

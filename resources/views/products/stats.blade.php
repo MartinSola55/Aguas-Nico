@@ -31,14 +31,14 @@
         <!-- ============================================================== -->
         <div class="row justify-content-center">
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-column no-block align-items-start">
                             <h3 class="card-title">{{ $product->name }}</h3>
                             <h6 class="card-subtitle">{{ $today->format('Y') }}</h6>
                         </div>
                         <div>
-                            <canvas id="barChart" height="150"></canvas>
+                            <canvas id="barChart" height="160"></canvas>
                         </div>
                         <div class="row">
                             <div class="col-md-6 m-b-30 m-t-20 text-center">
@@ -46,8 +46,8 @@
                                 <h6 class="text-muted">Ventas totales</h6>
                             </div>
                             <div class="col-md-6 m-b-30 m-t-20 text-center">
-                                <h1 class="m-b-0 font-light">{{ $product->stock }}</h1>
-                                <h6 class="text-muted">En stock</h6>
+                                <h1 class="m-b-0 font-light">{{ $total_in_street }} u.</h1>
+                                <h6 class="text-muted">En la calle</h6>
                             </div>
                         </div>
                     </div>

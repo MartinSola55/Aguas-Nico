@@ -28,7 +28,7 @@
         <!-- ============================================================== -->
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h2 class="card-title">Listado de repartidores</h4>
                             <div class="table-responsive m-t-10">

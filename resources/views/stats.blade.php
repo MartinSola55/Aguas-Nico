@@ -31,7 +31,7 @@
         <!-- ============================================================== -->
         <div class="row">
             <div class="col-lg-4 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
                         <div class="text-right"> <span class="text-muted">Completados</span>
@@ -45,7 +45,7 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Repartos anuales</h4>
                         <div class="text-right"> <span class="text-muted">Cancelados / pendientes</span>
@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Producto más vendido</h4>
                         <div class="text-right"> <span class="text-muted">{{ $stats['product'] }}</span>
@@ -73,12 +73,11 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Ventas anuales</h4>
                         <ul class="list-inline text-right">
                             <li>
-                                {{-- <h5><i class="fa fa-circle m-r-5 text-inverse"></i>{{ $dealer->name }}</h5> --}}
                             </li>
                         </ul>
                         <div id="morris-area-chart"></div>
@@ -86,12 +85,11 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Ventas mensuales</h4>
                         <ul class="list-inline text-center m-t-40">
                             <li>
-                                {{-- <h5><i class="fa fa-circle m-r-5 text-dark"></i>{{ $dealer->name }}</h5> --}}
                             </li>
                         </ul>
                         <div id="extra-area-chart"></div>

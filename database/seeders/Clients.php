@@ -20,7 +20,6 @@ class Clients extends Seeder
             'phone' => '3404437748',
             'email' => 'payopepe2011@gmail.com',
             'observation' => 'Cuidado con el perro',
-            'user_id' => 2,
         ]);
 
         Client::create([
@@ -30,7 +29,6 @@ class Clients extends Seeder
             'phone' => '3404418576',
             'email' => 'agustinbettig@gmail.com',
             'invoice' => 1,
-            'user_id' => 2,
         ]);
     }
 }

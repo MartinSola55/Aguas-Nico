@@ -44,6 +44,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/client/create', [App\Http\Controllers\ClientController::class, 'store']);
     Route::get('/client/searchSales', [App\Http\Controllers\ClientController::class, 'searchSales']);
     Route::post('/client/edit', [App\Http\Controllers\ClientController::class, 'update']);
+    Route::post('/client/updateInvoiceData', [App\Http\Controllers\ClientController::class, 'updateInvoiceData']);
     Route::get('/client/products/{client}', [App\Http\Controllers\ClientController::class, 'getProducts']);
     Route::post('/client/updateProducts', [App\Http\Controllers\ClientController::class, 'updateProducts']);
     Route::post('/client/setIsActive', [App\Http\Controllers\ClientController::class, 'setIsActive']);
@@ -56,6 +57,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+    Route::get('/route/{id}/newManualCart', [App\Http\Controllers\RouteController::class, 'newManualCart']);
+    Route::post('/route/createManualCart', [App\Http\Controllers\RouteController::class, 'createManualCart']);
     //ProductDispatchedController
     Route::post('/route/updateDispatched', [App\Http\Controllers\RouteController::class, 'updateDispatched']);
     //Agregar/actualizar clientes en reparto
@@ -82,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/route/getProductsClient', [App\Http\Controllers\RouteController::class, 'getProductsClient']);
     Route::get('/route/showRoutes', [App\Http\Controllers\RouteController::class, 'show']);
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
+    Route::post('/route/updateReturned', [App\Http\Controllers\RouteController::class, 'updateReturned']);
 
 
     // Cambiar estado del carrito

@@ -68,7 +68,7 @@
                 <input type="hidden" value="" name="id" id="route_id">
             </form>
             <div class="col-lg-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Reparto Lunes</h4>
                         <div class="table-responsive m-t-20">
@@ -109,7 +109,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Reparto Martes</h4>
                         <div class="table-responsive m-t-20">
@@ -150,7 +150,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Reparto Miércoles</h4>
                         <div class="table-responsive m-t-20">
@@ -191,7 +191,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Reparto Jueves</h4>
                         <div class="table-responsive m-t-20">
@@ -232,7 +232,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Reparto Viernes</h4>
                         <div class="table-responsive m-t-20">

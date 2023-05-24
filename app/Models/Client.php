@@ -26,11 +26,6 @@ class Client extends Model
         'tax_address',
     ];
 
-    public function User()
-    {
-        return $this->belongsTo(Route::class, 'user_id');
-    }
-
     public function Products()
     {
         return $this->hasManyThrough(Product::class, ProductsClient::class, 'client_id', 'id', 'id', 'product_id');
