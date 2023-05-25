@@ -52,7 +52,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // ROUTE
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
     Route::post('/route/create', [App\Http\Controllers\RouteController::class, 'store']);
-    Route::post('/route/edit', [App\Http\Controllers\RouteController::class, 'update']);
     Route::get('/route/showRoutes', [App\Http\Controllers\RouteController::class, 'show']);
     Route::get('/route/details/{id}', [App\Http\Controllers\RouteController::class, 'details'])->name('route.details');
     Route::get('/route/new', [App\Http\Controllers\RouteController::class, 'new']);
