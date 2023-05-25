@@ -64,7 +64,6 @@ class ProductController extends Controller
         //
     }
 
-
     public function stats($id)
     {
         $product = Product::find($id);
@@ -77,6 +76,7 @@ class ProductController extends Controller
 
         foreach ($products as $prod) {
             $total_earnings += $prod->quantity * $prod->setted_price;
+            if ($prod->updated_at == null) continue;
             $mes = date('n', strtotime($prod->updated_at)) - 1;
             $graph[$mes] += $prod->quantity;
         };
