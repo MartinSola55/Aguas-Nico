@@ -118,6 +118,7 @@ class DealerController extends Controller
         })->get();
 
         foreach ($sales as $sale) {
+            if ($sale->updated_at == null) continue;
             $mes = date('n', strtotime($sale->updated_at)) - 1;
             $data[$mes] += $sale->quantity * $sale->setted_price;
         };
@@ -156,6 +157,7 @@ class DealerController extends Controller
         })->get();
 
         foreach ($sales as $sale) {
+            if ($sale->updated_at == null) continue;
             $dia = date('j', strtotime($sale->updated_at)) - 1;
             $data[$dia] += $sale->quantity * $sale->setted_price;
         };

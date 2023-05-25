@@ -112,6 +112,8 @@ class CartController extends Controller
                     'cart_id' => $cart->id,
                     'quantity' => $product['quantity'],
                     'setted_price' => $prices[$product['product_id']],
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
 
                 $client_stock = $products_client->where('product_id', $product['product_id'])->first()['stock'];

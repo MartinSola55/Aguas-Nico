@@ -33,7 +33,7 @@ class RouteController extends Controller
     {
         $user = Auth::user();
         if ($user->rol_id == '1') {
-            $routes = Route::whereDate('start_date', $this->getDate())
+            $routes = Route::where('day_of_week', date('N'))
                 ->where('is_static', true)
                 ->with(['Carts' => function($query) {
                     $query->orderBy('priority');
@@ -427,27 +427,7 @@ class RouteController extends Controller
      */
     public function update(RouteUpdateRequest $request)
     {
-        $route = Route::find($request->input('id'));
-        try {
-            $route->update([
-                'user_id' => $request->input('user_id'),
-                'start_daytime' => $request->input('start_daytime'),
-                'end_daytime' => $request->input('end_daytime'),
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Repato actualizado correctamente',
-                'data' => $route
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'title' => 'Error al actualizar el reparto',
-                'message' => 'Intente nuevamente o comuníquese para soporte',
-                'error' => $e->getMessage()
-            ], 400);
-        }
+        //
     }
 
     // For admin. Deletes and creates all static carts.
@@ -545,6 +525,7 @@ class RouteController extends Controller
                     'product_id' => $product->id,
                     'route_id' => $route_id,
                     'quantity' => collect($products_quantity)->where('product_id', $product->id)->first()['quantity'] ?? null,
+                    'created_at' => now(),
                     'updated_at' => now(),
                 ];
             }
