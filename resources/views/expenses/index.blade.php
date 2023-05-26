@@ -2,17 +2,17 @@
 
 @section('content')
     <!-- Datepicker -->
-    <link href="{{ secure_asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
 
     <!-- Datepicker -->
-    <script src="{{ secure_asset('plugins/moment/moment-with-locales.js') }}"></script>
-    <script src="{{ secure_asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
+    <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
 
     <!-- Data table -->
-    <link href="{{ secure_asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
 
     <!-- This is data table -->
-    <script src="{{ secure_asset('plugins/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
 
     <div class="container-fluid">
         <!-- ============================================================== -->

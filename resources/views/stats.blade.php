@@ -2,12 +2,12 @@
 
 @section('content')
     <!-- Morris CSS -->
-    <link href="{{ secure_asset('plugins/morrisjs/morris.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/morrisjs/morris.css') }}" rel="stylesheet">
 
     <!--Morris JavaScript -->
-    <script src="{{ secure_asset('plugins/raphael/raphael-min.js') }}"></script>
-    <script src="{{ secure_asset('plugins/morrisjs/morris.js') }}"></script>
-    {{-- <script src="{{ secure_asset('js/morris-data.js') }}"></script> --}}
+    <script src="{{ asset('plugins/raphael/raphael-min.js') }}"></script>
+    <script src="{{ asset('plugins/morrisjs/morris.js') }}"></script>
+    {{-- <script src="{{ asset('js/morris-data.js') }}"></script> --}}
 
 
     <div class="container-fluid">

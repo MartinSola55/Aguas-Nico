@@ -11,10 +11,10 @@
 
 @section('content')
     <!-- Data table -->
-    <link href="{{ secure_asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
 
     <!-- This is data table -->
-    <script src="{{ secure_asset('plugins/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
 
 
     <!-- Modal route products returned -->

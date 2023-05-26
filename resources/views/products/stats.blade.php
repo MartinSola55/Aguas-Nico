@@ -7,7 +7,7 @@
 
 @section('content')
     <!-- Chart JS -->
-    <script src="{{ secure_asset('plugins/Chart.js/Chart.min.js') }}"></script>
+    <script src="{{ asset('plugins/Chart.js/Chart.min.js') }}"></script>
 
     <div class="container-fluid">
         <!-- ============================================================== -->
