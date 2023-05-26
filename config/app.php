@@ -54,6 +54,7 @@ return [
     |
     */
 
+    'url_scheme' => 'https',
 
     'url' => env('APP_URL', 'http://localhost'),
 
