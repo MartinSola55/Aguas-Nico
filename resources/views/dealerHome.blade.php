@@ -30,18 +30,18 @@
 @extends('layouts.app')
 
 @section('content')
-    <link href="{{ asset('plugins/css-chart/css-chart.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('plugins/css-chart/css-chart.css') }}" rel="stylesheet">
     <!--This page css - Morris CSS -->
-    <link href="{{ asset('plugins/c3-master/c3.min.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('plugins/c3-master/c3.min.css') }}" rel="stylesheet">
     <!-- Vector CSS -->
-    <link href="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet">
 
     <!--c3 JavaScript -->
-    <script src="{{ asset('plugins/d3/d3.min.js') }}"></script>
-    <script src="{{ asset('plugins/c3-master/c3.min.js') }}"></script>
+    <script src="{{ secure_asset('plugins/d3/d3.min.js') }}"></script>
+    <script src="{{ secure_asset('plugins/c3-master/c3.min.js') }}"></script>
     <!-- Vector map JavaScript -->
-    <script src="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
-    <script src="{{ asset('plugins/vectormap/jquery-jvectormap-us-aea-en.js') }}"></script>
+    <script src="{{ secure_asset('plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
+    <script src="{{ secure_asset('plugins/vectormap/jquery-jvectormap-us-aea-en.js') }}"></script>
 
 
     <div class="container-fluid">

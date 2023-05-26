@@ -20,44 +20,44 @@
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon.png') }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ secure_asset('favicon.png') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/app.css') }}">
     <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="{{ asset('plugins/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('plugins/bootstrap/css/bootstrap.min.css') }}">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/style.css') }}">
     <!-- You can change the theme colors from here -->
-    <link rel="stylesheet" href="{{ asset('css/colors/default-dark.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/colors/default-dark.css') }}">
     <!-- Bootstrap icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <!-- Popup CSS -->
-    <link href="{{ asset('plugins/Magnific-Popup-master/dist/magnific-popup.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('plugins/Magnific-Popup-master/dist/magnific-popup.css') }}" rel="stylesheet">
 
     <!-- Scripts -->
-    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+    <script src="{{ secure_asset('plugins/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap tether Core JavaScript -->
-    <script src="{{ asset('plugins/popper/popper.min.js') }}"></script>
-    <script src="{{ asset('plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ secure_asset('plugins/popper/popper.min.js') }}"></script>
+    <script src="{{ secure_asset('plugins/bootstrap/js/bootstrap.min.js') }}"></script>
     <!-- slimscrollbar scrollbar JavaScript -->
-    <script src="{{ asset('js/jquery.slimscroll.js') }}"></script>
+    <script src="{{ secure_asset('js/jquery.slimscroll.js') }}"></script>
     <!--Wave Effects -->
-    <script src="{{ asset('js/waves.js') }}"></script>
+    <script src="{{ secure_asset('js/waves.js') }}"></script>
     <!--Menu sidebar -->
-    <script src="{{ asset('js/sidebarmenu.js') }}"></script>
+    <script src="{{ secure_asset('js/sidebarmenu.js') }}"></script>
     <!--stickey kit -->
-    <script src="{{ asset('plugins/sticky-kit-master/dist/sticky-kit.min.js') }}"></script>
-    <script src="{{ asset('plugins/sparkline/jquery.sparkline.min.js') }}"></script>
+    <script src="{{ secure_asset('plugins/sticky-kit-master/dist/sticky-kit.min.js') }}"></script>
+    <script src="{{ secure_asset('plugins/sparkline/jquery.sparkline.min.js') }}"></script>
     <!--Custom JavaScript -->
-    <script src="{{ asset('js/custom.min.js') }}"></script>
+    <script src="{{ secure_asset('js/custom.min.js') }}"></script>
     <!-- ============================================================== -->
     <!-- Style switcher -->
     <!-- ============================================================== -->
-    <script src="{{ asset('plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
+    <script src="{{ secure_asset('plugins/styleswitcher/jQuery.style.switcher.js') }}"></script>
     <!-- Notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Magnific popup JavaScript -->
-    <script src="{{ asset('plugins/Magnific-Popup-master/dist/jquery.magnific-popup.min.js') }}"></script>
-    <script src="{{ asset('plugins/Magnific-Popup-master/dist/jquery.magnific-popup-init.js') }}"></script>
+    <script src="{{ secure_asset('plugins/Magnific-Popup-master/dist/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ secure_asset('plugins/Magnific-Popup-master/dist/jquery.magnific-popup-init.js') }}"></script>
 </head>
 
 <body class="fix-header fix-sidebar card-no-border mini-sidebar">
@@ -85,13 +85,13 @@
                         <b>
                             <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                             <!-- Dark Logo icon -->
-                            <img src="{{ asset('images/logo_n.png') }}" alt="N" class="p-2" style="width: 60px; height: 60px;">
+                            <img src="{{ secure_asset('images/logo_n.png') }}" alt="N" class="p-2" style="width: 60px; height: 60px;">
                         </b>
                         <!--End Logo icon -->
                         <!-- Logo text -->
                         <span>
                             <!-- Logo text -->
-                            <img src="{{ asset('images/logo.png') }}" alt="Inicio" class="p-2" style="width: 150px; height: 70px;"/>
+                            <img src="{{ secure_asset('images/logo.png') }}" alt="Inicio" class="p-2" style="width: 150px; height: 70px;"/>
                         </span>
                     </a>
                 </div>
@@ -116,13 +116,13 @@
                         <!-- ============================================================== -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img src="{{ asset('images/profile.png') }}" alt="Usuario" class="profile-pic">
+                                <img src="{{ secure_asset('images/profile.png') }}" alt="Usuario" class="profile-pic">
                             </a>
                             <div class="dropdown-menu dropdown-menu-right scale-up">
                                 <ul class="dropdown-user">
                                     <li>
                                         <div class="dw-user-box">
-                                            <div class="u-img"><img src="{{ asset('images/profile.png') }}" alt="user"></div>
+                                            <div class="u-img"><img src="{{ secure_asset('images/profile.png') }}" alt="user"></div>
                                             <div class="u-text">
                                                 <h4>{{ Auth::user()->name }}</h4>
                                                 <p class="text-muted">{{ Auth::user()->email }}</p>

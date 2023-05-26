@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <script src="{{ asset('plugins/flot/excanvas.js') }}"></script>
-    <script src="{{ asset('plugins/flot/jquery.flot.js') }}"></script>
-    <script src="{{ asset('plugins/flot/jquery.flot.pie.js') }}"></script>
-    <script src="{{ asset('plugins/flot.tooltip/js/jquery.flot.tooltip.min.js') }}"></script>
-    {{-- <script src="{{ asset('js/flot-data.js') }}"></script> --}}
+    <script src="{{ secure_asset('plugins/flot/excanvas.js') }}"></script>
+    <script src="{{ secure_asset('plugins/flot/jquery.flot.js') }}"></script>
+    <script src="{{ secure_asset('plugins/flot/jquery.flot.pie.js') }}"></script>
+    <script src="{{ secure_asset('plugins/flot.tooltip/js/jquery.flot.tooltip.min.js') }}"></script>
+    {{-- <script src="{{ secure_asset('js/flot-data.js') }}"></script> --}}
 
     <div class="container-fluid">
         <!-- ============================================================== -->

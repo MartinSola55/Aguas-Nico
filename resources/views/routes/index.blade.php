@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
+    <script src="{{ secure_asset('plugins/moment/moment-with-locales.js') }}"></script>
     <div class="container-fluid">
         <!-- ============================================================== -->
         <!-- Bread crumb and right sidebar toggle -->

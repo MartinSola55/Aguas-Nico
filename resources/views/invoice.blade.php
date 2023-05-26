@@ -7,13 +7,13 @@
 @section('content')
 
     <!-- Datepicker -->
-    <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
 
     <!-- Datepicker -->
-    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
-    <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+    <script src="{{ secure_asset('plugins/moment/moment-with-locales.js') }}"></script>
+    <script src="{{ secure_asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!-- Print invoice -->
-    <script src="{{ asset('js/jquery.PrintArea.js') }}" type="text/JavaScript"></script>
+    <script src="{{ secure_asset('js/jquery.PrintArea.js') }}" type="text/JavaScript"></script>
 
     <div class="container-fluid">
         <!-- ============================================================== -->
