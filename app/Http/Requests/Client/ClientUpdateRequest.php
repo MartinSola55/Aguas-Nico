@@ -25,7 +25,7 @@ class ClientUpdateRequest extends BaseFormRequest
             'name' => ['required', 'string', 'max:255'],
             'adress' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
             'debt' => ['required', 'numeric'],
             'dni' => ['nullable', 'string', 'max:255'],
             'invoice' => ['boolean'],

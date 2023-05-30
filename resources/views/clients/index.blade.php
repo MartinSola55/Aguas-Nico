@@ -66,7 +66,7 @@
                                         </div>
                                         <div class="col-12 mb-3">
                                             <label for="clientEmail" class="mb-0">Email</label>
-                                            <input type="email" class="form-control" id="clientEmail" name="email" required>
+                                            <input type="email" class="form-control" id="clientEmail" name="email">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un email
                                             </div>
