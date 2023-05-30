@@ -1,7 +1,6 @@
 @php
     use Carbon\Carbon;
     $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
-    
 @endphp
 
 @extends('layouts.app')
