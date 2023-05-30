@@ -51,6 +51,11 @@ class ClientController extends Controller
                 'dni' => $request->input('dni'),
                 'invoice' => $request->input('invoice') == 1 ? true : false,
                 'observation' => $request->input('observation'),
+                'invoice_type' => $request->input('invoice_type'),
+                'business_name' => $request->input('business_name'),
+                'tax_condition' => $request->input('tax_condition'),
+                'cuit' => $request->input('cuit'),
+                'tax_address' => $request->input('tax_address')
             ]);
 
             return response()->json([

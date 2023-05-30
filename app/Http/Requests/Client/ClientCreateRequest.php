@@ -30,6 +30,11 @@ class ClientCreateRequest extends BaseFormRequest
             'dni' => ['nullable', 'string', 'max:255'],
             'invoice' => ['boolean'],
             'observation' => ['nullable', 'string'],
+            'invoice_type' => ['nullable', 'string'],
+            'business_name' => ['nullable', 'string'],
+            'tax_condition' => ['nullable', 'numeric'],
+            'cuit' => ['nullable', 'numeric'],
+            'tax_address' => ['nullable', 'string'],
         ]);
 
        return [
@@ -42,6 +47,11 @@ class ClientCreateRequest extends BaseFormRequest
             'invoice',
             'is_active',
             'observation',
+            'invoice_type',
+            'business_name',
+            'tax_condition',
+            'cuit',
+            'tax_address',
             'user_id',
         ];
     }

@@ -100,6 +100,52 @@
                                                 <label for="clientInvoice">¿Quiere factura?</label>
                                             </div>
                                         </div>
+                                        <div class="col-12" id="invoiceDataContainer">
+                                            <div class="form-group mb-3">
+                                                <label class="form-control-label mb-0" for="invoiceType">Tipo de factura</label>
+                                                <select required id="invoiceType" name="invoice_type" class="form-control form-select">
+                                                    <option disabled value="" selected>Seleccione un tipo</option>
+                                                    <option value="A">A</option>
+                                                    <option value="B">B</option>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese un tipo de factura
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label class="form-control-label mb-0" for="taxCondition">Condición frente al IVA</label>
+                                                <select required id="taxCondition" name="tax_condition" class="form-control form-select">
+                                                    <option disabled selected value="">Seleccione una condición</option>
+                                                    <option value="1">Responsable Inscripto</option>
+                                                    <option value="2">Monotributista</option>
+                                                    <option value="3">Excento</option>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese una condición frente al IVA
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label class="form-control-label mb-0" for="clientBusinessName">Razón Social</label>
+                                                <input required type="text" id="clientBusinessName" name="business_name" class="form-control form-control-alternative">
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese una razón social
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label class="form-control-label mb-0" for="clientCUIT">CUIT</label>
+                                                <input required type="number" id="clientCUIT" name="cuit" class="form-control form-control-alternative">
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese un CUIT
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label class="form-control-label mb-0" for="clientTaxAdress">Dirección de facturación</label>
+                                                <input required type="text" id="clientTaxAdress" name="tax_address" class="form-control form-control-alternative">
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese una dirección de facturación
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -257,6 +303,19 @@
             $("#form-create").removeClass('was-validated');
             $("#form-create input:not([name='_token'], [type='checkbox']),textarea").val("");
             $("#form-create input[type='checkbox']").prop("checked", false);
+            $("#form-create #invoiceDataContainer input, select").prop("disabled", "disabled");
+            $("#form-create #invoiceDataContainer").css("display", "none");
+        });
+        
+        $("#clientInvoice").on("change", function() {
+            if ($(this).prop("checked")) {
+                $("#form-create #invoiceDataContainer input, select").prop("disabled", false);
+                $("#form-create #invoiceDataContainer input, select").val("");
+                $("#form-create #invoiceDataContainer").css("display", "block");
+            } else {
+                $("#form-create #invoiceDataContainer input, select").prop("disabled", "disabled");
+                $("#form-create #invoiceDataContainer").css("display", "none");
+            }
         });
 
         $('#clientsTable').DataTable({
