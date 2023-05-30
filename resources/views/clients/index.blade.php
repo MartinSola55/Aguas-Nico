@@ -73,7 +73,7 @@
                                         </div>
                                         <div class="col-12 mb-3">
                                             <label for="clientDNI" class="mb-0">DNI</label>
-                                            <input type="number" min="0" class="form-control" id="clientDNI" name="dni" required>
+                                            <input type="number" min="0" class="form-control" id="clientDNI" name="dni">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un DNI
                                             </div>
@@ -146,7 +146,7 @@
                                             <td>{{ $client->adress }}</td>
                                             <td>{{ $client->phone }}</td>
                                             <td>{{ $client->email }}</td>
-                                            <td>{{ $client->dni }}</td>
+                                            <td>{{ $client->dni ?? "-" }}</td>
                                             <td class="text-center">
                                                 @if ( $client->invoice == true)
                                                     <i class="bi bi-check2" style="font-size: 1.5rem"></i>
@@ -176,13 +176,10 @@
 
     <script>
         function fillTable(client) {
+            console.log(client.invoice);
             let invoice = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
-            if (client.invoice) {
+            if (client.invoice == true) {
                 invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
-            }
-            let active = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
-            if (client.is_active) {
-                active = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
             }
             if (client.observation == null) {
                 client.observation = "";
@@ -195,15 +192,13 @@
                 <td>` + client.adress + `</td>
                 <td>` + client.phone + `</td>
                 <td>` + client.email + `</td>
-                <td>` + client.dni + `</td>
+                <td>` + (client.dni ?? "-") + `</td>
                 <td class="text-center">` +
                     invoice +
                 `</td>
                 <td>$` + client.debt + `</td>
                 <td>` + client.observation + `</td>
-                <td class="text-center">` +
-                    active +
-                `</td>
+                <td class="text-center"><i class="bi bi-check2" style="font-size: 1.5rem"></i></td>
             </tr>`;
             $('#clientsTable').DataTable().row.add($(content)).draw();
         }

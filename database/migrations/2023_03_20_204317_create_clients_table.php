@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('email');
             $table->double('debt', 8, 2)->default(0);
-            $table->string('dni');
+            $table->string('dni')->nullable();
             $table->boolean('invoice')->default(0);
             $table->boolean('is_active')->default(1);
             $table->text('observation')->nullable();

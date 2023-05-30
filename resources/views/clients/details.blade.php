@@ -245,7 +245,7 @@
                                     <div class="col-lg-6">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="clientDNI">DNI</label>
-                                            <input disabled required type="number" id="clientDNI" name="dni" class="form-control form-control-alternative" value="{{ $client->dni }}">
+                                            <input disabled type="number" id="clientDNI" name="dni" class="form-control form-control-alternative" value="{{ $client->dni }}">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un DNI
                                             </div>

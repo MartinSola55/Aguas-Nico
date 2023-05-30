@@ -27,7 +27,7 @@ class ClientCreateRequest extends BaseFormRequest
             'phone' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'debt' => ['required', 'numeric'],
-            'dni' => ['required', 'string', 'max:255'],
+            'dni' => ['nullable', 'string', 'max:255'],
             'invoice' => ['boolean'],
             'observation' => ['nullable', 'string'],
         ]);
