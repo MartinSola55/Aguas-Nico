@@ -301,10 +301,8 @@
                         allowOutsideClick: false,
                     })
                     .then((result) => {
-                        if (result.isConfirmed && window.userRol != '1') {
+                        if (result.isConfirmed) {
                             window.location.href = "{{ route('route.details', ['id' => $route->id] ) }}";
-                        } else if (result.isConfirmed && window.userRol == '1') {
-                            window.location.reload();
                         }
                     })
                 },
