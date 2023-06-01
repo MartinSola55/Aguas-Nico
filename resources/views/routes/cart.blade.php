@@ -7,7 +7,7 @@
         5 => 'Viernes',
     ];
 @endphp
-@extends('layouts.app')
+@extends('layouts.app') 
 
 @section('content')
     <!-- Data table -->
