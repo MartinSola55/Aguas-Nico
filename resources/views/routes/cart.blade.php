@@ -167,7 +167,8 @@
                     columnDefs: [
                         { orderable: false, targets: [0] } // Deshabilita la ordenación en la columna del control de reordenamiento
                     ],
-                    scrollY: 600,
+                    scrollY: '50vh',
+                    scrollCollapse: true,
                     paging: false,
                     "language": {
                         "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
@@ -189,7 +190,8 @@
                     columnDefs: [
                         { orderable: false, targets: [0] } // Deshabilita la ordenación en la columna del control de reordenamiento
                     ],
-                    scrollY: 600,
+                    scrollY: '50vh',
+                    scrollCollapse: true,
                     paging: false,
                     "language": {
                         "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
