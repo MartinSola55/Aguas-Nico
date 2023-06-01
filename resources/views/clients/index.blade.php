@@ -66,7 +66,7 @@
                                         </div>
                                         <div class="col-12 mb-3">
                                             <label for="clientEmail" class="mb-0">Email</label>
-                                            <input type="email" class="form-control" id="clientEmail" name="email" required>
+                                            <input type="email" class="form-control" id="clientEmail" name="email">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un email
                                             </div>
@@ -175,9 +175,10 @@
                                         <th>Nombre</th>
                                         <th>Dirección</th>
                                         <th>Teléfono</th>
-                                        <th>Email</th>
+                                        <th>Stock</th>
+                                        {{-- <th>Email</th>
                                         <th>DNI</th>
-                                        <th>Factura</th>
+                                        <th>Factura</th> --}}
                                         <th>Deuda</th>
                                         <th>Observación</th>
                                         <th>Activo</th>
@@ -191,7 +192,14 @@
                                             </td>
                                             <td>{{ $client->adress }}</td>
                                             <td>{{ $client->phone }}</td>
-                                            <td>{{ $client->email }}</td>
+                                            <td>
+                                            @foreach ($client->ProductsClient as $product)
+                                                @if ($product->stock != 0 && $product->stock != null)
+                                                    {{ $product->Product->name }}: {{ $product->stock }}<br>
+                                                @endif
+                                            @endforeach
+                                            </td>
+                                            {{-- <td>{{ $client->email }}</td>
                                             <td>{{ $client->dni ?? "-" }}</td>
                                             <td class="text-center">
                                                 @if ( $client->invoice == true)
@@ -199,7 +207,7 @@
                                                 @else
                                                     <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
                                                 @endif
-                                            </td>
+                                            </td> --}}
                                             <td>${{ $client->debt }}</td>
                                             <td>{{ $client->observation }}</td>
                                             <td class="text-center">
@@ -223,10 +231,10 @@
     <script>
         function fillTable(client) {
             console.log(client.invoice);
-            let invoice = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
-            if (client.invoice == true) {
-                invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
-            }
+            // let invoice = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
+            // if (client.invoice == true) {
+            //     invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
+            // }
             if (client.observation == null) {
                 client.observation = "";
             }
@@ -237,11 +245,6 @@
                 </td>
                 <td>` + client.adress + `</td>
                 <td>` + client.phone + `</td>
-                <td>` + client.email + `</td>
-                <td>` + (client.dni ?? "-") + `</td>
-                <td class="text-center">` +
-                    invoice +
-                `</td>
                 <td>$` + client.debt + `</td>
                 <td>` + client.observation + `</td>
                 <td class="text-center"><i class="bi bi-check2" style="font-size: 1.5rem"></i></td>

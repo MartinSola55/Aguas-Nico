@@ -283,7 +283,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="clientEmail">Email</label>
-                                            <input disabled required type="email" id="clientEmail" name="email" class="form-control form-control-alternative" value="{{ $client->email }}">
+                                            <input disabled type="email" id="clientEmail" name="email" class="form-control form-control-alternative" value="{{ $client->email }}">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un email
                                             </div>
