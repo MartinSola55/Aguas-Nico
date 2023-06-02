@@ -228,6 +228,7 @@
             format: 'DD/MM/YYYY',
             cancelText: "Cancelar",
             weekStart: 1,
+            lang: 'es',
         });
 
         $("#dateFrom").on("change", function() {
@@ -241,6 +242,7 @@
                 format: 'DD/MM/YYYY',
                 cancelText: "Cancelar",
                 weekStart: 1,
+                lang: 'es',
             });
             $("#dateFromInvoice").html(`<i class="fa fa-calendar"></i><b> Fecha desde : </b>` + $(this).val())
         });

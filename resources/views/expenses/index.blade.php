@@ -172,6 +172,7 @@
             format: 'DD/MM/YYYY',
             cancelText: "Cancelar",
             weekStart: 1,
+            lang: 'es',
         });
 
         $("#dateFrom").on("change", function() {
@@ -185,6 +186,7 @@
                 format: 'DD/MM/YYYY',
                 cancelText: "Cancelar",
                 weekStart: 1,
+                lang: 'es',
             });
         });
         $("#dateTo").on("change", function() {
