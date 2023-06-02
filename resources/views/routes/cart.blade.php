@@ -7,14 +7,21 @@
         5 => 'Viernes',
     ];
 @endphp
-@extends('layouts.app')
+@extends('layouts.app') 
 
 @section('content')
     <!-- Data table -->
     <link href="{{ asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
+    <!--nestable CSS -->
+    <link href="{{ asset('plugins/nestable/nestable.css') }}" rel="stylesheet" type="text/css" />
 
     <!-- This is data table -->
     <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/dataTables.rowReorder.min.js') }}"></script>
+ 
+
+    <!--Nestable js -->
+    <script src="{{ asset('plugins/nestable/jquery.nestable.js') }}"></script>
 
     <div class="container-fluid">
         <!-- ============================================================== -->
@@ -42,55 +49,47 @@
             <div class="col-12">
                 <h2 class="text-left">Agregar cliente al reparto del <b>{{ $diasSemana[$route->day_of_week] }}</b> de <b>{{ $route->user->name }}</b></h2>
                 <hr />
+            </div>
+            <div class="col-12 col-xl-6">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Listado de clientes</h4>
+                        <h4 class="card-title">Clientes seleccionados</h4>
                         <form role="form" method="POST" action="{{ auth()->user()->rol_id == '1' ? url('/route/updateClients') : url('/route/addClients') }}" id="form-confirm">
                             @csrf
                             <input type="hidden" name="route_id" value="{{ $route->id }}">
                             <input type="hidden" name="clients_array" id="clients_array" value="">
 
                             <div class="table-responsive">
-                                <table id="clientsTable" class="table table-bordered table-striped">
+                                <table id="clientsTable" class="table DataTable table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Seleccionar</th>
+                                            <th></th>
+                                            <th>Quitar</th>
                                             <th>Nombre</th>
                                             <th>Dirección</th>
-                                            <th>Teléfono</th>
                                             @if (auth()->user()->rol_id == '1')
                                             <th>DNI</th>
                                             @endif
-                                            <th>Factura</th>
-                                            <th>Deuda</th>
-                                            <th>Observación</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($clients->sortBy('priority')->sortBy(function($client) {
-                                            return is_null($client->priority) ? 1 : 0;
-                                        }) as $client)
-                                            <tr data-id="{{ $client->id }}" class="client_row">
+                                        @php
+                                            $i = 0;
+                                        @endphp
+                                        @foreach($clientsSelected as $client)
+                                            @php
+                                                $i++;
+                                            @endphp
+                                            <tr data-id="{{ $client->id }}">
+                                                <td style="cursor: pointer">{{ $i }}</td>
                                                 <td class="text-center">
-                                                    <input type="checkbox" id="check_{{ $client->id }}" {{ $client->priority ? "checked" : ""}} class="client_checkbox form-control" {{ auth()->user()->rol_id != '1' && $client->priority ? "disabled" : ""}}>
-                                                    <label for="check_{{ $client->id }}">{{ $client->priority ?? ""}}</label>
-                                                    <input type="hidden" name="client_priority" class="client_priority" value="{{ $client->priority ?? 0 }}" {{ auth()->user()->rol_id != '1' && $client->priority ? "disabled" : ""}}>
+                                                    <button type="button" name="remove_client" {{ auth()->user()->rol_id != '1' ? "disabled" : "" }} class="btn btn-danger btn-sm" onclick="removeClient({{ json_encode($client) }})"><i class="bi bi-x-lg"></i></button>
                                                 </td>
                                                 <td>{{ $client->name }}</td>
                                                 <td>{{ $client->adress }}</td>
-                                                <td>{{ $client->phone }}</td>
                                                 @if (auth()->user()->rol_id == '1')
                                                 <td>{{ $client->dni }}</td>
                                                 @endif
-                                                <td class="text-center">
-                                                    @if ( $client->invoice == true)
-                                                        <i class="bi bi-check2" style="font-size: 1.5rem"></i>
-                                                    @else
-                                                        <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
-                                                    @endif
-                                                </td>
-                                                <td>${{ $client->debt }}</td>
-                                                <td>{{ $client->observation }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -103,43 +102,48 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 col-xl-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h4 class="card-title">Listado de clientes</h4>
+                        <div class="table-responsive">
+                            <table id="listTable" class="table DataTable table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Seleccionar</th>
+                                        <th>Nombre</th>
+                                        <th>Dirección</th>
+                                        @if (auth()->user()->rol_id == '1')
+                                        <th>DNI</th>
+                                        @endif
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($clients as $client)
+                                        <tr data-id="{{ $client->id }}">
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-info" onclick="addClient({{ json_encode($client) }})"><i class="bi bi-arrow-left"></i></button>
+                                            </td>
+                                            <td>{{ $client->name }}</td>
+                                            <td>{{ $client->adress }}</td>
+                                            @if (auth()->user()->rol_id == '1')
+                                            <td>{{ $client->dni }}</td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    {{-- Establecer el orden de prioridad --}}
-    <script>
-        let lastPriority = $('.client_checkbox:checked').length; // Cantidad de clientes seleccionados
-        document.querySelectorAll('.client_checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                let input = this.parentElement.querySelector('.client_priority');
-                let label = this.parentElement.querySelector('label');
-                
-                if (this.checked) {
-                    lastPriority++;
-                    input.value = lastPriority;
-                    label.textContent = lastPriority;
-                } else {
-                    input.value = '';
-                    label.textContent = '';
-                    lastPriority = 0;
-                    document.querySelectorAll('.client_checkbox:checked').forEach(function(checkbox) {
-                        lastPriority++;
-                        checkbox.parentElement.querySelector('.client_priority').value = lastPriority;
-                        checkbox.parentElement.querySelector('label').textContent = lastPriority;
-                    });
-                }
-            });
-        });
-
-    </script>
-
-
     <script>
         $(document).ready(function() {
-            $('#clientsTable').DataTable({
-                "ordering": false,
+            $('#listTable').DataTable({
                 "language": {
-                    // "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json" // La url reemplaza todo al español
                     "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
                     "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
                     "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
@@ -154,6 +158,57 @@
                     },
                 },
             });
+            if (userRol == 1) {
+                $('#clientsTable').DataTable({
+                    rowReorder: {
+                        selector: 'td:first-child',
+                        update: true
+                    },
+                    columnDefs: [
+                        { orderable: false, targets: [0] } // Deshabilita la ordenación en la columna del control de reordenamiento
+                    ],
+                    scrollY: '50vh',
+                    scrollCollapse: true,
+                    paging: false,
+                    "language": {
+                        "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                        "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                        "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                        "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                        "sLengthMenu": "Mostrar _MENU_ clientes",
+                        "sSearch": "Buscar:",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior",
+                        },
+                    },
+                });
+            } else {
+                $('#clientsTable').DataTable({
+                    columnDefs: [
+                        { orderable: false, targets: [0] } // Deshabilita la ordenación en la columna del control de reordenamiento
+                    ],
+                    scrollY: '50vh',
+                    scrollCollapse: true,
+                    paging: false,
+                    "language": {
+                        "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                        "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                        "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                        "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                        "sLengthMenu": "Mostrar _MENU_ clientes",
+                        "sSearch": "Buscar:",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior",
+                        },
+                    },
+                });
+            }
         });
     </script>
 
@@ -161,21 +216,55 @@
         window.userRol = "{{ auth()->user()->rol_id }}";
     </script>
 
+    <script>
+        function removeFromTable(client_id, table_id) {
+            $(`#${table_id}`).DataTable().row(`[data-id="${client_id}"]`).remove().draw();
+        }
+
+        function fillTable(client, table_id, action, btn_color, btn_icon, btn_size = "") {
+            let totalClients = $(`#${table_id}`).DataTable().rows().count() + 1;
+            let dni = "<td></td>";
+            let index = "";
+            if (userRol == '1' && client.dni !== null) {
+                dni = `<td>${client.dni}</td>`;
+            }
+            if (table_id == 'clientsTable') {
+                index = `<td style='cursor: pointer'>${totalClients}</td>`;
+            }
+            let content = `
+                <tr data-id='${client.id}'>
+                    ${index}
+                    <td class="text-center">
+                        <button type="button" class="btn btn-${btn_color} ${btn_size}" onclick='${action}(${JSON.stringify(client)})'><i class="bi bi-${btn_icon}"></i></button>
+                    </td>
+                    <td>${client.name}</td>
+                    <td>${client.adress}</td>
+                    ${dni}
+                </tr>`;
+            $(`#${table_id}`).DataTable().row.add($(content)).draw();
+            if (table_id == 'listTable') {
+                $(`#${table_id}`).DataTable().order([1, 'asc']).draw();
+            }
+        }
+
+        function addClient(client) {
+            removeFromTable(client.id, 'listTable');
+            fillTable(client, 'clientsTable', 'removeClient', 'danger', 'x-lg', 'btn-sm');
+        }
+
+        function removeClient(client) {
+            removeFromTable(client.id, 'clientsTable');
+            fillTable(client, 'listTable', 'addClient', 'info', 'arrow-left');
+        }
+    </script>
+
     {{-- Send form --}}
     <script>
         function createClientsArray() {
             var clients = []; // arreglo para almacenar los clientes
-    
-            // para cada fila de la tabla
-            $('#clientsTable tbody tr').each(function(index) {
-                var client = {}; // objeto para almacenar un cliente
-                if ($(this).find('input[name="client_priority"]').val() != "" && !$(this).find('input[name="client_priority"]').is(':disabled')) {
-                    client.priority = parseInt($(this).find('input[name="client_priority"]').val()); // obtener la prioridad del cliente)
-                    client.id = parseInt($(this).attr('data-id')); // obtener el id del cliente
-                    clients.push(client); // agregar el cliente al arreglo de clientes
-                }
-            });
-            if (clients.length == 0) {
+
+            // Validar que hay filas en la tabla
+            if ($("#clientsTable").DataTable().rows().count() == 0) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'No se ha seleccionado ningún cliente',
@@ -183,7 +272,17 @@
                 });
                 return;
             }
-            // agregar el arreglo de productos como un campo del formulario
+            
+            // para cada fila de la tabla
+            $('#clientsTable tbody tr').each(function(index) {
+                var client = {}; // objeto para almacenar un cliente
+                if (!$(this).find('button[name="remove_client"]').is(':disabled')) {
+                    client.id = parseInt($(this).attr('data-id')); // obtener el id del cliente
+                    clients.push(client); // agregar el cliente al arreglo de clientes
+                }
+            });
+
+            // Agregar el arreglo de productos como un campo del formulario
             $("#clients_array").val(JSON.stringify(clients));
             sendForm();
         };
@@ -201,10 +300,10 @@
                         showCancelButton: false,
                         confirmButtonColor: '#1e88e5',
                         confirmButtonText: 'OK',
-                        allowOutsideClick: window.userRol == '1' ? true : false,
+                        allowOutsideClick: false,
                     })
                     .then((result) => {
-                        if (result.isConfirmed && window.userRol != '1') {
+                        if (result.isConfirmed) {
                             window.location.href = "{{ route('route.details', ['id' => $route->id] ) }}";
                         }
                     })
@@ -226,5 +325,35 @@
             background-color: #dee2e6;
         }
     </style>
+
+
+
+    {{-- Nestable --}}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var updateOutput = function(e) {
+                var list = e.length ? e : $(e.target),
+                    output = list.data('output');
+                if (window.JSON) {
+                    output.val(window.JSON.stringify(list.nestable('serialize'))); //, null, 2));
+                } else {
+                    output.val('JSON browser support required');
+                }
+            };
+
+            $('#nestable-menu').on('click', function(e) {
+                var target = $(e.target),
+                    action = target.data('action');
+                if (action === 'expand-all') {
+                    $('.dd').nestable('expandAll');
+                }
+                if (action === 'collapse-all') {
+                    $('.dd').nestable('collapseAll');
+                }
+            });
+
+            $('#nestable-menu').nestable();
+        });
+    </script>
 
 @endsection

@@ -252,12 +252,16 @@ class RouteController extends Controller
     public function newCart($id)
     {
         $route = Route::find($id);
-        $clients = Client::all();
+        $clients = Client::all()->sortBy('name');
         foreach ($clients as $client) {
             $client->priority = $route->Carts()->where('client_id', $client->id)->value('priority') ?? null;
         }
+        $clientsSelected = $clients->where('priority', '!=', null)->sortBy('priority')->sortBy(function($client) {
+            return is_null($client->priority) ? 1 : 0;
+        });
+        $clients = $clients->where('priority', '==', null);
         $products = Product::all();
-        return view('routes.cart', compact('route', 'clients', 'products'));
+        return view('routes.cart', compact('route', 'clients', 'clientsSelected', 'products'));
     }
 
     public function newManualCart($id)
@@ -438,17 +442,16 @@ class RouteController extends Controller
             $clientsJson = json_decode($request->input('clients_array'));
 
             DB::beginTransaction();
-
+            $i = 0;
             foreach ($clientsJson as $client) {
-                if ($client->priority !== 0) {
-                    $carts[] = [
-                        'route_id' => $route->id,
-                        'client_id' => $client->id,
-                        'priority' => $client->priority,
-                        'state' => null,
-                        'is_static' => true,
-                    ];
-                }
+                $i++;
+                $carts[] = [
+                    'route_id' => $route->id,
+                    'client_id' => $client->id,
+                    'priority' => $i,
+                    'state' => null,
+                    'is_static' => true,
+                ];
             }
 
             Cart::where('route_id', $route->id)->where('is_static', true)->delete(); // Eliminar todos los carrtios del reparto
@@ -478,16 +481,16 @@ class RouteController extends Controller
             $route = Route::find($request->input('route_id'));
             $clientsJson = json_decode($request->input('clients_array'));
 
+            $lastPriority = Cart::where('route_id', $route->id)->where('is_static', false)->max('priority');
             foreach ($clientsJson as $client) {
-                if ($client->priority !== 0) {
-                    $carts[] = [
-                        'route_id' => $route->id,
-                        'client_id' => $client->id,
-                        'priority' => $client->priority,
-                        'state' => 0,
-                        'is_static' => false,
-                    ];
-                }
+                $lastPriority++;
+                $carts[] = [
+                    'route_id' => $route->id,
+                    'client_id' => $client->id,
+                    'priority' => $lastPriority,
+                    'state' => 0,
+                    'is_static' => false,
+                ];
             }
 
             DB::beginTransaction();
