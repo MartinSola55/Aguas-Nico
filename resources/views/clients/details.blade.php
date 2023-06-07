@@ -272,7 +272,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="clientPhone">Teléfono</label>
-                                            <input disabled required type="tel" id="clientPhone" name="phone" class="form-control form-control-alternative" value="{{ $client->phone }}">
+                                            <input disabled type="tel" id="clientPhone" name="phone" class="form-control form-control-alternative" value="{{ $client->phone }}">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un teléfono
                                             </div>
@@ -323,7 +323,7 @@
                                             <label class="form-control-label" for="clientDebt">Observación</label>
                                             <div class="input-group">
                                                 <textarea disabled type="text" class="form-control form-control-alternative" id="clientObservation"
-                                                    name="observation" value="{{ $client->observation }}"></textarea>
+                                                    name="observation">{{ $client->observation }}</textarea>
                                                 <div class="invalid-feedback">
                                                     Por favor, ingrese una descripción
                                                 </div>
