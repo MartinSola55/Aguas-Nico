@@ -59,7 +59,7 @@
                                         </div>
                                         <div class="col-12 mb-3">
                                             <label for="clientPhone" class="mb-0">Teléfono</label>
-                                            <input type="tel" class="form-control" id="clientPhone" name="phone" required>
+                                            <input type="tel" class="form-control" id="clientPhone" name="phone">
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un teléfono
                                             </div>
@@ -237,6 +237,9 @@
             // }
             if (client.observation == null) {
                 client.observation = "";
+            }
+            if (client.phone == null) {
+                client.phone = "";
             }
             let content = `
             <tr>

@@ -172,6 +172,8 @@ class ClientController extends Controller
                 'observation' => $request->input('observation')
             ]);
 
+            dd($client);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Cliente editado correctamente',
