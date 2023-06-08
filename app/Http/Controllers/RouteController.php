@@ -28,7 +28,7 @@ class RouteController extends Controller
     {
         return Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
     }
-    
+
     public function index()
     {
         $user = Auth::user();
@@ -41,7 +41,9 @@ class RouteController extends Controller
                 ->get();
             return view('routes.adminIndex', compact('routes'));
         } else {
-            $routes = $this->getDealerRoutes(date('N'), $user->id);
+            $routes = Route::where('user_id', $user->id)
+                ->where('is_static', true)
+                ->get();
             return view('routes.index', compact('routes'));
         }
     }
@@ -115,12 +117,12 @@ class RouteController extends Controller
 
             // Si no se encontró, agregarlo a la colección "products_sold"
             if (!$foundProduct) {
-                
+
                 $productCart = new ProductsCart();
                 $productCart->product()->associate($pr->Product);
                 $productCart->total_sold = 0;
                 $productCart->total_returned = $pr->quantity;
-                
+
                 $data->products_sold[] = $productCart;
             }
         }
@@ -139,7 +141,7 @@ class RouteController extends Controller
             } else {
                 $data->pending_carts++;
             }
-            
+
             foreach ($cart->CartPaymentMethod as $pm) {
                 $paymentMethodName = $pm->PaymentMethod->method;
 
@@ -166,8 +168,8 @@ class RouteController extends Controller
             }
 
         }
-        
-        
+
+
         if ($route->Carts()->count() === 0) {
             $data->in_deposit_routes++;
         }
@@ -228,7 +230,7 @@ class RouteController extends Controller
      * @param  int  $user_id
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    private function getDealerRoutes(int $day, int $id)
+    public function getDealerRoutes(int $day, int $id)
     {
         $route = Route::where('user_id', $id)
         ->limit(10)

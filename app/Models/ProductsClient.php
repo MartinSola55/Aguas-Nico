@@ -9,6 +9,7 @@ class ProductsClient extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    public $incrementing = false;
     protected $table = 'products_client';
     protected $fillable = [
         'client_id',

@@ -186,7 +186,7 @@ class ClientController extends Controller
             ], 400);
         }
     }
-    
+
     public function updateInvoiceData(ClientUpdateInvoiceRequest $request)
     {
         try {
@@ -223,7 +223,7 @@ class ClientController extends Controller
             $client_products = $client->Products;
 
             $exists = $client_products->contains('id',$product->id);
-            
+
             if ($exists) {
                 $productList[$key]['active'] = true;
                 $productList[$key]['stock'] = ProductsClient::where('client_id', $client->id)->where('product_id', $product->id)->first()->stock;
@@ -241,9 +241,9 @@ class ClientController extends Controller
             $products_quantity = json_decode($request->input('products_quantity'), true);
             $client_id = $request->input('client_id'); // Obtener el cliente
             $productsUpdated = [];
-            
+
             DB::beginTransaction();
-            
+
             foreach ($products_quantity as $product) {
                 $productsUpdated[] = [
                     'client_id' => $client_id,

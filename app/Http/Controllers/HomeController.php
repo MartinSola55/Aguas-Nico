@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Expense;
 use App\Models\ProductsCart;
 use App\Models\Route;
+use App\Http\Controllers\RouteController;
 use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -97,9 +98,8 @@ class HomeController extends Controller
             return view('home', compact('routes', 'data'));
         } // Repartidor
         else {
-            $routes = Route::where('user_id', $user->id)
-                ->where('is_static', true)
-                ->get();
+            $routeController = new RouteController();
+            $routes = $routeController->getDealerRoutes(date('N'), $user->id);
             return view('dealerHome', compact('routes'));
         }
     }
