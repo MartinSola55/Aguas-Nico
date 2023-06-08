@@ -41,7 +41,9 @@ class RouteController extends Controller
                 ->get();
             return view('routes.adminIndex', compact('routes'));
         } else {
-            $routes = $this->getDealerRoutes(date('N'), $user->id);
+            $routes = Route::where('user_id', $user->id)
+                ->where('is_static', true)
+                ->get();
             return view('routes.index', compact('routes'));
         }
     }
@@ -228,7 +230,7 @@ class RouteController extends Controller
      * @param  int  $user_id
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    private function getDealerRoutes(int $day, int $id)
+    public function getDealerRoutes(int $day, int $id)
     {
         $route = Route::where('user_id', $id)
         ->limit(10)

@@ -865,11 +865,30 @@
                 } else {
                     payCart();
                 }
+            } else if (products.length == 0 && payment_methods.length > 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ALERTA',
+                    text: '¿Seguro que quieres pagar la cuenta corriente del cliente?',
+                    showCancelButton: true,
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,
+                    buttonsStyling: false,
+                    customClass: {
+                        confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
+                        cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                    }
+                }).
+                then((result) => {
+                    if (result.isConfirmed) {
+                        payCart();
+                    }
+                })
             } else {
                 Swal.fire({
                     icon: 'warning',
                     title: "ERROR",
-                    text: "Debes ingresar al menos un producto",
+                    text: "Debes ingresar al menos un producto o un método de pago",
                     confirmButtonColor: '#1e88e5',
                 });
             }
