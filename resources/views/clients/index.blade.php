@@ -42,7 +42,7 @@
                                     <div class="form-column">
                                         {{-- TOKEN --}}
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                                        
+
                                         <div class="col-12 mb-3">
                                             <label for="clientName" class="mb-0">Nombre</label>
                                             <input type="text" class="form-control" id="clientName" name="name" required>
@@ -159,102 +159,114 @@
             </div>
         </div>
         <!-- End Modal -->
-        
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <div class="d-flex flex-row justify-content-between">
-                            <h2 class="card-title">Listado de clientes</h4>
-                            <button id="btnAddClient" type="button" class="btn btn-info btn-rounded waves-effect waves-light m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar nuevo cliente</button>
-                        </div>
-                        <div class="table-responsive m-t-10">
-                            <table id="clientsTable" class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Dirección</th>
-                                        <th>Teléfono</th>
-                                        <th>Stock</th>
-                                        {{-- <th>Email</th>
-                                        <th>DNI</th>
-                                        <th>Factura</th> --}}
-                                        <th>Deuda</th>
-                                        <th>Observación</th>
-                                        <th>Activo</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table_body">
-                                    @foreach ($clients as $client)
+
+        @if (auth()->user()->rol_id == '1')
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="d-flex flex-row justify-content-between">
+                                <h2 class="card-title">Listado de clientes</h4>
+                                <button id="btnAddClient" type="button" class="btn btn-info btn-rounded waves-effect waves-light m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar nuevo cliente</button>
+                            </div>
+                            <div class="table-responsive m-t-10">
+                                <table id="clientsTable" class="table table-bordered table-striped">
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                <a href="{{ route('client.details', ['id' => $client->id]) }}">{{ $client->name }}</a>
-                                            </td>
-                                            <td>{{ $client->adress }}</td>
-                                            <td>{{ $client->phone }}</td>
-                                            <td>
-                                            @foreach ($client->ProductsClient as $product)
-                                                @if ($product->stock != 0 && $product->stock != null)
-                                                    {{ $product->Product->name }}: {{ $product->stock }}<br>
-                                                @endif
-                                            @endforeach
-                                            </td>
-                                            {{-- <td>{{ $client->email }}</td>
-                                            <td>{{ $client->dni ?? "-" }}</td>
-                                            <td class="text-center">
-                                                @if ( $client->invoice == true)
-                                                    <i class="bi bi-check2" style="font-size: 1.5rem"></i>
-                                                @else
-                                                    <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
-                                                @endif
-                                            </td> --}}
-                                            <td>${{ $client->debt }}</td>
-                                            <td>{{ $client->observation }}</td>
-                                            <td class="text-center">
-                                                @if ( $client->is_active == true)
-                                                    <i class="bi bi-check2" style="font-size: 1.5rem"></i>
-                                                @else
-                                                    <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
-                                                @endif
-                                            </td>
+                                            <th>Nombre</th>
+                                            <th>Dirección</th>
+                                            <th>Teléfono</th>
+                                            <th>Stock</th>
+                                            {{-- <th>Email</th>
+                                            <th>DNI</th>
+                                            <th>Factura</th> --}}
+                                            <th>Deuda</th>
+                                            <th>Observación</th>
+                                            <th>Activo</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody id="table_body">
+                                        @foreach ($clients as $client)
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ route('client.details', ['id' => $client->id]) }}">{{ $client->name }}</a>
+                                                </td>
+                                                <td>{{ $client->adress }}</td>
+                                                <td>{{ $client->phone }}</td>
+                                                <td>
+                                                @foreach ($client->ProductsClient as $product)
+                                                    @if ($product->stock != 0 && $product->stock != null)
+                                                        {{ $product->Product->name }}: {{ $product->stock }}<br>
+                                                    @endif
+                                                @endforeach
+                                                </td>
+                                                {{-- <td>{{ $client->email }}</td>
+                                                <td>{{ $client->dni ?? "-" }}</td>
+                                                <td class="text-center">
+                                                    @if ( $client->invoice == true)
+                                                        <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                                    @else
+                                                        <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
+                                                    @endif
+                                                </td> --}}
+                                                <td>${{ $client->debt }}</td>
+                                                <td>{{ $client->observation }}</td>
+                                                <td class="text-center">
+                                                    @if ( $client->is_active == true)
+                                                        <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                                    @else
+                                                        <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @else
+            <div class="row justify-content-center">
+                <div class="d-flex flex-row justify-content-between">
+                    <button id="btnAddClient" type="button" class="btn-xl btn-info btn-rounded waves-effect waves-light m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar nuevo cliente</button>
+                </div>
+            </div>
+        @endif
     </div>
 
-    <script>
-        function fillTable(client) {
-            console.log(client.invoice);
-            // let invoice = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
-            // if (client.invoice == true) {
-            //     invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
-            // }
-            if (client.observation == null) {
-                client.observation = "";
+    @if (auth()->user()->rol_id == '1')
+        <script>
+            function fillTable(client) {
+                console.log(client.invoice);
+                // let invoice = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
+                // if (client.invoice == true) {
+                //     invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
+                // }
+                if (client.observation == null) {
+                    client.observation = "";
+                }
+                if (client.phone == null) {
+                    client.phone = "";
+                }
+                let content = `
+                <tr>
+                    <td>
+                        <a href="/client/details/` + client.id + `">` + client.name + `</a>
+                    </td>
+                    <td>` + client.adress + `</td>
+                    <td>` + client.phone + `</td>
+                    <td>$` + client.debt + `</td>
+                    <td>` + client.observation + `</td>
+                    <td class="text-center"><i class="bi bi-check2" style="font-size: 1.5rem"></i></td>
+                </tr>`;
+                $('#clientsTable').DataTable().row.add($(content)).draw();
             }
-            if (client.phone == null) {
-                client.phone = "";
-            }
-            let content = `
-            <tr>
-                <td>
-                    <a href="/client/details/` + client.id + `">` + client.name + `</a>
-                </td>
-                <td>` + client.adress + `</td>
-                <td>` + client.phone + `</td>
-                <td>$` + client.debt + `</td>
-                <td>` + client.observation + `</td>
-                <td class="text-center"><i class="bi bi-check2" style="font-size: 1.5rem"></i></td>
-            </tr>`;
-            $('#clientsTable').DataTable().row.add($(content)).draw();
-        }
+        </script>
+    @endif
 
+    <script>
         //For validation with custom styles
         (function() {
             'use strict';
@@ -277,34 +289,6 @@
             }, false);
         })();
 
-        function sendForm() {
-            // Enviar solicitud AJAX
-            $.ajax({
-                url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
-                method: $("#form-create").attr('method'), // Utiliza el método del formulario
-                data: $("#form-create").serialize(), // Utiliza los datos del formulario
-                success: function(response) {
-                    $("#btnCloseModal").click();
-                    Swal.fire({
-                        icon: 'success',
-                        title: response.message,
-                        confirmButtonColor: '#1e88e5',
-                    });
-                    fillTable(response.data);
-                },
-                error: function(errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: errorThrown.responseJSON.title,
-                        text: errorThrown.responseJSON.message,
-                        confirmButtonColor: '#1e88e5',
-                    });
-                }
-            });
-        }
-    </script>
-
-    <script>
         $("#btnAddClient").on("click", function () {
             $("#form-create").removeClass('was-validated');
             $("#form-create input:not([name='_token'], [type='checkbox']),textarea").val("");
@@ -312,7 +296,7 @@
             $("#form-create #invoiceDataContainer input, select").prop("disabled", "disabled");
             $("#form-create #invoiceDataContainer").css("display", "none");
         });
-        
+
         $("#clientInvoice").on("change", function() {
             if ($(this).prop("checked")) {
                 $("#form-create #invoiceDataContainer input, select").prop("disabled", false);
@@ -343,5 +327,33 @@
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
+    <script>
+        function sendForm() {
+            // Enviar solicitud AJAX
+            $.ajax({
+                url: $("#form-create").attr('action'), // Utiliza la ruta del formulario
+                method: $("#form-create").attr('method'), // Utiliza el método del formulario
+                data: $("#form-create").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnCloseModal").click();
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                    fillTable(response.data);
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.title,
+                        text: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection

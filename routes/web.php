@@ -103,5 +103,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/expense/index', [App\Http\Controllers\ExpenseController::class, 'index']);
     Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
     Route::get('/expense/searchExpenses', [App\Http\Controllers\ExpenseController::class, 'searchExpenses']);
+
+    // CLIENT
+    Route::get('/client/index', [App\Http\Controllers\ClientController::class, 'index']);
+    Route::post('/client/create', [App\Http\Controllers\ClientController::class, 'store']);
 });
 

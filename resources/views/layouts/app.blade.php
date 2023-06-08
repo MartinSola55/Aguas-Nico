@@ -73,7 +73,7 @@
 
     <div id="main-wrapper">
         @auth
-        
+
         <header class="topbar">
             <nav class="navbar top-navbar navbar-expand-md navbar-light">
                 <!-- ============================================================== -->
@@ -186,7 +186,7 @@
                                 <li>
                                     <a class="waves-effect waves-dark" href="{{ url('/expense/index') }}" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
                                 </li>
-                                
+
                                 <li class="nav-devider"></li>
                                 <li class="nav-small-cap">ADMINISTRACIÓN</li>
                                 <li>
@@ -203,6 +203,9 @@
                                 </li>
                                 <li>
                                     <a class="waves-effect waves-dark" href="{{ url('/route/index') }}" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Mis repartos</span></a>
+                                </li>
+                                <li>
+                                    <a class="waves-effect waves-dark" href="{{ url('/client/index') }}" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
                                 </li>
                                 <li>
                                     <a class="waves-effect waves-dark" href="{{ url('/expense/index') }}" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>

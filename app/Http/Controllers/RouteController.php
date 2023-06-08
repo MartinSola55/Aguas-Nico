@@ -28,7 +28,7 @@ class RouteController extends Controller
     {
         return Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
     }
-    
+
     public function index()
     {
         $user = Auth::user();
@@ -115,12 +115,12 @@ class RouteController extends Controller
 
             // Si no se encontró, agregarlo a la colección "products_sold"
             if (!$foundProduct) {
-                
+
                 $productCart = new ProductsCart();
                 $productCart->product()->associate($pr->Product);
                 $productCart->total_sold = 0;
                 $productCart->total_returned = $pr->quantity;
-                
+
                 $data->products_sold[] = $productCart;
             }
         }
@@ -139,7 +139,7 @@ class RouteController extends Controller
             } else {
                 $data->pending_carts++;
             }
-            
+
             foreach ($cart->CartPaymentMethod as $pm) {
                 $paymentMethodName = $pm->PaymentMethod->method;
 
@@ -166,8 +166,8 @@ class RouteController extends Controller
             }
 
         }
-        
-        
+
+
         if ($route->Carts()->count() === 0) {
             $data->in_deposit_routes++;
         }
