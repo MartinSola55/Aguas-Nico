@@ -23,7 +23,7 @@
 @section('content')
 
     @if (auth()->user()->rol_id == '2')
-        
+
         <!-- Modal confirm cart -->
         <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
@@ -61,7 +61,7 @@
                                         <hr>
                                         <div class="d-flex flex-column">
                                             <div class="d-flex flex-row justify-content-between mb-3">
-                                                <div class="col-6 d-flex flex-row align-items-center">    
+                                                <div class="col-6 d-flex flex-row align-items-center">
                                                     <div class="switch">
                                                         <label>
                                                             <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
@@ -77,7 +77,7 @@
                                                 </div>
                                             </div>
                                             <div class="d-flex flex-row justify-content-between mb-3">
-                                                <div class="col-6 d-flex flex-row align-items-center">    
+                                                <div class="col-6 d-flex flex-row align-items-center">
                                                     <div class="switch">
                                                         <label>
                                                             <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-teal"></span>
@@ -89,7 +89,7 @@
                                                     <select name="method" id="payment_method" class="form-control mr-1" disabled>
                                                         <option value="" disabled selected>Seleccionar</option>
                                                         @foreach ($payment_methods as $pm)
-                                                            <option value="{{ $pm->id }}">{{ $pm->method }}</option>      
+                                                            <option value="{{ $pm->id }}">{{ $pm->method }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -141,6 +141,7 @@
                                                 <tr>
                                                     <th class="col-4">Cantidad</th>
                                                     <th>Producto</th>
+                                                    <th>Añadir Cantidad</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -148,6 +149,14 @@
                                                     <tr data-id="{{ $product->product_id }}">
                                                         <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
                                                         <td>{{ $product->Product->name }}</td>
+                                                        <td>
+                                                            <div class="input-group">
+                                                                <input type="number" class="form-control additional-quantity" min="0" max="10000" value="0">
+                                                                <div class="input-group-append">
+                                                                    <button type="button" class="btn btn-primary btn-add-quantity">Añadir</button>
+                                                                </div>
+                                                            </div>
+                                                        </td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -191,7 +200,7 @@
                                             <select id="selectClientToReturn" name="client_id" class="form-control">
                                                 <option disabled selected>Seleccione un cliente</option>
                                                 @foreach ($clients as $client)
-                                                    <option value="{{ $client->id }}">{{ $client->name }}</option>                                                                
+                                                    <option value="{{ $client->id }}">{{ $client->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -218,7 +227,7 @@
                                 <button type="button" id="btnUpdateProductsReturned" class="btn btn-success waves-effect waves-light">Actualizar</button>
                             </div>
                         @endif
-                        
+
                     </div>
                 </form>
             </div>
@@ -285,7 +294,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($data->products_sold as $item)    
+                                        @foreach ($data->products_sold as $item)
                                         <tr>
                                             <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
                                             <td>
@@ -466,7 +475,7 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($cart->ProductsCart as $pc)    
+                                                                    @foreach ($cart->ProductsCart as $pc)
                                                                         <tr>
                                                                             <td>{{ $pc->quantity}}</td>
                                                                             <td>{{ $pc->product->name }}</td>
@@ -519,7 +528,7 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($cart->CartPaymentMethod as $pm)    
+                                                                    @foreach ($cart->CartPaymentMethod as $pm)
                                                                         <tr>
                                                                             <td>{{ $pm->PaymentMethod->method}}</td>
                                                                             <td>${{ $pm->amount }}</td>
@@ -537,7 +546,7 @@
                                                 </div>
                                             @endif
                                             {{-- 1 = admin --}}
-                                            @if (auth()->user()->rol_id == '1' && $cart->is_static === false) 
+                                            @if (auth()->user()->rol_id == '1' && $cart->is_static === false)
                                                 <hr>
                                                 <div class="d-flex flex-row justify-content-end">
                                                     {{-- Delete Cart --}}
@@ -610,7 +619,7 @@
                 }
             });
             $("#formRouteProducts input[name='products_quantity']").val(JSON.stringify(products));
-            
+
             function updateProducts() {
                 $.ajax({
                     url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
@@ -718,7 +727,7 @@
                 }
             });
             $("#formProductsReturned input[name='products_quantity']").val(JSON.stringify(products));
-            
+
             function updateProductsReturned() {
                 $.ajax({
                     url: $("#formProductsReturned").attr('action'), // Utiliza la ruta del formulario
@@ -775,7 +784,7 @@
             }
         });
     </script>
-    
+
     {{-- Pagar un carrito --}}
     <script>
         $("#btnPayCart").on("click", function() {
@@ -792,7 +801,7 @@
                 }
             });
             $("#form-confirm input[name='products_quantity']").val(JSON.stringify(products));
-            
+
             // Métodos de pago
             let payment_methods = [];
             let cash = $("#cash_input").val();
@@ -947,7 +956,7 @@
         function esNumero(valor) {
             return /^\d+$/.test(valor);
         }
-        
+
         // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
         function fillModal(data) {
             let content = "";
@@ -1159,5 +1168,30 @@
                 }
             })
         }
+    </script>
+
+    {{-- Añadir cantidad de productos cargados --}}
+    <script>
+        $(document).ready(function() {
+            // Evento click para el botón "Añadir"
+            $(document).on('click', '.btn-add-quantity', function() {
+                var row = $(this).closest('tr'); // Obtener la fila padre del botón
+                var additionalQuantity = parseFloat(row.find('.additional-quantity').val()); // Obtener la cantidad adicional
+                var quantityInput = row.find('input[type="number"]'); // Obtener el campo de entrada de la cantidad
+                var currentQuantity = parseFloat(quantityInput.val()); // Obtener la cantidad actual
+
+                var newQuantity = currentQuantity + additionalQuantity; // Calcular la nueva cantidad
+
+                quantityInput.val(newQuantity); // Actualizar el campo de entrada con la nueva cantidad
+            });
+
+            // Restricción para evitar valores negativos en el campo de cantidad adicional
+            $(document).on('input', '.additional-quantity', function() {
+                var value = parseFloat($(this).val());
+                if (value < 0) {
+                $(this).val(0);
+                }
+            });
+        });
     </script>
 @endsection
