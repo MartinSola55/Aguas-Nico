@@ -45,9 +45,9 @@
                                         <table class="table" id="modalTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Cantidad</th>
                                                     <th>Producto</th>
                                                     <th>Precio</th>
+                                                    <th>Cantidad</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="tableBody">
@@ -104,6 +104,10 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <hr />
+                                    <div class="d-flex flex-row justify-content-end">
+                                        <button id="btnOpenModalProductsReturned" onclick="openModalProductsReturned()" data-id="" data-dismiss="modal" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalProductsReturned">Devuelve productos</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -139,15 +143,15 @@
                                         <table class="table" id="modalProductsTable">
                                             <thead>
                                                 <tr>
-                                                    <th class="col-4">Cantidad</th>
                                                     <th>Producto</th>
+                                                    <th class="col-4">Cantidad</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($productsDispatched as $product)
                                                     <tr data-id="{{ $product->product_id }}">
-                                                        <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
                                                         <td>{{ $product->Product->name }}</td>
+                                                        <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -201,8 +205,8 @@
                                         <table class="table" id="modalProductsTable">
                                             <thead>
                                                 <tr>
-                                                    <th class="col-4">Cantidad</th>
                                                     <th>Producto</th>
+                                                    <th class="col-4">Cantidad</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -666,6 +670,15 @@
             $("#modalProductsReturned select").prop('selectedIndex', 0);
         });
 
+        // Se abre dentro del modal de confirmar
+        function openModalProductsReturned() {
+            let id = $("#btnOpenModalProductsReturned").data("id");
+            $("#table_products_client").css('display', 'none');
+            $("#modalProductsReturned input[type='number']").val("");
+            $("#modalProductsReturned select").val(id);
+            searchProductsClient();
+        }
+
         $("#modalProductsReturned input[type='number']").on("input", function() {
             if ($(this).val() < 0) {
                 $(this).val(0);
@@ -674,8 +687,8 @@
             }
         });
 
-        $("#selectClientToReturn").on("change", function() {
-            $("#client_id").val($(this).val());
+        function searchProductsClient() {
+            $("#client_id").val($("#selectClientToReturn").val());
             $("#table_products_client table tbody").html("");
             $.ajax({
                 url: $("#form_search_products").attr('action'), // Utiliza la ruta del formulario
@@ -687,8 +700,8 @@
                     response.products.forEach(product => {
                         content += `
                             <tr data-id="${product.product_id}">
-                                <td><input type="number" class="form-control" min="0" max="10000"></td>
                                 <td>${product.product.name}</td>
+                                <td><input type="number" class="form-control" min="0" max="10000"></td>
                             </tr>
                         `;
                     });
@@ -702,6 +715,10 @@
                     });
                 }
             });
+        }
+
+        $("#selectClientToReturn").on("change", function() {
+            searchProductsClient();
         });
 
         $("#btnUpdateProductsReturned").on("click", function() {
@@ -732,13 +749,8 @@
                             showCancelButton: false,
                             confirmButtonColor: '#1e88e5',
                             confirmButtonText: 'OK',
-                            allowOutsideClick: false,
-                        })
-                        .then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        })
+                            allowOutsideClick: true,
+                        });
                     },
                     error: function(errorThrown) {
                         Swal.fire({
@@ -953,9 +965,9 @@
             let content = "";
             data.forEach(p => {
                 content += '<tr>';
-                content += '<td><input type="number" min="0" max="1000" class="form-control quantity-input" data-id="' + p.product.id + '" ></td>';
                 content += '<td>' + p.product.name + '</td>';
                 content += '<td class="precioProducto">$ ' + p.product.price + '</td>';
+                content += '<td><input type="number" min="0" max="1000" class="form-control quantity-input" data-id="' + p.product.id + '" ></td>';
                 content += "</tr>";
             });
             $("#tableBody").html(content);
@@ -976,6 +988,8 @@
         };
 
         function openModal(cart_id, client_id, debt) {
+            $("#btnOpenModalProductsReturned").data('id', client_id);
+
             // Para el modal
             $("#form-confirm input[name='cart_id']").val(cart_id);
             if (debt > 0) {

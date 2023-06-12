@@ -96,68 +96,74 @@
         </div>
         <!-- End Modal -->
 
-
-        <div class="row">
-            <div id="datesContainer" class="col-xlg-6 col-lg-6">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h4 class="card-title">Intervalo de gastos</h4>
-                        <form method="GET" action="{{ url('/expense/searchExpenses') }}" id="form-expense" class="form-material m-t-30">
-                            @csrf
-                            <input type="hidden" name="dateFrom" id="dateFromFormatted" value="">
-                            <input type="hidden" name="dateTo" id="dateToFormatted" value="">
-                            <div class="row">
-                                <div class="form-group col-lg-6">
-                                    <label for="dateFrom">Fecha inicio</label>
-                                    <input id="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa">
+        @if (auth()->user()->rol_id == "1") 
+            <div class="row">
+                <div id="datesContainer" class="col-xlg-6 col-lg-6">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h4 class="card-title">Intervalo de gastos</h4>
+                            <form method="GET" action="{{ url('/expense/searchExpenses') }}" id="form-expense" class="form-material m-t-30">
+                                @csrf
+                                <input type="hidden" name="dateFrom" id="dateFromFormatted" value="">
+                                <input type="hidden" name="dateTo" id="dateToFormatted" value="">
+                                <div class="row">
+                                    <div class="form-group col-lg-6">
+                                        <label for="dateFrom">Fecha inicio</label>
+                                        <input id="dateFrom" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                                    </div>
+                                    <div id="dateToContainer" class="form-group col-lg-6" style="display: none">
+                                        <label for="dateTo">Fecha fin</label>
+                                        <input id="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                                    </div>
                                 </div>
-                                <div id="dateToContainer" class="form-group col-lg-6" style="display: none">
-                                    <label for="dateTo">Fecha fin</label>
-                                    <input id="dateTo" type="text" class="form-control" placeholder="dd/mm/aaaa">
-                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="d-flex flex-row justify-content-between">
+                                <h2 class="card-title">Listado de gastos</h4>
+                                <button id="btnAddExpense" type="button" class="btn btn-info btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar gasto</button>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <div class="d-flex flex-row justify-content-between">
-                            <h2 class="card-title">Listado de gastos</h4>
-                            <button id="btnAddExpense" type="button" class="btn btn-info btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar gasto</button>
-                        </div>
-                        <h4 id="totalTable">Total: $</h4>
-                        <div class="table-responsive m-t-20">
-                            <table id="expensesTable" class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Descripción</th>
-                                        <th>Gasto</th>
-                                        @if (auth()->user()->rol_id == '1')
-                                            <th>Repartidor</th>
-                                        @endif
-                                        <th>Fecha</th>
-                                        @if (auth()->user()->rol_id == '1')
-                                            <th></th>
-                                        @endif
-                                    </tr>
-                                </thead>
-                                <tbody id="table_body">
-                                </tbody>
-                            </table>
+                            <h4 id="totalTable">Total: $</h4>
+                            <div class="table-responsive m-t-20">
+                                <table id="expensesTable" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Descripción</th>
+                                            <th>Gasto</th>
+                                            @if (auth()->user()->rol_id == '1')
+                                                <th>Repartidor</th>
+                                            @endif
+                                            <th>Fecha</th>
+                                            @if (auth()->user()->rol_id == '1')
+                                                <th></th>
+                                            @endif
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table_body">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <form action="/expense/delete" method="post" id="form-delete">
-            @csrf
-            <input type="hidden" name="id" id="expense_id">
-        </form>
+            <form action="/expense/delete" method="post" id="form-delete">
+                @csrf
+                <input type="hidden" name="id" id="expense_id">
+            </form>
+        @else
+            <div class="row d-flex justify-content-center">
+                <button id="btnAddExpense" type="button" class="btn btn-info btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar gasto</button>
+            </div>
+        @endif
     </div>
 
     <script>
