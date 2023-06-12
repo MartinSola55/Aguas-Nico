@@ -144,18 +144,20 @@
                                             <thead>
                                                 <tr>
                                                     <th>Producto</th>
-                                                    <th>Añadir Cantidad</th>
+                                                    <th class="col-4">Cantidad</th>
+                                                    <th>Agregar</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($productsDispatched as $product)
                                                     <tr data-id="{{ $product->product_id }}">
                                                         <td>{{ $product->Product->name }}</td>
+                                                        <td><input type="number" name="quantity_dispatched" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
                                                         <td>
                                                             <div class="input-group">
                                                                 <input type="number" class="form-control additional-quantity" min="0" max="10000" value="0">
                                                                 <div class="input-group-append">
-                                                                    <button type="button" class="btn btn-primary btn-add-quantity">Añadir</button>
+                                                                    <button type="button" class="btn btn-primary btn-add-quantity"><i class="bi bi-plus-lg"></i></button>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -1187,21 +1189,22 @@
         $(document).ready(function() {
             // Evento click para el botón "Añadir"
             $(document).on('click', '.btn-add-quantity', function() {
-                var row = $(this).closest('tr'); // Obtener la fila padre del botón
-                var additionalQuantity = parseFloat(row.find('.additional-quantity').val()); // Obtener la cantidad adicional
-                var quantityInput = row.find('input[type="number"]'); // Obtener el campo de entrada de la cantidad
-                var currentQuantity = parseFloat(quantityInput.val()); // Obtener la cantidad actual
+                let row = $(this).closest('tr'); // Obtener la fila padre del botón
+                let additionalQuantity = parseFloat(row.find('.additional-quantity').val()); // Obtener la cantidad adicional
+                let quantityInput = row.find('input[name="quantity_dispatched"]'); // Obtener el campo de entrada de la cantidad
+                let currentQuantity = parseFloat(quantityInput.val()); // Obtener la cantidad actual
 
-                var newQuantity = currentQuantity + additionalQuantity; // Calcular la nueva cantidad
+                let newQuantity = currentQuantity + additionalQuantity; // Calcular la nueva cantidad
 
                 quantityInput.val(newQuantity); // Actualizar el campo de entrada con la nueva cantidad
+                row.find('.additional-quantity').val(0);
             });
 
             // Restricción para evitar valores negativos en el campo de cantidad adicional
             $(document).on('input', '.additional-quantity', function() {
-                var value = parseFloat($(this).val());
+                let value = parseFloat($(this).val());
                 if (value < 0) {
-                $(this).val(0);
+                    $(this).val(0);
                 }
             });
         });
