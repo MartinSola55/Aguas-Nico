@@ -23,7 +23,7 @@
 @section('content')
 
     @if (auth()->user()->rol_id == '2')
-        
+
         <!-- Modal confirm cart -->
         <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
@@ -45,9 +45,9 @@
                                         <table class="table" id="modalTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Cantidad</th>
                                                     <th>Producto</th>
                                                     <th>Precio</th>
+                                                    <th>Cantidad</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="tableBody">
@@ -61,7 +61,7 @@
                                         <hr>
                                         <div class="d-flex flex-column">
                                             <div class="d-flex flex-row justify-content-between mb-3">
-                                                <div class="col-6 d-flex flex-row align-items-center">    
+                                                <div class="col-6 d-flex flex-row align-items-center">
                                                     <div class="switch">
                                                         <label>
                                                             <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
@@ -77,7 +77,7 @@
                                                 </div>
                                             </div>
                                             <div class="d-flex flex-row justify-content-between mb-3">
-                                                <div class="col-6 d-flex flex-row align-items-center">    
+                                                <div class="col-6 d-flex flex-row align-items-center">
                                                     <div class="switch">
                                                         <label>
                                                             <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-teal"></span>
@@ -89,7 +89,7 @@
                                                     <select name="method" id="payment_method" class="form-control mr-1" disabled>
                                                         <option value="" disabled selected>Seleccionar</option>
                                                         @foreach ($payment_methods as $pm)
-                                                            <option value="{{ $pm->id }}">{{ $pm->method }}</option>      
+                                                            <option value="{{ $pm->id }}">{{ $pm->method }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -103,6 +103,10 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <hr />
+                                    <div class="d-flex flex-row justify-content-end">
+                                        <button id="btnOpenModalProductsReturned" onclick="openModalProductsReturned()" data-id="" data-dismiss="modal" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalProductsReturned">Devuelve productos</button>
                                     </div>
                                 </div>
                             </div>
@@ -139,15 +143,24 @@
                                         <table class="table" id="modalProductsTable">
                                             <thead>
                                                 <tr>
-                                                    <th class="col-4">Cantidad</th>
                                                     <th>Producto</th>
+                                                    <th class="col-4">Cantidad</th>
+                                                    <th>Agregar</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($productsDispatched as $product)
                                                     <tr data-id="{{ $product->product_id }}">
-                                                        <td><input type="number" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
                                                         <td>{{ $product->Product->name }}</td>
+                                                        <td><input type="number" name="quantity_dispatched" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
+                                                        <td>
+                                                            <div class="input-group">
+                                                                <input type="number" class="form-control additional-quantity" min="0" max="10000" value="0">
+                                                                <div class="input-group-append">
+                                                                    <button type="button" class="btn btn-primary btn-add-quantity"><i class="bi bi-plus-lg"></i></button>
+                                                                </div>
+                                                            </div>
+                                                        </td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -191,7 +204,7 @@
                                             <select id="selectClientToReturn" name="client_id" class="form-control">
                                                 <option disabled selected>Seleccione un cliente</option>
                                                 @foreach ($clients as $client)
-                                                    <option value="{{ $client->id }}">{{ $client->name }}</option>                                                                
+                                                    <option value="{{ $client->id }}">{{ $client->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -201,8 +214,8 @@
                                         <table class="table" id="modalProductsTable">
                                             <thead>
                                                 <tr>
-                                                    <th class="col-4">Cantidad</th>
                                                     <th>Producto</th>
+                                                    <th class="col-4">Cantidad</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -218,7 +231,7 @@
                                 <button type="button" id="btnUpdateProductsReturned" class="btn btn-success waves-effect waves-light">Actualizar</button>
                             </div>
                         @endif
-                        
+
                     </div>
                 </form>
             </div>
@@ -285,7 +298,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($data->products_sold as $item)    
+                                        @foreach ($data->products_sold as $item)
                                         <tr>
                                             <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
                                             <td>
@@ -466,7 +479,7 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($cart->ProductsCart as $pc)    
+                                                                    @foreach ($cart->ProductsCart as $pc)
                                                                         <tr>
                                                                             <td>{{ $pc->quantity}}</td>
                                                                             <td>{{ $pc->product->name }}</td>
@@ -519,7 +532,7 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($cart->CartPaymentMethod as $pm)    
+                                                                    @foreach ($cart->CartPaymentMethod as $pm)
                                                                         <tr>
                                                                             <td>{{ $pm->PaymentMethod->method}}</td>
                                                                             <td>${{ $pm->amount }}</td>
@@ -537,7 +550,7 @@
                                                 </div>
                                             @endif
                                             {{-- 1 = admin --}}
-                                            @if (auth()->user()->rol_id == '1' && $cart->is_static === false) 
+                                            @if (auth()->user()->rol_id == '1' && $cart->is_static === false)
                                                 <hr>
                                                 <div class="d-flex flex-row justify-content-end">
                                                     {{-- Delete Cart --}}
@@ -610,7 +623,7 @@
                 }
             });
             $("#formRouteProducts input[name='products_quantity']").val(JSON.stringify(products));
-            
+
             function updateProducts() {
                 $.ajax({
                     url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
@@ -666,6 +679,15 @@
             $("#modalProductsReturned select").prop('selectedIndex', 0);
         });
 
+        // Se abre dentro del modal de confirmar
+        function openModalProductsReturned() {
+            let id = $("#btnOpenModalProductsReturned").data("id");
+            $("#table_products_client").css('display', 'none');
+            $("#modalProductsReturned input[type='number']").val("");
+            $("#modalProductsReturned select").val(id);
+            searchProductsClient();
+        }
+
         $("#modalProductsReturned input[type='number']").on("input", function() {
             if ($(this).val() < 0) {
                 $(this).val(0);
@@ -674,8 +696,8 @@
             }
         });
 
-        $("#selectClientToReturn").on("change", function() {
-            $("#client_id").val($(this).val());
+        function searchProductsClient() {
+            $("#client_id").val($("#selectClientToReturn").val());
             $("#table_products_client table tbody").html("");
             $.ajax({
                 url: $("#form_search_products").attr('action'), // Utiliza la ruta del formulario
@@ -687,8 +709,8 @@
                     response.products.forEach(product => {
                         content += `
                             <tr data-id="${product.product_id}">
-                                <td><input type="number" class="form-control" min="0" max="10000"></td>
                                 <td>${product.product.name}</td>
+                                <td><input type="number" class="form-control" min="0" max="10000"></td>
                             </tr>
                         `;
                     });
@@ -702,6 +724,10 @@
                     });
                 }
             });
+        }
+
+        $("#selectClientToReturn").on("change", function() {
+            searchProductsClient();
         });
 
         $("#btnUpdateProductsReturned").on("click", function() {
@@ -718,7 +744,7 @@
                 }
             });
             $("#formProductsReturned input[name='products_quantity']").val(JSON.stringify(products));
-            
+
             function updateProductsReturned() {
                 $.ajax({
                     url: $("#formProductsReturned").attr('action'), // Utiliza la ruta del formulario
@@ -732,13 +758,8 @@
                             showCancelButton: false,
                             confirmButtonColor: '#1e88e5',
                             confirmButtonText: 'OK',
-                            allowOutsideClick: false,
-                        })
-                        .then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        })
+                            allowOutsideClick: true,
+                        });
                     },
                     error: function(errorThrown) {
                         Swal.fire({
@@ -775,7 +796,7 @@
             }
         });
     </script>
-    
+
     {{-- Pagar un carrito --}}
     <script>
         $("#btnPayCart").on("click", function() {
@@ -792,7 +813,7 @@
                 }
             });
             $("#form-confirm input[name='products_quantity']").val(JSON.stringify(products));
-            
+
             // Métodos de pago
             let payment_methods = [];
             let cash = $("#cash_input").val();
@@ -947,15 +968,15 @@
         function esNumero(valor) {
             return /^\d+$/.test(valor);
         }
-        
+
         // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
         function fillModal(data) {
             let content = "";
             data.forEach(p => {
                 content += '<tr>';
-                content += '<td><input type="number" min="0" max="1000" class="form-control quantity-input" data-id="' + p.product.id + '" ></td>';
                 content += '<td>' + p.product.name + '</td>';
                 content += '<td class="precioProducto">$ ' + p.product.price + '</td>';
+                content += '<td><input type="number" min="0" max="1000" class="form-control quantity-input" data-id="' + p.product.id + '" ></td>';
                 content += "</tr>";
             });
             $("#tableBody").html(content);
@@ -976,6 +997,8 @@
         };
 
         function openModal(cart_id, client_id, debt) {
+            $("#btnOpenModalProductsReturned").data('id', client_id);
+
             // Para el modal
             $("#form-confirm input[name='cart_id']").val(cart_id);
             if (debt > 0) {
@@ -1159,5 +1182,31 @@
                 }
             })
         }
+    </script>
+
+    {{-- Añadir cantidad de productos cargados --}}
+    <script>
+        $(document).ready(function() {
+            // Evento click para el botón "Añadir"
+            $(document).on('click', '.btn-add-quantity', function() {
+                let row = $(this).closest('tr'); // Obtener la fila padre del botón
+                let additionalQuantity = parseFloat(row.find('.additional-quantity').val()); // Obtener la cantidad adicional
+                let quantityInput = row.find('input[name="quantity_dispatched"]'); // Obtener el campo de entrada de la cantidad
+                let currentQuantity = parseFloat(quantityInput.val()); // Obtener la cantidad actual
+
+                let newQuantity = currentQuantity + additionalQuantity; // Calcular la nueva cantidad
+
+                quantityInput.val(newQuantity); // Actualizar el campo de entrada con la nueva cantidad
+                row.find('.additional-quantity').val(0);
+            });
+
+            // Restricción para evitar valores negativos en el campo de cantidad adicional
+            $(document).on('input', '.additional-quantity', function() {
+                let value = parseFloat($(this).val());
+                if (value < 0) {
+                    $(this).val(0);
+                }
+            });
+        });
     </script>
 @endsection
