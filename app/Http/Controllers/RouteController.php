@@ -6,6 +6,8 @@ use App\Http\Requests\Route\ProductDispatchedUpdateRequest;
 use App\Http\Requests\Route\ProductReturnedUpdateRequest;
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
+use App\Models\Abono;
+use App\Models\AbonoClient;
 use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Expense;
@@ -204,7 +206,23 @@ class RouteController extends Controller
     public function getProductsClient(Request $request)
     {
         $products = ProductsClient::where('client_id', $request->input('client_id'))->with('Product')->get();
-        return response()->json(['products' => $products]);
+        $client = Client::find($request->input('client_id'));
+        $abonoClient = null; // Inicializar la variable $abonoClient
+
+        if ($client->abono_id !== null) {
+            $abonoType = Abono::find($client->abono_id);
+            $abonoType->client_id = $request->input('client_id');
+            if ($client->abono_id !== "NULL") {
+                $abonoClient = AbonoClient::where('abono_id', $abonoType->id)
+                    ->where('client_id', $request->input('client_id'))
+                    ->whereYear('created_at', now()->year)
+                    ->whereMonth('created_at', now()->month)
+                    ->first();
+            }
+        } else {
+            $abonoType = null;
+        }
+        return response()->json(['products' => $products,'abonoType' => $abonoType,'abonoClient' => $abonoClient, 'client_abono_id' => $client->abono_id]);
     }
 
     /**

@@ -47,6 +47,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/client/updateInvoiceData', [App\Http\Controllers\ClientController::class, 'updateInvoiceData']);
     Route::get('/client/products/{client}', [App\Http\Controllers\ClientController::class, 'getProducts']);
     Route::post('/client/updateProducts', [App\Http\Controllers\ClientController::class, 'updateProducts']);
+    Route::post('/client/updateAbono', [App\Http\Controllers\ClientController::class, 'updateAbono']);
     Route::post('/client/setIsActive', [App\Http\Controllers\ClientController::class, 'setIsActive']);
 
     // ROUTE
@@ -73,6 +74,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
     Route::post('/expense/delete', [App\Http\Controllers\ExpenseController::class, 'delete']);
 
+    //ABONOS
+    Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
+    Route::post('/abono/discount', [App\Http\Controllers\AbonoClientController::class, 'update']);
 });
 
 // EMPLOYEE
@@ -107,5 +111,9 @@ Route::middleware(['auth'])->group(function () {
     // CLIENT
     Route::get('/client/index', [App\Http\Controllers\ClientController::class, 'index']);
     Route::post('/client/create', [App\Http\Controllers\ClientController::class, 'store']);
+
+    //ABONOS
+    Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
+    Route::post('/abono/discount', [App\Http\Controllers\AbonoClientController::class, 'update']);
 });
 

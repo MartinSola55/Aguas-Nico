@@ -91,6 +91,7 @@ class CartController extends Controller
         try {
             $products_quantity = json_decode($request->input('products_quantity'), true);
             $payment_methods = json_decode($request->input('payment_methods'), true);
+            $renew_abono = json_decode($request->input('renew_abono'), true);
 
             $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
             $prices = Product::whereIn('id', $productIds)->pluck('price', 'id');
@@ -99,7 +100,12 @@ class CartController extends Controller
             $cart = Cart::find($request->input('cart_id'));
             $products_client = ProductsClient::where('client_id', $client->id)->get();
 
-            $total_cart = 0;
+            if ($renew_abono > 0) {
+                $total_cart = $renew_abono;
+            } else {
+                $total_cart = 0;
+            }
+
             $total_paid = 0;
 
             DB::beginTransaction();

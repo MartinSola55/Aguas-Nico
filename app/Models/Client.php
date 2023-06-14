@@ -24,6 +24,7 @@ class Client extends Model
         'tax_condition',
         'cuit',
         'tax_address',
+        'abono_id',
     ];
 
     public function Products()

@@ -10,14 +10,14 @@ class Cart extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
-    public $timestamps = false;
     protected $fillable = [
         'route_id',
         'client_id',
         'priority',
         'state',
         'is_static',
+        'created_at',
+        'updated_at',
     ];
 
     public function Route()
@@ -38,6 +38,11 @@ class Cart extends Model
     public function CartPaymentMethod()
     {
         return $this->hasMany(CartPaymentMethod::class, 'cart_id');
+    }
+
+    public function AbonoClient()
+    {
+        return $this->hasOne(AbonoClient::class, 'cart_id');
     }
 }
 

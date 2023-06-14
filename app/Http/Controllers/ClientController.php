@@ -7,6 +7,7 @@ use App\Http\Requests\Client\ClientShowRequest;
 use App\Http\Requests\Client\ClientUpdateInvoiceRequest;
 use App\Http\Requests\Client\ClientUpdateRequest;
 use App\Http\Requests\Client\SearchSalesRequest;
+use App\Models\Abono;
 use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Product;
@@ -103,7 +104,9 @@ class ClientController extends Controller
 
         $client_products = $this->getProducts($client);
 
-        return view('clients.details', compact('client', 'graph', 'client_products'));
+        $abonos = Abono::all();
+
+        return view('clients.details', compact('client', 'graph', 'client_products', 'abonos'));
     }
 
     public function searchSales(SearchSalesRequest $request){
@@ -265,6 +268,30 @@ class ClientController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al actualizar los productos',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function updateAbono(Request $request)
+    {
+        try {
+            $client_id = $request->input('client_id');
+            $abono_id = $request->input('abono_id');
+            DB::beginTransaction();
+                Client::find($client_id)->update(['abono_id' => $abono_id]);
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Abono actualizado correctamente',
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al actualizar el abono',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);

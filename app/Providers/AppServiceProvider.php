@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Route::observe(RouteObserver::class);
         Cart::observe(CartObserver::class);
-        Client::observe(ClientObserver::class);
+        //Client::observe(ClientObserver::class);
 
         if($this->app->environment('production'))
         {
