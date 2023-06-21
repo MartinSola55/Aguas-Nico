@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Abono;
 use App\Models\AbonoClient;
+use App\Models\BottleClient;
+use App\Models\Product;
+use App\Models\StockLog;
 use Illuminate\Http\Request;
 
 class AbonoClientController extends Controller
@@ -76,6 +79,19 @@ class AbonoClientController extends Controller
     {
         try {
             $abonoClient = AbonoClient::find($request->input('abono_id'));
+            $productModel = Product::find($abonoClient->abono->product_id);
+            $bottleType = $productModel->bottle_type_id;
+            if ($bottleType !== null) {
+                StockLog::create([
+                    'client_id' => $abonoClient->client_id,
+                    'cart_id' => $abonoClient->cart_id,
+                    'bottle_type_id' => $bottleType,
+                    'quantity' => $request->input('discount'),
+                    'l_r' => 0,          //si es 0=l, si es 1=r
+                ]);
+                BottleClient::firstOrCreate(['client_id' => $abonoClient->client_id,'bottle_types_id' => $bottleType])
+                    ->increment('stock', $request->input('discount'));
+            }
             $abonoClient->available -= $request->input('discount');
             $abonoClient->save();
             return response()->json([

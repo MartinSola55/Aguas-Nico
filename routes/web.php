@@ -111,6 +111,7 @@ Route::middleware(['auth'])->group(function () {
     // CLIENT
     Route::get('/client/index', [App\Http\Controllers\ClientController::class, 'index']);
     Route::post('/client/create', [App\Http\Controllers\ClientController::class, 'store']);
+    Route::get('/client/products/{client}', [App\Http\Controllers\ClientController::class, 'getStock']);
 
     //ABONOS
     Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);

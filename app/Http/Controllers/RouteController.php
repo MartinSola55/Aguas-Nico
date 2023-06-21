@@ -272,7 +272,7 @@ class RouteController extends Controller
     public function newCart($id)
     {
         $route = Route::find($id);
-        $clients = Client::all()->sortBy('name');
+        $clients = Client::select('id', 'name', 'adress as address', 'dni', 'phone')->orderBy('name')->get();
         foreach ($clients as $client) {
             $client->priority = $route->Carts()->where('client_id', $client->id)->value('priority') ?? null;
         }
@@ -500,7 +500,6 @@ class RouteController extends Controller
         try {
             $route = Route::find($request->input('route_id'));
             $clientsJson = json_decode($request->input('clients_array'));
-
             $lastPriority = Cart::where('route_id', $route->id)->where('is_static', false)->max('priority');
             foreach ($clientsJson as $client) {
                 $lastPriority++;

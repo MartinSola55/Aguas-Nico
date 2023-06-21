@@ -238,6 +238,42 @@ class ClientController extends Controller
         return $productList;
     }
 
+    public function getStock(Client $client)
+    {
+        $list = [];
+        try {
+            foreach ($client->ProductsClient as $product) {
+                if ($product->Product->bottle_type_id === null) {
+                    $list['products'][] = [
+                        'id' => $product->product_id,
+                        'name' => $product->Product->name,
+                        'stock' => $product->stock,
+                    ];
+                }
+            }
+
+            foreach ($client->BottleClient as $bottle) {
+                $list['bottle'][] = [
+                    'id' => $bottle->bottle_types_id,
+                    'name' => $bottle->BottleType->name,
+                    'stock' => $bottle->stock,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $list,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al actualizar el estado del cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
     public function updateProducts(Request $request)
     {
         try {

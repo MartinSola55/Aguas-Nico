@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Cart;
+use App\Models\Client;
 
 class CartObserver
 {
@@ -29,6 +30,10 @@ class CartObserver
     {
         $cart->ProductsCart()->delete();
         $cart->CartPaymentMethod()->delete();
+
+        $client = Client::find($cart->Client->id);
+        $client->debt -= $cart->take_debt;
+        $client->save();
     }
 
     /**

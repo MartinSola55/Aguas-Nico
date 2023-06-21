@@ -2,7 +2,15 @@
     use Carbon\Carbon;
     $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
 @endphp
-
+@php
+    $diasSemana = [
+        1 => 'Lunes',
+        2 => 'Martes',
+        3 => 'Miércoles',
+        4 => 'Jueves',
+        5 => 'Viernes',
+    ];
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -100,7 +108,7 @@
             </div>
             <!-- Column -->
 
-            
+
             <div class="col-lg-6 col-md-12">
                 <div class="card shadow">
                     <div class="card-body">
@@ -118,7 +126,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($data->products_sold as $item)    
+                                    @foreach ($data->products_sold as $item)
                                     <tr>
                                         <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
                                         <td>
@@ -152,7 +160,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($data->day_expenses as $item)    
+                                    @foreach ($data->day_expenses as $item)
                                     <tr>
                                         <td>
                                             <h6>{{ $item->User->name }}</h6>
@@ -203,11 +211,7 @@
                                             @endphp
                                             <td style="width:50px;"><span class="round">{{ $initials }}</span></td>
                                             <td>
-                                            @if ($route->User->truck_number !== null)
-                                                <h6>{{ $route->User->name }}</h6><small class="text-muted">Camión {{ $route->User->truck_number }}</small>
-                                            @else
-                                                <h6>{{ $route->User->name }}</h6><small class="text-muted">Sin camión asignado</small>
-                                            @endif
+                                            <h6>{{ $route->User->name }}</h6><small class="text-muted">Planilla {{ $diasSemana[$route->day_of_week] }}</small>
                                             </td>
                                             <td>{{ $route->Info()['completed_carts'] }}/{{ $route->Info()['total_carts'] }}</td>
                                             @if ($route->Info()['state'] === "En depósito")

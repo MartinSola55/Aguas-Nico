@@ -41,4 +41,9 @@ class Client extends Model
     {
         return $this->hasMany(Cart::class, 'client_id');
     }
+
+    public function BottleClient()
+    {
+        return $this->hasMany(BottleClient::class, 'client_id');
+    }
 }

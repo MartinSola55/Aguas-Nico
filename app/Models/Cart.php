@@ -16,6 +16,7 @@ class Cart extends Model
         'priority',
         'state',
         'is_static',
+        'take_debt',
         'created_at',
         'updated_at',
     ];

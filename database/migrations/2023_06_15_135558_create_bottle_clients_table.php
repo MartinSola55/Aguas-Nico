@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('carts', function (Blueprint $table) {
-            $table->double('take_debt', 8, 2)->default(0);
-            $table->timestamps();
+        Schema::create('bottle_clients', function (Blueprint $table) {
+            $table->foreignId('client_id')->constrained('clients');
+            $table->foreignId('bottle_types_id')->constrained('bottle_types');
+            $table->integer('stock')->default(0);
         });
     }
 
@@ -22,10 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('carts', function (Blueprint $table) {
-            $table->dropColumn('take_debt');
-            $table->dropColumn('created_at');
-            $table->dropColumn('updated_at');
-        });
+        Schema::dropIfExists('bottle_clients');
     }
 };

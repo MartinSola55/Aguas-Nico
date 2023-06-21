@@ -57,29 +57,29 @@
                                             </tbody>
                                         </table>
                                         <hr>
-                                        <div class="d-flex flex-row justify-content-between">
-                                            <p id="totalAmount" class="mr-2 mb-0">Total pedido: $0</p>
-                                            <p id="modalClientDebt"></p>
+                                        <div class="d-flex row justify-content-between">
+                                            <p id="totalAmount" class="col-12 align-items-center justify-content-end mb-0">Total pedido: $0</p>
+                                            <p id="modalClientDebt" class="col-12 align-items-center justify-content-end mb-0"></p>
                                         </div>
                                         <hr>
                                         <div class="d-flex flex-column">
                                             <div class="d-flex flex-row justify-content-between mb-3">
-                                                <div class="col-6 d-flex flex-row align-items-center">
-                                                    <div class="switch">
+                                                <div class="col-3 d-flex flex-row align-items-center">
+                                                    {{-- <div class="switch">
                                                         <label>
                                                             <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
                                                         </label>
-                                                    </div>
-                                                    <div class="demo-switch-title">{{ $cash->method }}</div>
+                                                    </div> --}}
+                                                    <div class="demo-switch-title">Entrega</div>
                                                 </div>
-                                                <div id="cash_input_container" class="input-group">
+                                                <div id="cash_input_container" class="col-9 input-group">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">$</span>
                                                     </div>
                                                     <input id="cash_input" type="number" min="0" class="form-control mr-1" disabled data-id="{{ $cash->id }}">
                                                 </div>
                                             </div>
-                                            <div class="d-flex flex-row justify-content-between mb-3">
+                                            {{-- <div class="d-flex flex-row justify-content-between mb-3">
                                                 <div class="col-6 d-flex flex-row align-items-center">
                                                     <div class="switch">
                                                         <label>
@@ -96,7 +96,7 @@
                                                         @endforeach
                                                     </select>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                             <div class="d-flex justify-content-end">
                                                 <div id="amount_input_container" class="input-group w-50 mb-1" style="display: none">
                                                     <div class="input-group-prepend">
@@ -108,9 +108,6 @@
                                         </div>
                                     </div>
                                     <hr />
-                                    <div class="d-flex flex-row justify-content-end">
-                                        <button id="btnOpenModalProductsReturned" onclick="openModalProductsReturned()" data-id="" data-dismiss="modal" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalProductsReturned">Devuelve productos</button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -184,7 +181,7 @@
     @endif
 
     @if (auth()->user()->rol_id == '2')
-        <!-- Modal route products returned -->
+        <!-- Modal route products returned general -->
         <div id="modalProductsReturned" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
             <div class="modal-dialog">
@@ -240,6 +237,44 @@
             </div>
         </div>
         <!-- End Modal -->
+
+        <!-- Modal route products returned by client -->
+        <div id="modalProductsReturnedByClient" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Cargar devolución </h4>
+                        <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12" id="colAbono">
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                {{-- <th>Tiene</th> --}}
+                                                <th>Devuelve</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableBodyReturnedByClient">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                        <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Pagar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Modal -->
     @endif
 
     <div class="container-fluid">
@@ -267,7 +302,7 @@
                 <div class="col-md-7 col-4 align-self-center">
                     <div class="d-flex m-t-10 justify-content-end">
                         <div class="d-flex m-r-20 m-l-10">
-                            <button id="btnProductsReturned" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalProductsReturned">Productos devueltos</button>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalProductsReturned">Productos devueltos</button>
                         </div>
                     </div>
                 </div>
@@ -422,7 +457,7 @@
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-header d-flex flex-row justify-content-between">
-                        <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
+                        <h5 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h5>
                         @if (auth()->user()->rol_id == '1')
                         <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar reparto</button>
                         @endif
@@ -430,7 +465,7 @@
                     <div class="card-body">
                         @if (($route->is_static === false && auth()->user()->rol_id == '2') || $route->is_static === true)
                             <div class="d-flex flex-row justify-content-end">
-                                <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
+                                <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Fuera de reparto</a>
                             </div>
                         @endif
                         @if ($route->is_static === false && auth()->user()->rol_id == '1')
@@ -477,7 +512,7 @@
                                                 <p class="m-0"><small class="text-muted">Sin deuda</small></p>
                                             @endif
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
-                                            @if ($cart->state === 1)
+                                            @if ($cart->state && auth()->user()->rol_id == '1')
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-calendar-check"></i> {{ $cart->updated_at->format('d-m-Y H:i') }}&nbsp;hs. </small></p>
                                             @endif
                                         </div>
@@ -514,6 +549,8 @@
                                                     </div>
                                                     @endif
                                                 </div>
+                                                <button type="button" onclick="devuelve({{ $cart->Client }}, {{ $cart->id }})" class="btn btn-info">Devuelve</button>
+                                                <button type="button" onclick="editCart({{ $cart->id }})" class="btn btn-info">Editar Bajada</button>
                                                 <div class="d-flex flex-row justify-content-start">
                                                     <p class="m-0">Total del pedido: $
                                                         {{ $cart->ProductsCart->sum(function($product_cart) {
@@ -531,7 +568,7 @@
                                                         <div class="btn-group">
                                                             <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                             <div class="dropdown-menu">
-                                                                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
+                                                                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Bajar</b></button>
                                                                 <div class="dropdown-divider"></div>
                                                                 <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(2, {{ $cart->id }}, 'no estaba')">No estaba</button>
                                                                 <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(3, {{ $cart->id }}, 'no necesitaba')">No necesitaba</button>
@@ -541,7 +578,7 @@
                                                     @endif
                                                 </div>
                                             @elseif ($cart->state === 1)
-                                                <div class="row">
+                                                {{-- <div class="row">
                                                     <div class="col-lg-12">
                                                         <div class="table-responsive">
                                                             <table class="table">
@@ -567,7 +604,7 @@
                                                             }) }}</p>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> --}}
                                             @endif
                                             {{-- 1 = admin --}}
                                             @if (auth()->user()->rol_id == '1' && $cart->is_static === false)
@@ -683,28 +720,6 @@
 
     {{-- Productos que devuelve un cliente --}}
     <script>
-        $("#btnProductsReturned").on('click', function() {
-            $("#table_products_client").css('display', 'none');
-            $("#modalProductsReturned input[type='number']").val("");
-            $("#modalProductsReturned select").prop('selectedIndex', 0);
-        });
-
-        // Se abre dentro del modal de confirmar
-        function openModalProductsReturned() {
-            let id = $("#btnOpenModalProductsReturned").data("id");
-            $("#table_products_client").css('display', 'none');
-            $("#modalProductsReturned input[type='number']").val("");
-            $("#modalProductsReturned select").val(id);
-            searchProductsClient();
-        }
-
-        $("#modalProductsReturned input[type='number']").on("input", function() {
-            if ($(this).val() < 0) {
-                $(this).val(0);
-            } else if ($(this).val() > 10000){
-                $(this).val(10000);
-            }
-        });
 
         function searchProductsClient() {
             $("#client_id").val($("#selectClientToReturn").val());
@@ -806,6 +821,50 @@
                 updateProductsReturned();
             //}
         });
+
+        function devuelve(client, cart_id) {
+            //console.log(client, cart_id);
+
+            $.ajax({
+                url: "{{ url('/client/products/') }}" +"/"+ client.id,
+                type: "GET",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    console.log(response);
+                    $("#modalProductsReturnedByClient").modal("show");
+                    $("#modalProductsReturnedByClient .modal-title").text("Cargar devolución " + client.name);
+                    let cont = "";
+                    if (response.data.bottle) {
+                    response.data.bottle.forEach(function(bottle) {
+                        cont += '<tr>';
+                        cont += '<td>' + bottle.name + '</td>';
+                        //cont += '<td>' + bottle.stock + '</td>';
+                        cont += '<td><input type="number" class="form-control" min="0" max="10000"></td>';
+                        cont += '</tr>';
+                    });
+                    }
+                    if (response.data.products){
+                    response.data.products.forEach(function(products) {
+                        cont += '<tr>';
+                        cont += '<td>' + products.name + '</td>';
+                        //cont += '<td>' + products.stock + '</td>';
+                        cont += '<td><input type="number" class="form-control" min="0" max="10000"></td>';
+                        cont += '</tr>';
+                    });
+                    }
+                    $("#tableBodyReturnedByClient").html(cont);
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        }
     </script>
 
     {{-- Pagar un carrito --}}
@@ -819,7 +878,7 @@
                 if (quantity !== "" && quantity > 0) {
                     products.push({
                         product_id: productId,
-                        quantity: quantity
+                        quantity: quantity,
                     });
                 }
             });
@@ -1051,8 +1110,6 @@
         };
 
         function openModal(cart_id, client_id, debt) {
-            $("#btnOpenModalProductsReturned").data('id', client_id);
-
             // Para el modal
             $("#form-confirm input[name='cart_id']").val(cart_id);
             if (debt > 0) {
@@ -1351,6 +1408,50 @@
                     resolve();
                 }
             });
+        }
+    </script>
+
+    <script>
+        //HACER METODO EDITAR CARRITO
+        function editCart(cart_id) {
+            $.ajax({
+                    url: "{{ url('/') }}",
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        abono_id: abono_id,
+                        client_id: client_id,
+                        cart_id: $("input[name='cart_id']").val(),
+                    },
+                    success: function(response) {
+                        let cont = "";
+                        cont += '<input type="hidden" name="abono_id" value="'+ response.data.abonoClient.id +'">';
+                        cont += '<div class="table-responsive"><table class="table"><thead><tr>';
+                        cont += '<th>Abono</th>';
+                        cont += '<th>Disponible</th>';
+                        cont += '<th>Baja</th></tr>';
+                        cont += '</thead><tr>';
+                        cont += '<td>' + response.data.abonoType.name + ' $' + response.data.abonoType.price + '</td>';
+                        if (response.data.abonoClient.available === 0) {
+                        cont += '<td>no disponible</td>';
+                        } else if (response.client_abono_id !== null){
+                        cont += '<td>' + response.data.abonoClient.available + '</td>';
+                        cont += '<td><input type="number" min="0" max="' + response.data.abonoClient.available + '" id="dump_truck" value="0"></td>';
+                        }
+                        cont += '</tr>';
+                        cont += '</tbody></table><hr></div>';
+                        $("#colAbono").html(cont);
+                    },
+                    error: function(errorThrown) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: errorThrown.responseJSON.message,
+                            confirmButtonColor: '#1e88e5',
+                        });
+                    }
+                });
         }
     </script>
 @endsection
