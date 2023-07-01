@@ -128,24 +128,18 @@ class CartController extends Controller
                 $productModel = Product::find($productId);
 
                 $bottleType = $productModel->bottle_type_id;
+                StockLog::create([
+                    'client_id' => $client->id,
+                    'cart_id' => $cart->id,
+                    'bottle_type_id' => $bottleType,
+                    'product_id' => $bottleType === null ? $productId : null,
+                    'quantity' => $product['quantity'],
+                    'l_r' => 0,          //si es 0=l, si es 1=r
+                ]);
                 if ($bottleType !== null) {
-                    StockLog::create([
-                        'client_id' => $client->id,
-                        'cart_id' => $cart->id,
-                        'bottle_type_id' => $bottleType,
-                        'quantity' => $product['quantity'],
-                        'l_r' => 0,          //si es 0=l, si es 1=r
-                    ]);
                     BottleClient::firstOrCreate(['client_id' => $client->id,'bottle_types_id' => $bottleType])
                         ->increment('stock', $product['quantity']);
                 } else {
-                    StockLog::create([
-                        'client_id' => $client->id,
-                        'cart_id' => $cart->id,
-                        'product_id' => $productId,
-                        'quantity' => $product['quantity'],
-                        'l_r' => 0,          //si es 0=l, si es 1=r
-                    ]);
                     ProductsClient::firstOrCreate(['client_id' => $client->id, 'product_id' => $product['product_id']])
                         ->increment('stock', $product['quantity']);
                 }
@@ -162,11 +156,7 @@ class CartController extends Controller
                 ];
             }
 
-            if ($total_paid < $total_cart) {
-                $client->update(['debt' => $client->debt + $total_cart - $total_paid]);
-            } else if ($total_paid >= $total_cart) {
-                $client->update(['debt' => $client->debt + $total_cart - $total_paid]);
-            }
+            $client->increment(['debt' => $total_cart - $total_paid]);
 
             $cart->update(['state' => 1, 'take_debt' => $total_cart - $total_paid]);
             DB::table('cart_payment_methods')->insert($cart_payment_methods);
