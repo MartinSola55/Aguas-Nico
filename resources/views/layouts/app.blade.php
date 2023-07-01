@@ -150,73 +150,73 @@
 
         <aside class="left-sidebar">
             <!-- Sidebar scroll-->
-            <div class="slimScrollDiv" style="position: relative; overflow: visible; width: auto; height: 100%;">
-                <div class="scroll-sidebar" style="overflow: visible hidden; width: auto; height: 100%;">
-                    <!-- User profile -->
-                    <div class="user-profile" no-repeat;">
-                    </div>
-                    <!-- End User profile text-->
-                    <!-- Sidebar navigation-->
-                    <nav class="sidebar-nav">
-                        <ul id="sidebarnav">
-
-                            {{-- ADMIN --}}
-                            @if (auth()->user()->rol_id == '1')
-                                <li class="nav-small-cap">NEGOCIO</li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
-                                </li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/product/index') }}" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
-                                </li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/client/index') }}" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
-                                </li>
-                                <li class="nav-devider"></li>
-                                <li class="nav-small-cap">PLANILLAS</li>
-                                <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Planillas</span></a>
-                                    <ul aria-expanded="false" class="collapse">
-                                        <li><a href="{{ url('/route/index') }}">Planillas</a></li>
-                                        <li><a href="{{ url('/route/new') }}">Nueva Planilla</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/dealer/index') }}" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartidores</span></a>
-                                </li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/expense/index') }}" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
-                                </li>
-
-                                <li class="nav-devider"></li>
-                                <li class="nav-small-cap">ADMINISTRACIÓN</li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/invoice') }}" aria-expanded="false"><i class="bi bi-file-earmark-text"></i><span class="hide-menu">Facturación</span></a>
-                                </li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/stats') }}" aria-expanded="false"><i class="bi bi-graph-up"></i><span class="hide-menu">Estadísticas</span></a>
-                                </li>
-
-                            {{-- REPARTIDOR --}}
-                            @else
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
-                                </li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/route/index') }}" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Mis Planillas</span></a>
-                                </li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/client/index') }}" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
-                                </li>
-                                <li>
-                                    <a class="waves-effect waves-dark" href="{{ url('/expense/index') }}" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
-                                </li>
-                            @endif
-                        </ul>
-                    </nav>
-                    <!-- End Sidebar navigation -->
+            <div class="scroll-sidebar" style="overflow: visible hidden; width: auto; height: 100%;">
+                <!-- User profile -->
+                <div class="user-profile" no-repeat;">
                 </div>
+                <!-- End User profile text-->
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+
+                        {{-- ADMIN --}}
+                        @if (auth()->user()->rol_id == '1')
+                            <li class="nav-small-cap">NEGOCIO</li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/product/index') }}" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/client/index') }}" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
+                            </li>
+                            <li class="nav-devider"></li>
+                            <li class="nav-small-cap">PLANILLAS</li>
+                            <li> <a class="has-arrow waves-effect waves-dark" aria-expanded="false"><i class="bi bi-calendar-event"></i><span class="hide-menu">Planillas</span></a>
+                                <ul aria-expanded="false" class="collapse">
+                                    <li><a href="{{ url('/route/index') }}">Planillas</a></li>
+                                    <li><a href="{{ url('/route/new') }}">Nueva Planilla</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/dealer/index') }}" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Repartidores</span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/transfer/index') }}" aria-expanded="false"><i class="bi bi-bank"></i><span class="hide-menu">Transferencias</span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/expense/index') }}" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
+                            </li>
+
+                            <li class="nav-devider"></li>
+                            <li class="nav-small-cap">ADMINISTRACIÓN</li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/invoice') }}" aria-expanded="false"><i class="bi bi-file-earmark-text"></i><span class="hide-menu">Facturación</span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/stats') }}" aria-expanded="false"><i class="bi bi-graph-up"></i><span class="hide-menu">Estadísticas</span></a>
+                            </li>
+
+                        {{-- REPARTIDOR --}}
+                        @else
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/home') }}" aria-expanded="false"><i class="bi bi-house"></i><span class="hide-menu">Inicio</span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/route/index') }}" aria-expanded="false"><i class="bi bi-truck"></i><span class="hide-menu">Mis Planillas</span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/client/index') }}" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/expense/index') }}" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
+                            </li>
+                        @endif
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
             </div>
-            <!-- End Sidebar scroll-->
         </aside>
         @endauth
 

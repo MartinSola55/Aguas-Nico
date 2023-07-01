@@ -27,6 +27,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/home/searchAllSales', [App\Http\Controllers\HomeController::class, 'searchAllSales']);
     Route::get('/stats', [App\Http\Controllers\DealerController::class, 'statistics'])->name('stats');
 
+    // TRANSFER
+    Route::get('/transfer/index', [App\Http\Controllers\TransferController::class, 'index']);
+    Route::get('/transfer/searchTransfers', [App\Http\Controllers\TransferController::class, 'searchTransfers']);
+    Route::get('/transfer/searchClients', [App\Http\Controllers\TransferController::class, 'searchClients']);
+    Route::post('/transfer/delete', [App\Http\Controllers\TransferController::class, 'delete']);
+    Route::post('/transfer/create', [App\Http\Controllers\TransferController::class, 'store']);
+    Route::post('/transfer/edit', [App\Http\Controllers\TransferController::class, 'update']);
+
     // DEALER
     Route::get('/dealer/index', [App\Http\Controllers\DealerController::class, 'index']);
     Route::get('/dealer/details/{id}', [App\Http\Controllers\DealerController::class, 'show'])->name('dealer.details');
@@ -99,6 +107,9 @@ Route::middleware(['auth'])->group(function () {
 
     //Confirmar carrito
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
+
+    //Devolución en carrito
+    Route::post('/cart/return', [App\Http\Controllers\CartController::class, 'returnStock']);
 
     //Agregar/actualizar clientes en reparto
     Route::post('/route/addClients', [App\Http\Controllers\RouteController::class, 'addClients']);
