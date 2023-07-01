@@ -13,6 +13,7 @@ use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductsCart;
 use App\Models\ProductsClient;
+use App\Models\StockLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -238,27 +239,39 @@ class ClientController extends Controller
         return $productList;
     }
 
-    public function getStock(Client $client)
+    public function getStock(Client $client, Request $request)
     {
         $list = [];
         try {
+            $stockLog = StockLog::where('cart_id', $request->input('cart_id'))
+                ->where('l_r', 1)
+                ->get();
+
             foreach ($client->ProductsClient as $product) {
                 if ($product->Product->bottle_type_id === null) {
+                    $existingLog = $stockLog->where('product_id', $product->product_id)->first();
+
                     $list['products'][] = [
                         'id' => $product->product_id,
                         'name' => $product->Product->name,
-                        'stock' => $product->stock,
+                        'stock' => $existingLog ? $existingLog->quantity : 0,
+                        'log_id' => $existingLog ? $existingLog->id : null, // Asignar log_id como el ID del log existente o null
                     ];
                 }
             }
 
             foreach ($client->BottleClient as $bottle) {
+                $existingLog = $stockLog->where('bottle_types_id', $bottle->bottle_types_id)->first();
+
                 $list['bottle'][] = [
                     'id' => $bottle->bottle_types_id,
                     'name' => $bottle->BottleType->name,
-                    'stock' => $bottle->stock,
+                    'stock' => $existingLog ? $existingLog->quantity : 0,
+                    'log_id' => $existingLog ? $existingLog->id : null, // Asignar log_id como el ID del log existente o null
                 ];
             }
+
+            $list['cart_id'] = $request->input('cart_id');
 
             return response()->json([
                 'success' => true,

@@ -258,6 +258,7 @@
                                                 <th>Producto</th>
                                                 {{-- <th>Tiene</th> --}}
                                                 <th>Devuelve</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody id="tableBodyReturnedByClient">
@@ -269,7 +270,6 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Pagar</button>
                     </div>
                 </div>
             </div>
@@ -549,7 +549,7 @@
                                                     </div>
                                                     @endif
                                                 </div>
-                                                <button type="button" onclick="devuelve({{ $cart->Client }}, {{ $cart->id }})" class="btn btn-info">Devuelve</button>
+                                                <button type="button" onclick="getReturnStock({{ $cart->Client }}, {{ $cart->id }})" class="btn btn-info">Devuelve</button>
                                                 <button type="button" onclick="editCart({{ $cart->id }})" class="btn btn-info">Editar Bajada</button>
                                                 <div class="d-flex flex-row justify-content-start">
                                                     <p class="m-0">Total del pedido: $
@@ -822,35 +822,35 @@
             //}
         });
 
-        function devuelve(client, cart_id) {
-            //console.log(client, cart_id);
-
+        function getReturnStock(client, cart_id) {
             $.ajax({
                 url: "{{ url('/client/products/') }}" +"/"+ client.id,
                 type: "GET",
                 headers: {
                     'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
                 },
+                data: {
+                    cart_id: cart_id,
+                },
                 success: function(response) {
-                    console.log(response);
                     $("#modalProductsReturnedByClient").modal("show");
                     $("#modalProductsReturnedByClient .modal-title").text("Cargar devolución " + client.name);
                     let cont = "";
                     if (response.data.bottle) {
                     response.data.bottle.forEach(function(bottle) {
                         cont += '<tr>';
-                        cont += '<td>' + bottle.name + '</td>';
-                        //cont += '<td>' + bottle.stock + '</td>';
-                        cont += '<td><input type="number" class="form-control" min="0" max="10000"></td>';
+                        cont += '<td><input type="hidden" class="form-control" id="bottle_id_' + bottle.id + '" value="' + bottle.log_id + '">' + bottle.name + '</td>';
+                        cont += '<td><input type="number" class="form-control" id="bottle-' + bottle.id + '" value="' + bottle.stock + '" min="0" max="10000"></td>';
+                        cont += '<td><button type="button" onclick="returnProduct($(\'#bottle_id_' + bottle.id + '\').val(), false ,'+ bottle.id +','+ response.data.cart_id + ', $(\'#bottle-' + bottle.id + '\').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
                         cont += '</tr>';
                     });
                     }
                     if (response.data.products){
-                    response.data.products.forEach(function(products) {
+                    response.data.products.forEach(function(product) {
                         cont += '<tr>';
-                        cont += '<td>' + products.name + '</td>';
-                        //cont += '<td>' + products.stock + '</td>';
-                        cont += '<td><input type="number" class="form-control" min="0" max="10000"></td>';
+                        cont += '<td><input type="hidden" class="form-control" id="product_id_' + product.id + '" value="' + product.log_id + '">' + product.name + '</td>';
+                        cont += '<td><input type="number" class="form-control" id="product-' + product.id + '" value="' + product.stock + '" min="0" max="10000"></td>';
+                        cont += '<td><button type="button" onclick="returnProduct($(\'#product_id_' + product.id + '\').val(), true,'+ product.id +','+ response.data.cart_id + ', $(\'#product-' + product.id + '\').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
                         cont += '</tr>';
                     });
                     }
@@ -1452,6 +1452,57 @@
                         });
                     }
                 });
+        }
+    </script>
+
+    <script>
+        function returnProduct(id, product, type_id, cart_id, quantity) {
+            // acá el type_id puede ser
+            $.ajax({
+                url: "{{ url('/cart/return') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    log_id: id,
+                    product: product,
+                    type_id: type_id,
+                    quantity: quantity,
+                    cart_id: cart_id,
+                },
+                success: function(response) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'bottom-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: response.message
+                    });
+                    if (response.data !== null) {
+                        if (product === true) {
+                            $(`#product_id_${type_id}`).val(response.data.id);
+                        } else{
+                            $(`#bottle_id_${type_id}`).val(response.data.id);
+                        }
+                    }
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
         }
     </script>
 @endsection

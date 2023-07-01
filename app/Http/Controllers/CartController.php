@@ -188,6 +188,62 @@ class CartController extends Controller
         }
     }
 
+    public function returnStock(Request $request)
+    {
+        try {
+            $client_id = Cart::find($request->input('cart_id'))->Client->id;
+            if ($request->input('log_id') === 'null') {
+                if ($request->input('product') === 'false') {
+                    DB::beginTransaction();
+                        $responseId = StockLog::create([
+                            'client_id' => $client_id,
+                            'cart_id' => $request->input('cart_id'),
+                            'product_id' => NULL,
+                            'bottle_types_id' => $request->input('type_id'),
+                            'quantity' => $request->input('quantity'),
+                            'l_r' => 1,
+                        ]);
+                    DB::commit();
+                } elseif ($request->input('product') === 'true') {
+                    DB::beginTransaction();
+                        $responseId = StockLog::create([
+                            'client_id' => $client_id,
+                            'cart_id' => $request->input('cart_id'),
+                            'product_id' => $request->input('type_id'),
+                            'bottle_types_id' => NULL,
+                            'quantity' => $request->input('quantity'),
+                            'l_r' => 1,
+                        ]);
+                    DB::commit();
+                }
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Devolución exitosa',
+                    'data' => $responseId
+                ], 201);
+            } else {
+                DB::beginTransaction();
+                    StockLog::where('id', $request->input('log_id'))->update([
+                        'quantity' => $request->input('quantity'),
+                    ]);
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Devolución exitosa',
+                    'data' => null
+                ], 201);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al cargar devolución de productos',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */
