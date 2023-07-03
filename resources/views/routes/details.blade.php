@@ -32,7 +32,7 @@
                     @csrf
                     <input type="hidden" name="cart_id" value="">
                     <input type="hidden" name="products_quantity" value="">
-                    <input type="hidden" name="payment_methods" value="">
+                    <input type="hidden" name="cash" value="">
                     <input type="hidden" name="renew_abono" value="0">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -65,11 +65,6 @@
                                         <div class="d-flex flex-column">
                                             <div class="d-flex flex-row justify-content-between mb-3">
                                                 <div class="col-3 d-flex flex-row align-items-center">
-                                                    {{-- <div class="switch">
-                                                        <label>
-                                                            <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
-                                                        </label>
-                                                    </div> --}}
                                                     <div class="demo-switch-title">Entrega</div>
                                                 </div>
                                                 <div id="cash_input_container" class="col-9 input-group">
@@ -79,24 +74,6 @@
                                                     <input id="cash_input" type="number" min="0" class="form-control mr-1" disabled data-id="{{ $cash->id }}">
                                                 </div>
                                             </div>
-                                            {{-- <div class="d-flex flex-row justify-content-between mb-3">
-                                                <div class="col-6 d-flex flex-row align-items-center">
-                                                    <div class="switch">
-                                                        <label>
-                                                            <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-teal"></span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="demo-switch-title">Otro</div>
-                                                </div>
-                                                <div id="methods_input_container" class="input-group" style="display: none">
-                                                    <select name="method" id="payment_method" class="form-control mr-1" disabled>
-                                                        <option value="" disabled selected>Seleccionar</option>
-                                                        @foreach ($payment_methods as $pm)
-                                                            <option value="{{ $pm->id }}">{{ $pm->method }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div> --}}
                                             <div class="d-flex justify-content-end">
                                                 <div id="amount_input_container" class="input-group w-50 mb-1" style="display: none">
                                                     <div class="input-group-prepend">
@@ -646,6 +623,28 @@
         </div>
     </div>
 
+    <script>
+        const SwalAlert = (text) => {
+            Swal.fire({
+                icon: 'warning',
+                title: 'ALERTA',
+                text: text,
+                showCancelButton: false,
+                confirmButtonColor: '#1e88e5',
+                confirmButtonText: 'OK',
+                allowOutsideClick: false,
+            });
+            return false;
+        };
+        const SwalError = (text) => {
+            Swal.fire({
+                icon: 'error',
+                title: text,
+                confirmButtonColor: '#1e88e5',
+            });
+        };
+    </script>
+
     {{-- Productos en el camión de un repartidor --}}
     <script>
         $("#modalProducts input[type='number']").on("input", function() {
@@ -671,56 +670,35 @@
             });
             $("#formRouteProducts input[name='products_quantity']").val(JSON.stringify(products));
 
-            function updateProducts() {
-                $.ajax({
-                    url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
-                    method: $("#formRouteProducts").attr('method'), // Utiliza el método del formulario
-                    data: $("#formRouteProducts").serialize(), // Utiliza los datos del formulario
-                    success: function(response) {
-                        $("#btnCloseModalProducts").click();
-                        Swal.fire({
-                            title: response.message,
-                            icon: 'success',
-                            showCancelButton: false,
-                            confirmButtonColor: '#1e88e5',
-                            confirmButtonText: 'OK',
-                            allowOutsideClick: false,
-                        })
-                        .then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        })
-                    },
-                    error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                            confirmButtonColor: '#1e88e5',
-                        });
-                    }
-                });
-            }
-
-            // if (products.length <= 0) {
-            //     Swal.fire({
-            //         icon: 'warning',
-            //         title: 'ALERTA',
-            //         text: 'Debes ingresar al menos un producto',
-            //         showCancelButton: false,
-            //         confirmButtonColor: '#1e88e5',
-            //         confirmButtonText: 'OK',
-            //         allowOutsideClick: false,
-            //     })
-            // } else {
-                updateProducts();
-            //}
+            $.ajax({
+                url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
+                method: $("#formRouteProducts").attr('method'), // Utiliza el método del formulario
+                data: $("#formRouteProducts").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnCloseModalProducts").click();
+                    Swal.fire({
+                        title: response.message,
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#1e88e5',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    })
+                },
+                error: function(errorThrown) {
+                    SwalError(errorThrown.responseJSON.message);
+                }
+            });
         });
     </script>
 
     {{-- Productos que devuelve un cliente --}}
     <script>
-
         function searchProductsClient() {
             $("#client_id").val($("#selectClientToReturn").val());
             $("#table_products_client table tbody").html("");
@@ -740,14 +718,9 @@
                         `;
                     });
                     $("#table_products_client table tbody").html(content);
-            // Calcular el total dentro del modal
                 },
                 error: function(errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: errorThrown.responseJSON.message,
-                        confirmButtonColor: '#1e88e5',
-                    });
+                    SwalError(errorThrown.responseJSON.message);
                 }
             });
         }
@@ -771,55 +744,18 @@
             });
             $("#formProductsReturned input[name='products_quantity']").val(JSON.stringify(products));
 
-            function updateProductsReturned() {
-                $.ajax({
-                    url: $("#formProductsReturned").attr('action'), // Utiliza la ruta del formulario
-                    method: $("#formProductsReturned").attr('method'), // Utiliza el método del formulario
-                    data: $("#formProductsReturned").serialize(), // Utiliza los datos del formulario
-                    success: function(response) {
-                        $("#btnCloseModalProductsReturned").click();
-                        Swal.fire({
-                            title: response.message,
-                            icon: 'success',
-                            showCancelButton: false,
-                            confirmButtonColor: '#1e88e5',
-                            confirmButtonText: 'OK',
-                            allowOutsideClick: true,
-                        });
-                    },
-                    error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                            confirmButtonColor: '#1e88e5',
-                        });
-                    }
-                });
-            }
+            $.ajax({
+                url: $("#formProductsReturned").attr('action'), // Utiliza la ruta del formulario
+                method: $("#formProductsReturned").attr('method'), // Utiliza el método del formulario
+                data: $("#formProductsReturned").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnCloseModalProductsReturned").click();
 
-            // if (products.length <= 0) {
-            //     Swal.fire({
-            //         icon: 'warning',
-            //         title: 'ALERTA',
-            //         text: 'Debes ingresar al menos un producto',
-            //         showCancelButton: false,
-            //         confirmButtonColor: '#1e88e5',
-            //         confirmButtonText: 'OK',
-            //         allowOutsideClick: false,
-            //     })
-            // } else if ($("#selectClientToReturn").val() === null) {
-            //     Swal.fire({
-            //         icon: 'warning',
-            //         title: 'ALERTA',
-            //         text: 'Debes ingresar un cliente',
-            //         showCancelButton: false,
-            //         confirmButtonColor: '#1e88e5',
-            //         confirmButtonText: 'OK',
-            //         allowOutsideClick: false,
-            //     })
-            // } else {
-                updateProductsReturned();
-            //}
+                },
+                error: function(errorThrown) {
+                    SwalError(errorThrown.responseJSON.message);
+                }
+            });
         });
 
         function getReturnStock(client_id, client_name, cart_id) {
@@ -838,7 +774,7 @@
                     let cont = "";
                     if (response.data.bottle) {
                     response.data.bottle.forEach(function(bottle) {
-                        cont += '<tr>';
+                        let cont += '<tr>';
                         cont += '<td><input type="hidden" class="form-control" id="bottle_id_' + bottle.id + '" value="' + bottle.log_id + '">' + bottle.name + '</td>';
                         cont += '<td><input type="number" class="form-control" id="bottle-' + bottle.id + '" value="' + bottle.stock + '" min="0" max="10000"></td>';
                         cont += '<td><button type="button" onclick="returnProduct($(\'#bottle_id_' + bottle.id + '\').val(), false ,'+ bottle.id +','+ response.data.cart_id + ', $(\'#bottle-' + bottle.id + '\').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
@@ -857,11 +793,7 @@
                     $("#tableBodyReturnedByClient").html(cont);
                 },
                 error: function(errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: errorThrown.responseJSON.message,
-                        confirmButtonColor: '#1e88e5',
-                    });
+                    SwalError(errorThrown.responseJSON.message);
                 }
             });
         }
@@ -885,113 +817,37 @@
             $("#form-confirm input[name='products_quantity']").val(JSON.stringify(products));
 
             // Métodos de pago
-            let payment_methods = [];
-            let cash = $("#cash_input").val();
-            if (cash !== "" && cash > 0) {
-                payment_methods.push({
-                    method: $("#cash_input").data('id'),
-                    amount: cash
-                });
-            }
-            let other = $("#amount_input").val();
-            if (other !== "" && other > 0) {
-                payment_methods.push({
-                    method: $("#payment_method").val(),
-                    amount: other
-                });
-            }
-            $("#form-confirm input[name='payment_methods']").val(JSON.stringify(payment_methods));
+            $("#form-confirm input[name='cash']").val($("#cash_input").val());
 
-            function payCart() {
-                discountAbono()
-                    .then(() => {
-                        $.ajax({
-                            url: $("#form-confirm").attr('action'),
-                            method: $("#form-confirm").attr('method'),
-                            data: $("#form-confirm").serialize(),
-                            success: function(response) {
-                                $("#btnCloseModal").click();
-                                Swal.fire({
-                                    title: response.message,
-                                    icon: 'success',
-                                    showCancelButton: false,
-                                    confirmButtonColor: '#1e88e5',
-                                    confirmButtonText: 'OK',
-                                    allowOutsideClick: false,
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.reload();
-                                    }
-                                });
-                            },
-                            error: function(errorThrown) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: errorThrown.responseJSON.message,
-                                    confirmButtonColor: '#1e88e5',
-                                });
+            discountAbono()
+            .then(() => {
+                $.ajax({
+                    url: $("#form-confirm").attr('action'),
+                    method: $("#form-confirm").attr('method'),
+                    data: $("#form-confirm").serialize(),
+                    success: function(response) {
+                        $("#btnCloseModal").click();
+                        Swal.fire({
+                            title: response.message,
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonColor: '#1e88e5',
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
                             }
                         });
-                    })
-                    .catch((error) => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: error.responseJSON.message,
-                            confirmButtonColor: '#1e88e5',
-                        });
-                    });
-            }
-
-            //if (products.length > 0 && payment_methods.length >= 0) {
-                //if (payment_methods.length === 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'ALERTA',
-                        text: '¿Seguro que quieres cargar todo en la cuenta corriente del cliente?',
-                        showCancelButton: true,
-                        confirmButtonText: 'OK',
-                        allowOutsideClick: false,
-                        buttonsStyling: false,
-                        customClass: {
-                            confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
-                            cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
-                        }
-                    })
-                    .then((result) => {
-                        if (result.isConfirmed) {
-                            payCart();
-                        }
-                    })
-                // } else {
-                //     payCart();
-                // }
-            // } else if (products.length == 0 && payment_methods.length > 0) {
-            //     Swal.fire({
-            //         icon: 'warning',
-            //         title: 'ALERTA',
-            //         text: '¿Seguro que quieres pagar la cuenta corriente del cliente?',
-            //         showCancelButton: true,
-            //         confirmButtonText: 'OK',
-            //         allowOutsideClick: false,
-            //         buttonsStyling: false,
-            //         customClass: {
-            //             confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
-            //             cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
-            //         }
-            //     }).
-            //     then((result) => {
-            //         if (result.isConfirmed) {
-            //             payCart();
-            //         }
-            //     })
-            // } else {
-            //     Swal.fire({
-            //         icon: 'warning',
-            //         title: "ERROR",
-            //         text: "Debes ingresar al menos un producto o un método de pago",
-            //         confirmButtonColor: '#1e88e5',
-            //     });
-            // }
+                    },
+                    error: function(errorThrown) {
+                        SwalError(errorThrown.responseJSON.message);
+                    }
+                });
+            })
+            .catch((error) => {
+                SwalError(errorThrown.responseJSON.message);
+            });
         });
     </script>
 
@@ -1184,11 +1040,7 @@
                             });
                         },
                         error: function(errorThrown) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: errorThrown.responseJSON.message,
-                                confirmButtonColor: '#1e88e5',
-                            });
+                            SwalError(errorThrown.responseJSON.message);
                         }
                     });
                 }
@@ -1230,11 +1082,7 @@
                             });
                         },
                         error: function(errorThrown) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: errorThrown.responseJSON.message,
-                                confirmButtonColor: '#1e88e5',
-                            });
+                            SwalError(errorThrown.responseJSON.message);
                         }
                     });
                 }
@@ -1283,11 +1131,7 @@
                             })
                         },
                         error: function(errorThrown) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: errorThrown.responseJSON.message,
-                                confirmButtonColor: '#1e88e5',
-                            });
+                            SwalError(errorThrown.responseJSON.message);
                         }
                     });
                 }
@@ -1365,11 +1209,7 @@
                         $("#colAbono").html(cont);
                     },
                     error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                            confirmButtonColor: '#1e88e5',
-                        });
+                        SwalError(errorThrown.responseJSON.message);
                     }
                 });
 
@@ -1396,11 +1236,7 @@
                             resolve();
                         },
                         error: function(errorThrown) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: errorThrown.responseJSON.message,
-                                confirmButtonColor: '#1e88e5',
-                            });
+                            SwalError(errorThrown.responseJSON.message);
                             reject(errorThrown);
                         }
                     });
@@ -1497,11 +1333,7 @@
                     }
                 },
                 error: function(errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: errorThrown.responseJSON.message,
-                        confirmButtonColor: '#1e88e5',
-                    });
+                    SwalError(errorThrown.responseJSON.message);
                 }
             });
         }

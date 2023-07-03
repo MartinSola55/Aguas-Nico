@@ -92,7 +92,7 @@ class CartController extends Controller
     {
         try {
             $products_quantity = json_decode($request->input('products_quantity'), true);
-            $payment_methods = json_decode($request->input('payment_methods'), true);
+            $cash = $request->input('cash');
             $renew_abono = json_decode($request->input('renew_abono'), true);
 
             $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
@@ -145,21 +145,16 @@ class CartController extends Controller
                 }
             }
 
-            //volar a la bosta metodos de pago
-            $cart_payment_methods = [];
-            foreach ($payment_methods as $payment) {
-                $total_paid += $payment['amount'];
-                $cart_payment_methods[] = [
-                    'cart_id' => $cart->id,
-                    'payment_method_id' => $payment['method'],
-                    'amount' => $payment['amount'],
-                ];
-            }
+            // Agregar metodo de pago en efectivo
+            CartPaymentMethod::create([
+                'cart_id' => $cart->id,
+                'payment_method_id' => 1, // ESTA HARCODED PARA EFECTIVO
+                'amount' => $cash,
+            ]);
 
             $client->increment(['debt' => $total_cart - $total_paid]);
 
             $cart->update(['state' => 1, 'take_debt' => $total_cart - $total_paid]);
-            DB::table('cart_payment_methods')->insert($cart_payment_methods);
             DB::table('products_cart')->insert($products_cart);
             DB::commit();
 
