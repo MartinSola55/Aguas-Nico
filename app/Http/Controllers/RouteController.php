@@ -66,8 +66,7 @@ class RouteController extends Controller
             $data = $this->getStats($route, $productsDispatched);
 
             return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'data'));
-        } else
-        {
+        } else {
             $clients = collect();
             foreach ($route->Carts as $cart) {
                 $clients->push($cart->Client);

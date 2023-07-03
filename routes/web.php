@@ -77,6 +77,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
     Route::post('/cart/delete', [App\Http\Controllers\CartController::class, 'delete']);
+    Route::post('/cart/edit', [App\Http\Controllers\CartController::class, 'edit']);
 
     // EXPENSES
     Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
