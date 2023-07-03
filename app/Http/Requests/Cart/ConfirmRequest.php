@@ -26,15 +26,13 @@ class ConfirmRequest extends BaseFormRequest
             'products_quantity' => ['required'],
             'products_quantity.*.product_id' => ['required', 'exists:products,id'],
             'products_quantity.*.quantity' => ['required', 'integer', 'min:1'],
-            'payment_methods' => ['required'],
-            'payment_methods.*.method' => ['required', 'string', 'max:255'],
-            'payment_methods.*.amount' => ['required', 'numeric', 'min:0'],
+            'cash' => ['required', 'numeric', 'min:0'],
         ]);
 
         return [
             'cart_id',
             'products_quantity',
-            'payment_methods',
+            'cash',
         ];
     }
 }
