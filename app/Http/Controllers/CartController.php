@@ -152,8 +152,8 @@ class CartController extends Controller
                 'amount' => $cash,
             ]);
 
-            $client->increment(['debt' => $total_cart - $total_paid]);
-
+            $client->increment('debt', $total_cart - $total_paid);
+           
             $cart->update(['state' => 1, 'take_debt' => $total_cart - $total_paid]);
             DB::table('products_cart')->insert($products_cart);
             DB::commit();
