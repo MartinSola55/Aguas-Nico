@@ -29,7 +29,6 @@
             style="display: none;">
             <div class="modal-dialog">
                 <form role="form" class="needs-validation" id="form-confirm" autocomplete="off" novalidate>
-                    @csrf
                     <input type="hidden" name="cart_id" value="">
                     <input type="hidden" name="products_quantity" value="">
                     <input type="hidden" name="cash" value="">
@@ -91,6 +90,79 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
                             <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Pagar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- End Modal -->
+
+        <!-- Modal edit cart -->
+        <div id="modalEditCart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+            style="display: none;">
+            <div class="modal-dialog">
+                <form role="form" class="needs-validation" id="form-confirm" autocomplete="off" novalidate>
+                    <input type="hidden" name="cart_id" value="">
+                    <input type="hidden" name="products_quantity" value="">
+                    <input type="hidden" name="cash" value="">
+                    <input type="hidden" name="renew_abono" value="0">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Editar Bajada</h4>
+                            <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12" id="colAbono">
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="table-responsive">
+                                        <table class="table" id="modalTableEditCart">
+                                            <thead>
+                                                <tr>
+                                                    <th>Producto</th>
+                                                    <th>Precio</th>
+                                                    <th>Cantidad</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tableEditCart" class="cart-items">
+                                            </tbody>
+                                        </table>
+                                        <hr>
+                                        <div class="d-flex row justify-content-between">
+                                            <p id="totalAmountEditCart" class="col-12 align-items-center justify-content-end mb-0"></p>
+                                            <p id="modalClientDebt" class="col-12 align-items-center justify-content-end mb-0"></p>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex flex-column">
+                                            <div class="d-flex flex-row justify-content-between mb-3">
+                                                <div class="col-3 d-flex flex-row align-items-center">
+                                                    <div class="demo-switch-title">Entrega</div>
+                                                </div>
+                                                <div id="cash_input_container" class="col-9 input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input id="cash_input_edit_cart" type="number" min="0" class="form-control mr-1">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-end">
+                                                <div id="amount_input_container" class="input-group w-50 mb-1" style="display: none">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input id="amount_input" type="number" min="0" class="form-control mr-1" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                            <button type="button" id="btnEditCart" class="btn btn-success waves-effect waves-light">Editar</button>
                         </div>
                     </div>
                 </form>
@@ -922,7 +994,7 @@
             });
             $("#tableBody").html(content);
             if (data.abonoClient !== null) {
-                //Avono corriente disponible para descontar
+                //Abono corriente disponible para descontar
                 let cont = "";
                 cont += '<input type="hidden" name="abono_id" value="'+ data.abonoClient.id +'">';
                 cont += '<div class="table-responsive"><table class="table"><thead><tr>';
@@ -1253,9 +1325,50 @@
     </script>
 
     <script>
-        //HACER METODO EDITAR CARRITO
+        // Calcular el total del carrito
+        function calculateTotal() {
+            let total = 0;
+            $(".cart-items tr").each(function() {
+                let precioUnit = parseFloat($(this).find(".precioProducto").text().replace("$ ", ""));
+                let cantidad = parseInt($(this).find(".quantityedit-input").val());
+                let subtotal = precioUnit * cantidad;
+                total += subtotal;
+            });
+            return total;
+        }
+        // METODO EDITAR CARRITO
         function editCart(cart) {
+            calculateTotal();
             console.log(cart);
+            $("#modalEditCart").modal("show");
+            let content = '';
+            cart.products_cart.forEach(p => {
+                content += '<tr>';
+                content += '<td>' + p.product.name + '</td>';
+                content += '<td class="precioProducto">$ ' + p.product.price + '</td>';
+                content += '<td><input type="number" min="0" max="1000" class="form-control quantityedit-input" value="' + p.quantity + '" data-id="' + p.product.id + '" ></td>';
+                content += "</tr>";
+            });
+
+            // Actualizar el total al modificar la cantidad
+            $(document).ready(function() {
+                function updateTotal() {
+                    let total = calculateTotal();
+                    $("#totalAmountEditCart").text("Total carrito: $" + total);
+                }
+                updateTotal();
+                $(".quantityedit-input").on("input", updateTotal);
+            });
+
+
+            if (cart.cart_payment_method[0].amount) {
+                $("#cash_input_edit_cart").val(cart.cart_payment_method[0].amount);
+            } else {
+                $("#cash_input_edit_cart").val('0');
+            }
+
+            $("#tableEditCart").html(content);
+
             // $.ajax({
             //         url: "{{ url('/cart/edit') }}",'/cart/confirm'
             //         type: "POST",
