@@ -55,9 +55,11 @@ class RouteController extends Controller
         $cash = PaymentMethod::where('method', 'Efectivo')->first();
         $payment_methods = PaymentMethod::all()->except($cash->id);
 
-        $route = Route::with('Carts.Client')->with(['Carts' => function ($query) {
-            $query->orderBy('priority', 'asc');
-        }])->find($id);
+        $route = Route::with(['Carts.Client', 'Carts.CartPaymentMethod'])
+            ->with(['Carts' => function ($query) {
+                $query->orderBy('priority', 'asc');
+            }])->find($id);
+
 
         if (auth()->user()->rol_id == '1')
         {
