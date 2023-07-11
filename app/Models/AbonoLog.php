@@ -5,15 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DebtPaymentLog extends Model
+class AbonoLog extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'client_id',
-        'cart_id',
-        'transfer_id',
-        'debt',
+        'abono_clients_id',
+        'quantity',
         'created_at',
         'updated_at',
     ];
@@ -23,13 +21,8 @@ class DebtPaymentLog extends Model
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    public function Cart()
+    public function AbonoClients()
     {
-        return $this->belongsTo(Cart::class, 'cart_id');
-    }
-
-    public function Transfer()
-    {
-        return $this->belongsTo(Transfer::class, 'transfer_id');
+        return $this->belongsTo(AbonoClient::class, 'abono_clients_id');
     }
 }

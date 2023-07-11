@@ -77,7 +77,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
     Route::post('/cart/delete', [App\Http\Controllers\CartController::class, 'delete']);
-    Route::post('/cart/edit', [App\Http\Controllers\CartController::class, 'edit']);
 
     // EXPENSES
     Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
@@ -109,6 +108,9 @@ Route::middleware(['auth'])->group(function () {
     //Confirmar carrito
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
 
+    //Editar carrito
+    Route::post('/cart/edit', [App\Http\Controllers\CartController::class, 'edit']);
+
     //Devolución en carrito
     Route::post('/cart/return', [App\Http\Controllers\CartController::class, 'returnStock']);
 
@@ -128,5 +130,6 @@ Route::middleware(['auth'])->group(function () {
     //ABONOS
     Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
     Route::post('/abono/discount', [App\Http\Controllers\AbonoClientController::class, 'update']);
+    Route::get('/abono/getQuantity', [App\Http\Controllers\AbonoClientController::class, 'getQuantity']);
 });
 

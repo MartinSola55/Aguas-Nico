@@ -58,7 +58,6 @@
                                         <hr>
                                         <div class="d-flex row justify-content-between">
                                             <p id="totalAmount" class="col-12 align-items-center justify-content-end mb-0">Total pedido: $0</p>
-                                            <p id="modalClientDebt" class="col-12 align-items-center justify-content-end mb-0"></p>
                                         </div>
                                         <hr>
                                         <div class="d-flex flex-column">
@@ -131,7 +130,6 @@
                                         <hr>
                                         <div class="d-flex row justify-content-between">
                                             <p id="totalAmountEditCart" class="col-12 align-items-center justify-content-end mb-0"></p>
-                                            <p id="modalClientDebt" class="col-12 align-items-center justify-content-end mb-0"></p>
                                         </div>
                                         <hr>
                                         <div class="d-flex flex-column">
@@ -506,7 +504,7 @@
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-header d-flex flex-row justify-content-between">
-                        <h5 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h5>
+                        <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h3>
                         @if (auth()->user()->rol_id == '1')
                         <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar reparto</button>
                         @endif
@@ -553,12 +551,16 @@
                                             @endif
 
                                             {{-- Deuda / saldo a favor --}}
-                                            @if ($cart->Client->debt > 0)
-                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt }}</small></p>
-                                            @elseif ($cart->Client->debt < 0)
-                                                <p class="m-0"><small style="color: #30d577">Saldo a favor: ${{ $cart->Client->debt * -1 }}</small></p>
+                                            @if ($cart->Client->debt != 0)
+                                            <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt - $cart->Client->debtMonth }}</small></p>
                                             @else
-                                                <p class="m-0"><small class="text-muted">Sin deuda</small></p>
+                                            <p class="m-0"><small class="text-muted">Sin deuda</small></p>
+                                            @endif
+                                            {{-- Deuda / saldo a favor del mes --}}
+                                            @if ($cart->Client->debtMonth != 0)
+                                                <p class="m-0"><small class="text-danger">Deuda de este mes: ${{ $cart->Client->debtMonth }}</small></p>
+                                            @else
+                                            <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
                                             @endif
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                             @if ($cart->state && auth()->user()->rol_id == '1')
@@ -1045,13 +1047,6 @@
         function openModal(cart_id, client_id, debt) {
             // Para el modal
             $("#form-confirm input[name='cart_id']").val(cart_id);
-            if (debt > 0) {
-                $("#modalClientDebt").text("Deuda: $" + debt);
-            } else if (debt < 0) {
-                $("#modalClientDebt").text("Saldo a favor: $" + debt * -1);
-            } else {
-                $("#modalClientDebt").text("Sin deuda");
-            }
             $("#tableBody").html("");
             $("#client_id").val(client_id);
             $("#cash_checkbox").prop("checked", true);

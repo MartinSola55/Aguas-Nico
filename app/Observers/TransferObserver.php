@@ -2,7 +2,9 @@
 
 namespace App\Observers;
 
+use App\Models\DebtPaymentLog;
 use App\Models\Transfer;
+use Carbon\Carbon;
 
 class TransferObserver
 {
@@ -15,6 +17,21 @@ class TransferObserver
         $client = $transfer->client;
         $client->debt -= $transfer->amount;
         $client->save();
+
+        $debtPaymentLog = DebtPaymentLog::firstOrCreate(
+            [
+                'transfer_id' => $transfer->id,
+                'client_id' => $transfer->client_id
+            ],
+            [
+                'transfer_id' => $transfer->id,
+                'client_id' => $transfer->client_id,
+                'created_at' => Carbon::now(),
+            ]
+        );
+        $debtPaymentLog->debt = ($transfer->amount * -1);
+        $debtPaymentLog->updated_at = Carbon::now();
+        $debtPaymentLog->save();
     }
 
     /**
@@ -33,6 +50,7 @@ class TransferObserver
         // Restablecer la deuda al cliente
         $client = $transfer->client;
         $client->debt += $transfer->amount;
+        DebtPaymentLog::where('transfer_id', $transfer->id)->delete();
         $client->save();
     }
 

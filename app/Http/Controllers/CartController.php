@@ -8,6 +8,7 @@ use App\Http\Requests\Cart\ConfirmRequest;
 use App\Models\BottleClient;
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
+use App\Models\DebtPaymentLog;
 use App\Models\Product;
 use App\Models\ProductsCart;
 use App\Models\ProductsClient;
@@ -107,8 +108,6 @@ class CartController extends Controller
                 $total_cart = 0;
             }
 
-            $total_paid = 0;
-
             DB::beginTransaction();
 
             $products_cart = [];
@@ -152,10 +151,18 @@ class CartController extends Controller
                 'amount' => $cash,
             ]);
 
-            $client->increment('debt', $total_cart - $total_paid);
-           
-            $cart->update(['state' => 1, 'take_debt' => $total_cart - $total_paid]);
+            $client->increment('debt', $total_cart - $cash);
+
+            // DebtPaymentLog::create([
+                //     'client_id' => $client->id,
+                //     'cart_id' => $cart->id,
+                //     'debt' => $cart->ProductsCart()->sum('quantity', '*', 'setted_price')
+                // ]);
+            
+            // Tiene que ir SI O SI primero la creacion de productos y despues la actualizacion del carrito
             DB::table('products_cart')->insert($products_cart);
+            $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
+
             DB::commit();
 
             return response()->json([
