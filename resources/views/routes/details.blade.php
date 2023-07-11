@@ -599,7 +599,7 @@
                                                     @endif
                                                 </div>
                                                 <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-info">Devuelve</button>
-                                                <button type="button" onclick="editCart({{ $cart }})" class="btn btn-info">Editar Bajada</button>
+                                                <button type="button" onclick="showEditCart({{ $cart }})" class="btn btn-info">Editar Bajada</button>
                                                 <div class="d-flex flex-row justify-content-start">
                                                     <p class="m-0">Total del pedido: $
                                                         {{ $cart->ProductsCart->sum(function($product_cart) {
@@ -1337,7 +1337,7 @@
             return total;
         }
         // METODO EDITAR CARRITO
-        function editCart(cart) {
+        function showEditCart(cart) {
             calculateTotal();
             console.log(cart);
             $("#modalEditCart").modal("show");
@@ -1368,45 +1368,49 @@
             }
 
             $("#tableEditCart").html(content);
+        }
+    </script>
 
-            // $.ajax({
-            //         url: "{{ url('/cart/edit') }}",'/cart/confirm'
-            //         type: "POST",
-            //         headers: {
-            //             'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-            //         },
-            //         data: {
-            //             abono_id: abono_id,
-            //             client_id: client_id,
-            //             cart_id: $("input[name='cart_id']").val(),
-            //         },
-            //         success: function(response) {
-            //             let cont = "";
-            //             cont += '<input type="hidden" name="abono_id" value="'+ response.data.abonoClient.id +'">';
-            //             cont += '<div class="table-responsive"><table class="table"><thead><tr>';
-            //             cont += '<th>Abono</th>';
-            //             cont += '<th>Disponible</th>';
-            //             cont += '<th>Baja</th></tr>';
-            //             cont += '</thead><tr>';
-            //             cont += '<td>' + response.data.abonoType.name + ' $' + response.data.abonoType.price + '</td>';
-            //             if (response.data.abonoClient.available === 0) {
-            //             cont += '<td>no disponible</td>';
-            //             } else if (response.client_abono_id !== null){
-            //             cont += '<td>' + response.data.abonoClient.available + '</td>';
-            //             cont += '<td><input type="number" min="0" max="' + response.data.abonoClient.available + '" id="dump_truck" value="0"></td>';
-            //             }
-            //             cont += '</tr>';
-            //             cont += '</tbody></table><hr></div>';
-            //             $("#colAbono").html(cont);
-            //         },
-            //         error: function(errorThrown) {
-            //             Swal.fire({
-            //                 icon: 'error',
-            //                 title: errorThrown.responseJSON.message,
-            //                 confirmButtonColor: '#1e88e5',
-            //             });
-            //         }
-            //     });
+    <script>
+        function editCart(cart) {
+            $.ajax({
+                url: "{{ url('/cart/edit') }}",'/cart/confirm'
+                type: "POST",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    abono_id: abono_id,
+                    client_id: client_id,
+                    cart_id: $("input[name='cart_id']").val(),
+                },
+                success: function(response) {
+                    let cont = "";
+                    cont += '<input type="hidden" name="abono_id" value="'+ response.data.abonoClient.id +'">';
+                    cont += '<div class="table-responsive"><table class="table"><thead><tr>';
+                    cont += '<th>Abono</th>';
+                    cont += '<th>Disponible</th>';
+                    cont += '<th>Baja</th></tr>';
+                    cont += '</thead><tr>';
+                    cont += '<td>' + response.data.abonoType.name + ' $' + response.data.abonoType.price + '</td>';
+                    if (response.data.abonoClient.available === 0) {
+                    cont += '<td>no disponible</td>';
+                    } else if (response.client_abono_id !== null){
+                    cont += '<td>' + response.data.abonoClient.available + '</td>';
+                    cont += '<td><input type="number" min="0" max="' + response.data.abonoClient.available + '" id="dump_truck" value="0"></td>';
+                    }
+                    cont += '</tr>';
+                    cont += '</tbody></table><hr></div>';
+                    $("#colAbono").html(cont);
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
         }
     </script>
 
