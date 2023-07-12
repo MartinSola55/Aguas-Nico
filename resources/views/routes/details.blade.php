@@ -58,6 +58,7 @@
                                         <hr>
                                         <div class="d-flex row justify-content-between">
                                             <p id="totalAmount" class="col-12 align-items-center justify-content-end mb-0">Total pedido: $0</p>
+                                            <p id="modalClientDebt" class="col-12 align-items-center justify-content-end mb-0"></p>
                                         </div>
                                         <hr>
                                         <div class="d-flex flex-column">
@@ -100,7 +101,7 @@
         <div id="modalEditCart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
             <div class="modal-dialog">
-                <form role="form" class="needs-validation" id="form-edit-bajada" autocomplete="off" novalidate>
+                <form role="form" class="needs-validation" id="form-confirm" autocomplete="off" novalidate>
                     <input type="hidden" name="cart_id" value="">
                     <input type="hidden" name="products_quantity" value="">
                     <input type="hidden" name="cash" value="">
@@ -130,6 +131,7 @@
                                         <hr>
                                         <div class="d-flex row justify-content-between">
                                             <p id="totalAmountEditCart" class="col-12 align-items-center justify-content-end mb-0"></p>
+                                            <p id="modalClientDebt" class="col-12 align-items-center justify-content-end mb-0"></p>
                                         </div>
                                         <hr>
                                         <div class="d-flex flex-column">
@@ -149,7 +151,7 @@
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">$</span>
                                                     </div>
-                                                    <input type="number" min="0" class="form-control mr-1" disabled>
+                                                    <input id="amount_input" type="number" min="0" class="form-control mr-1" disabled>
                                                 </div>
                                             </div>
                                         </div>
@@ -504,7 +506,7 @@
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-header d-flex flex-row justify-content-between">
-                        <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h3>
+                        <h5 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h5>
                         @if (auth()->user()->rol_id == '1')
                         <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar reparto</button>
                         @endif
@@ -550,28 +552,13 @@
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
 
-                                            @if ($cart->Client->debtMonth >= 0)    
-
-                                                {{-- Deuda / saldo a favor --}}
-                                                @if ($cart->Client->debt == 0)
-                                                    <p class="m-0"><small class="text-muted">Sin deuda</small></p>
-                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth > 0)
-                                                    <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt - $cart->Client->debtMonth }}</small></p>
-                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth < 0)
-                                                    <p class="m-0"><small class="text-success">A favor: ${{ ($cart->Client->debt - $cart->Client->debtMonth) * -1 }}</small></p>
-                                                @endif
-
-                                                {{-- Deuda / saldo a favor del mes --}}
-                                                @if ($cart->Client->debt != 0)
-                                                    @if ($cart->Client->debtMonth != 0)
-                                                        <p class="m-0"><small class="text-danger">Deuda de este mes: ${{ $cart->Client->debtMonth }}</small></p>
-                                                    @else
-                                                        <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
-                                                    @endif
-                                                @endif
-
+                                            {{-- Deuda / saldo a favor --}}
+                                            @if ($cart->Client->debt > 0)
+                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt }}</small></p>
+                                            @elseif ($cart->Client->debt < 0)
+                                                <p class="m-0"><small style="color: #30d577">Saldo a favor: ${{ $cart->Client->debt * -1 }}</small></p>
                                             @else
-                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt + $cart->Client->debtMonth }}</small></p>
+                                                <p class="m-0"><small class="text-muted">Sin deuda</small></p>
                                             @endif
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                             @if ($cart->state && auth()->user()->rol_id == '1')
@@ -612,7 +599,7 @@
                                                     @endif
                                                 </div>
                                                 <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-info">Devuelve</button>
-                                                <button type="button" onclick="editCart({{ $cart }})" class="btn btn-info">Editar Bajada</button>
+                                                <button type="button" onclick="showEditCart({{ $cart }})" class="btn btn-info">Editar Bajada</button>
                                                 <div class="d-flex flex-row justify-content-start">
                                                     <p class="m-0">Total del pedido: $
                                                         {{ $cart->ProductsCart->sum(function($product_cart) {
@@ -1058,6 +1045,13 @@
         function openModal(cart_id, client_id, debt) {
             // Para el modal
             $("#form-confirm input[name='cart_id']").val(cart_id);
+            if (debt > 0) {
+                $("#modalClientDebt").text("Deuda: $" + debt);
+            } else if (debt < 0) {
+                $("#modalClientDebt").text("Saldo a favor: $" + debt * -1);
+            } else {
+                $("#modalClientDebt").text("Sin deuda");
+            }
             $("#tableBody").html("");
             $("#client_id").val(client_id);
             $("#cash_checkbox").prop("checked", true);
@@ -1343,8 +1337,7 @@
             return total;
         }
         // METODO EDITAR CARRITO
-        function editCart(cart) {
-            $("#form-edit-bajada input[name='cart_id']").val(cart.id);
+        function showEditCart(cart) {
             calculateTotal();
             console.log(cart);
             $("#modalEditCart").modal("show");
@@ -1367,6 +1360,7 @@
                 $(".quantityedit-input").on("input", updateTotal);
             });
 
+
             if (cart.cart_payment_method[0].amount) {
                 $("#cash_input_edit_cart").val(cart.cart_payment_method[0].amount);
             } else {
@@ -1375,43 +1369,39 @@
 
             $("#tableEditCart").html(content);
         }
+    </script>
 
-        $("#btnEditCart").on("click", function() {
-            let cart_id = $("#form-edit-bajada input[name='cart_id']").val();
-            let cash = $("#cash_input_edit_cart").val();
-            let products = [];
-            $(".quantityedit-input").each(function() {
-                let product_id = $(this).data("id");
-                let quantity = $(this).val();
-                products.push({
-                    product_id: product_id,
-                    quantity: quantity
-                });
-            });
-            
+    <script>
+        function editCart(cart) {
             $.ajax({
-                url: "{{ url('/cart/edit') }}",
+                url: "{{ url('/cart/edit') }}",'/cart/confirm'
                 type: "POST",
                 headers: {
                     'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: {
-                    cart_id: cart_id,
-                    cash: cash,
-                    products_quantity: JSON.stringify(products),
+                    abono_id: abono_id,
+                    client_id: client_id,
+                    cart_id: $("input[name='cart_id']").val(),
                 },
                 success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: response.message,
-                        confirmButtonColor: '#1e88e5',
-                        allowOutsideClick: false,
-                    })
-                    .then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload();
-                        }
-                    });
+                    let cont = "";
+                    cont += '<input type="hidden" name="abono_id" value="'+ response.data.abonoClient.id +'">';
+                    cont += '<div class="table-responsive"><table class="table"><thead><tr>';
+                    cont += '<th>Abono</th>';
+                    cont += '<th>Disponible</th>';
+                    cont += '<th>Baja</th></tr>';
+                    cont += '</thead><tr>';
+                    cont += '<td>' + response.data.abonoType.name + ' $' + response.data.abonoType.price + '</td>';
+                    if (response.data.abonoClient.available === 0) {
+                    cont += '<td>no disponible</td>';
+                    } else if (response.client_abono_id !== null){
+                    cont += '<td>' + response.data.abonoClient.available + '</td>';
+                    cont += '<td><input type="number" min="0" max="' + response.data.abonoClient.available + '" id="dump_truck" value="0"></td>';
+                    }
+                    cont += '</tr>';
+                    cont += '</tbody></table><hr></div>';
+                    $("#colAbono").html(cont);
                 },
                 error: function(errorThrown) {
                     Swal.fire({
@@ -1421,7 +1411,7 @@
                     });
                 }
             });
-        });
+        }
     </script>
 
     <script>
