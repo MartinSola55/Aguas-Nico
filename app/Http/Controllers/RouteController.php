@@ -60,6 +60,11 @@ class RouteController extends Controller
                 $query->orderBy('priority', 'asc');
             }])->find($id);
 
+        // Agregar deuda del mes actual a cada cliente como un atributo nuevo, sacando esa deuda del modelo DebpaymentLog
+        foreach ($route->Carts as $cart) {
+            $cart->Client->debtMonth = $cart->Client->getDebtOfTheMonth();
+        }
+
 
         if (auth()->user()->rol_id == '1')
         {

@@ -46,4 +46,9 @@ class Client extends Model
     {
         return $this->hasMany(BottleClient::class, 'client_id');
     }
+
+    public function getDebtOfTheMonth()
+    {
+        return DebtPaymentLog::where('client_id', $this->id)->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->sum('debt');
+    }
 }

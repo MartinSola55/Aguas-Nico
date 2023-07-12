@@ -8,6 +8,7 @@ use App\Http\Requests\Cart\ConfirmRequest;
 use App\Models\BottleClient;
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
+use App\Models\DebtPaymentLog;
 use App\Models\Product;
 use App\Models\ProductsCart;
 use App\Models\ProductsClient;
@@ -26,44 +27,29 @@ class CartController extends Controller
         return view('carts.index', compact('carts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(CartCreateRequest $request)
+    public function edit(Request $request)
     {
-        //
-    }
+        $cart = Cart::find($request->input('cart_id'));
+        $products_quantity = json_decode($request->input('products_quantity'), true);
+        $cash = $request->input('cash');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cart $cart)
-    {
-        //
-    }
+        $total_cart = 0;
+        foreach ($cart->ProductsCart as $pc) {
+            foreach ($products_quantity as $product) {
+                if ($pc->product_id == $product['product_id']) {
+                    $pc->quantity = $product['quantity'];
+                    $pc->save();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cart $cart)
-    {
-        //
-    }
+                    $total_cart += $product['quantity'] * $pc->setted_price;
+                }
+            }
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(CartUpdateRequest $request)
-    {
-        //
+        // Actualizar metodo de pago en efectivo
+        CartPaymentMethod::where('cart_id', $cart->id)->where('payment_method_id', 1)->update(['amount' => $cash]);
+
+        $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
     }
 
     public function changeState(Request $request)
@@ -106,8 +92,6 @@ class CartController extends Controller
             } else {
                 $total_cart = 0;
             }
-
-            $total_paid = 0;
 
             DB::beginTransaction();
 
@@ -152,10 +136,18 @@ class CartController extends Controller
                 'amount' => $cash,
             ]);
 
-            $client->increment('debt', $total_cart - $total_paid);
-           
-            $cart->update(['state' => 1, 'take_debt' => $total_cart - $total_paid]);
+            $client->increment('debt', $total_cart - $cash);
+
+            // DebtPaymentLog::create([
+                //     'client_id' => $client->id,
+                //     'cart_id' => $cart->id,
+                //     'debt' => $cart->ProductsCart()->sum('quantity', '*', 'setted_price')
+                // ]);
+            
+            // Tiene que ir SI O SI primero la creacion de productos y despues la actualizacion del carrito
             DB::table('products_cart')->insert($products_cart);
+            $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
+
             DB::commit();
 
             return response()->json([
