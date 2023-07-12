@@ -27,44 +27,29 @@ class CartController extends Controller
         return view('carts.index', compact('carts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(CartCreateRequest $request)
+    public function edit(Request $request)
     {
-        //
-    }
+        $cart = Cart::find($request->input('cart_id'));
+        $products_quantity = json_decode($request->input('products_quantity'), true);
+        $cash = $request->input('cash');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cart $cart)
-    {
-        //
-    }
+        $total_cart = 0;
+        foreach ($cart->ProductsCart as $pc) {
+            foreach ($products_quantity as $product) {
+                if ($pc->product_id == $product['product_id']) {
+                    $pc->quantity = $product['quantity'];
+                    $pc->save();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cart $cart)
-    {
-        //
-    }
+                    $total_cart += $product['quantity'] * $pc->setted_price;
+                }
+            }
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(CartUpdateRequest $request)
-    {
-        //
+        // Actualizar metodo de pago en efectivo
+        CartPaymentMethod::where('cart_id', $cart->id)->where('payment_method_id', 1)->update(['amount' => $cash]);
+
+        $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
     }
 
     public function changeState(Request $request)

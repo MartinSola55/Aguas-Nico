@@ -100,7 +100,7 @@
         <div id="modalEditCart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
             <div class="modal-dialog">
-                <form role="form" class="needs-validation" id="form-confirm" autocomplete="off" novalidate>
+                <form role="form" class="needs-validation" id="form-edit-bajada" autocomplete="off" novalidate>
                     <input type="hidden" name="cart_id" value="">
                     <input type="hidden" name="products_quantity" value="">
                     <input type="hidden" name="cash" value="">
@@ -149,7 +149,7 @@
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">$</span>
                                                     </div>
-                                                    <input id="amount_input" type="number" min="0" class="form-control mr-1" disabled>
+                                                    <input type="number" min="0" class="form-control mr-1" disabled>
                                                 </div>
                                             </div>
                                         </div>
@@ -550,17 +550,28 @@
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
 
-                                            {{-- Deuda / saldo a favor --}}
-                                            @if ($cart->Client->debt != 0)
-                                            <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt - $cart->Client->debtMonth }}</small></p>
+                                            @if ($cart->Client->debtMonth >= 0)    
+
+                                                {{-- Deuda / saldo a favor --}}
+                                                @if ($cart->Client->debt == 0)
+                                                    <p class="m-0"><small class="text-muted">Sin deuda</small></p>
+                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt - $cart->Client->debtMonth }}</small></p>
+                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth < 0)
+                                                    <p class="m-0"><small class="text-success">A favor: ${{ ($cart->Client->debt - $cart->Client->debtMonth) * -1 }}</small></p>
+                                                @endif
+
+                                                {{-- Deuda / saldo a favor del mes --}}
+                                                @if ($cart->Client->debt != 0)
+                                                    @if ($cart->Client->debtMonth != 0)
+                                                        <p class="m-0"><small class="text-danger">Deuda de este mes: ${{ $cart->Client->debtMonth }}</small></p>
+                                                    @else
+                                                        <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
+                                                    @endif
+                                                @endif
+
                                             @else
-                                            <p class="m-0"><small class="text-muted">Sin deuda</small></p>
-                                            @endif
-                                            {{-- Deuda / saldo a favor del mes --}}
-                                            @if ($cart->Client->debtMonth != 0)
-                                                <p class="m-0"><small class="text-danger">Deuda de este mes: ${{ $cart->Client->debtMonth }}</small></p>
-                                            @else
-                                            <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
+                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt + $cart->Client->debtMonth }}</small></p>
                                             @endif
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                             @if ($cart->state && auth()->user()->rol_id == '1')
@@ -1333,6 +1344,7 @@
         }
         // METODO EDITAR CARRITO
         function editCart(cart) {
+            $("#form-edit-bajada input[name='cart_id']").val(cart.id);
             calculateTotal();
             console.log(cart);
             $("#modalEditCart").modal("show");
@@ -1355,7 +1367,6 @@
                 $(".quantityedit-input").on("input", updateTotal);
             });
 
-
             if (cart.cart_payment_method[0].amount) {
                 $("#cash_input_edit_cart").val(cart.cart_payment_method[0].amount);
             } else {
@@ -1363,46 +1374,54 @@
             }
 
             $("#tableEditCart").html(content);
-
-            // $.ajax({
-            //         url: "{{ url('/cart/edit') }}",'/cart/confirm'
-            //         type: "POST",
-            //         headers: {
-            //             'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-            //         },
-            //         data: {
-            //             abono_id: abono_id,
-            //             client_id: client_id,
-            //             cart_id: $("input[name='cart_id']").val(),
-            //         },
-            //         success: function(response) {
-            //             let cont = "";
-            //             cont += '<input type="hidden" name="abono_id" value="'+ response.data.abonoClient.id +'">';
-            //             cont += '<div class="table-responsive"><table class="table"><thead><tr>';
-            //             cont += '<th>Abono</th>';
-            //             cont += '<th>Disponible</th>';
-            //             cont += '<th>Baja</th></tr>';
-            //             cont += '</thead><tr>';
-            //             cont += '<td>' + response.data.abonoType.name + ' $' + response.data.abonoType.price + '</td>';
-            //             if (response.data.abonoClient.available === 0) {
-            //             cont += '<td>no disponible</td>';
-            //             } else if (response.client_abono_id !== null){
-            //             cont += '<td>' + response.data.abonoClient.available + '</td>';
-            //             cont += '<td><input type="number" min="0" max="' + response.data.abonoClient.available + '" id="dump_truck" value="0"></td>';
-            //             }
-            //             cont += '</tr>';
-            //             cont += '</tbody></table><hr></div>';
-            //             $("#colAbono").html(cont);
-            //         },
-            //         error: function(errorThrown) {
-            //             Swal.fire({
-            //                 icon: 'error',
-            //                 title: errorThrown.responseJSON.message,
-            //                 confirmButtonColor: '#1e88e5',
-            //             });
-            //         }
-            //     });
         }
+
+        $("#btnEditCart").on("click", function() {
+            let cart_id = $("#form-edit-bajada input[name='cart_id']").val();
+            let cash = $("#cash_input_edit_cart").val();
+            let products = [];
+            $(".quantityedit-input").each(function() {
+                let product_id = $(this).data("id");
+                let quantity = $(this).val();
+                products.push({
+                    product_id: product_id,
+                    quantity: quantity
+                });
+            });
+            
+            $.ajax({
+                url: "{{ url('/cart/edit') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    cart_id: cart_id,
+                    cash: cash,
+                    products_quantity: JSON.stringify(products),
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        confirmButtonColor: '#1e88e5',
+                        allowOutsideClick: false,
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
+                    });
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        });
     </script>
 
     <script>
