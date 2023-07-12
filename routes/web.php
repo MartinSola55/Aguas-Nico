@@ -27,6 +27,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/home/searchAllSales', [App\Http\Controllers\HomeController::class, 'searchAllSales']);
     Route::get('/stats', [App\Http\Controllers\DealerController::class, 'statistics'])->name('stats');
 
+    // TRANSFER
+    Route::get('/transfer/index', [App\Http\Controllers\TransferController::class, 'index']);
+    Route::get('/transfer/searchTransfers', [App\Http\Controllers\TransferController::class, 'searchTransfers']);
+    Route::get('/transfer/searchClients', [App\Http\Controllers\TransferController::class, 'searchClients']);
+    Route::post('/transfer/delete', [App\Http\Controllers\TransferController::class, 'delete']);
+    Route::post('/transfer/create', [App\Http\Controllers\TransferController::class, 'store']);
+    Route::post('/transfer/edit', [App\Http\Controllers\TransferController::class, 'update']);
+
     // DEALER
     Route::get('/dealer/index', [App\Http\Controllers\DealerController::class, 'index']);
     Route::get('/dealer/details/{id}', [App\Http\Controllers\DealerController::class, 'show'])->name('dealer.details');
@@ -47,6 +55,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/client/updateInvoiceData', [App\Http\Controllers\ClientController::class, 'updateInvoiceData']);
     Route::get('/client/products/{client}', [App\Http\Controllers\ClientController::class, 'getProducts']);
     Route::post('/client/updateProducts', [App\Http\Controllers\ClientController::class, 'updateProducts']);
+    Route::post('/client/updateAbono', [App\Http\Controllers\ClientController::class, 'updateAbono']);
     Route::post('/client/setIsActive', [App\Http\Controllers\ClientController::class, 'setIsActive']);
 
     // ROUTE
@@ -73,6 +82,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/expense/create', [App\Http\Controllers\ExpenseController::class, 'store']);
     Route::post('/expense/delete', [App\Http\Controllers\ExpenseController::class, 'delete']);
 
+    //ABONOS
+    Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
+    Route::post('/abono/discount', [App\Http\Controllers\AbonoClientController::class, 'update']);
 });
 
 // EMPLOYEE
@@ -96,6 +108,12 @@ Route::middleware(['auth'])->group(function () {
     //Confirmar carrito
     Route::post('/cart/confirm', [App\Http\Controllers\CartController::class, 'confirm']);
 
+    //Editar carrito
+    Route::post('/cart/edit', [App\Http\Controllers\CartController::class, 'edit']);
+
+    //Devolución en carrito
+    Route::post('/cart/return', [App\Http\Controllers\CartController::class, 'returnStock']);
+
     //Agregar/actualizar clientes en reparto
     Route::post('/route/addClients', [App\Http\Controllers\RouteController::class, 'addClients']);
 
@@ -107,5 +125,11 @@ Route::middleware(['auth'])->group(function () {
     // CLIENT
     Route::get('/client/index', [App\Http\Controllers\ClientController::class, 'index']);
     Route::post('/client/create', [App\Http\Controllers\ClientController::class, 'store']);
+    Route::get('/client/products/{client}', [App\Http\Controllers\ClientController::class, 'getStock']);
+
+    //ABONOS
+    Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
+    Route::post('/abono/discount', [App\Http\Controllers\AbonoClientController::class, 'update']);
+    Route::get('/abono/getQuantity', [App\Http\Controllers\AbonoClientController::class, 'getQuantity']);
 });
 

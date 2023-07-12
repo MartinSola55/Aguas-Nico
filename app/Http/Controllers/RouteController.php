@@ -6,6 +6,8 @@ use App\Http\Requests\Route\ProductDispatchedUpdateRequest;
 use App\Http\Requests\Route\ProductReturnedUpdateRequest;
 use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
+use App\Models\Abono;
+use App\Models\AbonoClient;
 use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Expense;
@@ -53,9 +55,16 @@ class RouteController extends Controller
         $cash = PaymentMethod::where('method', 'Efectivo')->first();
         $payment_methods = PaymentMethod::all()->except($cash->id);
 
-        $route = Route::with('Carts.Client')->with(['Carts' => function ($query) {
-            $query->orderBy('priority', 'asc');
-        }])->find($id);
+        $route = Route::with(['Carts.Client', 'Carts.CartPaymentMethod'])
+            ->with(['Carts' => function ($query) {
+                $query->orderBy('priority', 'asc');
+            }])->find($id);
+
+        // Agregar deuda del mes actual a cada cliente como un atributo nuevo, sacando esa deuda del modelo DebpaymentLog
+        foreach ($route->Carts as $cart) {
+            $cart->Client->debtMonth = $cart->Client->getDebtOfTheMonth();
+        }
+
 
         if (auth()->user()->rol_id == '1')
         {
@@ -64,8 +73,7 @@ class RouteController extends Controller
             $data = $this->getStats($route, $productsDispatched);
 
             return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'data'));
-        } else
-        {
+        } else {
             $clients = collect();
             foreach ($route->Carts as $cart) {
                 $clients->push($cart->Client);
@@ -204,7 +212,23 @@ class RouteController extends Controller
     public function getProductsClient(Request $request)
     {
         $products = ProductsClient::where('client_id', $request->input('client_id'))->with('Product')->get();
-        return response()->json(['products' => $products]);
+        $client = Client::find($request->input('client_id'));
+        $abonoClient = null; // Inicializar la variable $abonoClient
+
+        if ($client->abono_id !== null) {
+            $abonoType = Abono::find($client->abono_id);
+            $abonoType->client_id = $request->input('client_id');
+            if ($client->abono_id !== "NULL") {
+                $abonoClient = AbonoClient::where('abono_id', $abonoType->id)
+                    ->where('client_id', $request->input('client_id'))
+                    ->whereYear('created_at', now()->year)
+                    ->whereMonth('created_at', now()->month)
+                    ->first();
+            }
+        } else {
+            $abonoType = null;
+        }
+        return response()->json(['products' => $products,'abonoType' => $abonoType,'abonoClient' => $abonoClient, 'client_abono_id' => $client->abono_id]);
     }
 
     /**
@@ -254,7 +278,7 @@ class RouteController extends Controller
     public function newCart($id)
     {
         $route = Route::find($id);
-        $clients = Client::all()->sortBy('name');
+        $clients = Client::select('id', 'name', 'adress as address', 'dni', 'phone')->orderBy('name')->get();
         foreach ($clients as $client) {
             $client->priority = $route->Carts()->where('client_id', $client->id)->value('priority') ?? null;
         }
@@ -482,7 +506,6 @@ class RouteController extends Controller
         try {
             $route = Route::find($request->input('route_id'));
             $clientsJson = json_decode($request->input('clients_array'));
-
             $lastPriority = Cart::where('route_id', $route->id)->where('is_static', false)->max('priority');
             foreach ($clientsJson as $client) {
                 $lastPriority++;

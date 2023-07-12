@@ -7,7 +7,7 @@
         5 => 'Viernes',
     ];
 @endphp
-@extends('layouts.app') 
+@extends('layouts.app')
 
 @section('content')
     <!-- Data table -->
@@ -18,7 +18,7 @@
     <!-- This is data table -->
     <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
     <script src="{{ asset('plugins/datatables/dataTables.rowReorder.min.js') }}"></script>
- 
+
 
     <!--Nestable js -->
     <script src="{{ asset('plugins/nestable/jquery.nestable.js') }}"></script>
@@ -46,97 +46,122 @@
         <!-- ============================================================== -->
 
         <div class="row">
-            <div class="col-12">
-                <h2 class="text-left">Agregar cliente al reparto del <b>{{ $diasSemana[$route->day_of_week] }}</b> de <b>{{ $route->user->name }}</b></h2>
-                <hr />
-            </div>
-            <div class="col-12 col-xl-6">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h4 class="card-title">Clientes seleccionados</h4>
-                        <form role="form" method="POST" action="{{ auth()->user()->rol_id == '1' ? url('/route/updateClients') : url('/route/addClients') }}" id="form-confirm">
-                            @csrf
-                            <input type="hidden" name="route_id" value="{{ $route->id }}">
-                            <input type="hidden" name="clients_array" id="clients_array" value="">
+            @if (auth()->user()->rol_id == '1')
+                <div class="col-12">
+                    <h2 class="text-left">Agregar cliente al reparto del <b>{{ $diasSemana[$route->day_of_week] }}</b> de <b>{{ $route->user->name }}</b></h2>
+                    <hr />
+                </div>
+                <div class="col-12 col-xl-6">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h4 class="card-title">Clientes seleccionados</h4>
+                            <form role="form" method="POST" action="{{ auth()->user()->rol_id == '1' ? url('/route/updateClients') : url('/route/addClients') }}" id="form-confirm">
+                                @csrf
+                                <input type="hidden" name="route_id" value="{{ $route->id }}">
+                                <input type="hidden" name="clients_array" id="clients_array" value="">
 
+                                <div class="table-responsive">
+                                    <table id="clientsTable" class="table DataTable table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Quitar</th>
+                                                <th>Nombre</th>
+                                                <th>Dirección</th>
+                                                <th>DNI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $i = 0;
+                                            @endphp
+                                            @foreach($clientsSelected as $client)
+                                                @php
+                                                    $i++;
+                                                @endphp
+                                                <tr data-id="{{ $client->id }}">
+                                                    <td style="cursor: pointer">{{ $i }}</td>
+                                                    <td class="text-center">
+                                                        <button type="button" name="remove_client" {{ auth()->user()->rol_id != '1' ? "disabled" : "" }} class="btn btn-danger btn-sm" onclick="removeClient({{ json_encode($client) }})"><i class="bi bi-x-lg"></i></button>
+                                                    </td>
+                                                    <td>{{ $client->name }}</td>
+                                                    <td>{{ $client->adress }}</td>
+                                                    <td>{{ $client->dni }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                    <div class="d-flex flex-row justify-content-end mt-4">
+                                        <button onclick="createClientsArray()" type="button" class="btn btn-success">Guardar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h4 class="card-title">Listado de clientes</h4>
                             <div class="table-responsive">
-                                <table id="clientsTable" class="table DataTable table-bordered table-striped">
+                                <table id="listTable" class="table DataTable table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th></th>
-                                            <th>Quitar</th>
+                                            <th>Seleccionar</th>
                                             <th>Nombre</th>
                                             <th>Dirección</th>
-                                            @if (auth()->user()->rol_id == '1')
                                             <th>DNI</th>
-                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php
-                                            $i = 0;
-                                        @endphp
-                                        @foreach($clientsSelected as $client)
-                                            @php
-                                                $i++;
-                                            @endphp
+                                        @foreach($clients as $client)
                                             <tr data-id="{{ $client->id }}">
-                                                <td style="cursor: pointer">{{ $i }}</td>
                                                 <td class="text-center">
-                                                    <button type="button" name="remove_client" {{ auth()->user()->rol_id != '1' ? "disabled" : "" }} class="btn btn-danger btn-sm" onclick="removeClient({{ json_encode($client) }})"><i class="bi bi-x-lg"></i></button>
+                                                    <button type="button" class="btn btn-info" onclick="addClient({{ json_encode($client) }})"><i class="bi bi-arrow-left"></i></button>
                                                 </td>
                                                 <td>{{ $client->name }}</td>
                                                 <td>{{ $client->adress }}</td>
-                                                @if (auth()->user()->rol_id == '1')
                                                 <td>{{ $client->dni }}</td>
-                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <div class="d-flex flex-row justify-content-end mt-4">
-                                    <button onclick="createClientsArray()" type="button" class="btn btn-success">Guardar</button>
-                                </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-xl-6">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h4 class="card-title">Listado de clientes</h4>
-                        <div class="table-responsive">
-                            <table id="listTable" class="table DataTable table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Seleccionar</th>
-                                        <th>Nombre</th>
-                                        <th>Dirección</th>
-                                        @if (auth()->user()->rol_id == '1')
-                                        <th>DNI</th>
-                                        @endif
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($clients as $client)
-                                        <tr data-id="{{ $client->id }}">
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-info" onclick="addClient({{ json_encode($client) }})"><i class="bi bi-arrow-left"></i></button>
-                                            </td>
-                                            <td>{{ $client->name }}</td>
-                                            <td>{{ $client->adress }}</td>
-                                            @if (auth()->user()->rol_id == '1')
-                                            <td>{{ $client->dni }}</td>
-                                            @endif
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>
-            </div>
+            @elseif (auth()->user()->rol_id == '2')
+                <div class="col-12">
+                    <h5 class="text-left">Agregar cliente al reparto del <b>{{ $diasSemana[$route->day_of_week] }}</b> de <b>{{ $route->user->name }}</b></h5>
+                    <hr />
+                </div>
+                <div class="form-group">
+                    <label for="searchClient">Buscar Cliente</label>
+                    <input type="text" class="form-control" id="searchClient" placeholder="Ingrese el nombre del cliente">
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Agregar</th>
+                        </tr>
+                        </thead>
+                        <tbody id="clientTableBody">
+                        @foreach($clients as $client)
+                        <tr>
+                            <td>{{ $client->name }}</td>
+                            <td>{{ $client->address }}</td>
+                            <td>
+                                <button type="button" class="btn btn-info" onclick="addClientBydealer({{ json_encode($client) }})">Agregar</button>
+                            </td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -272,7 +297,7 @@
                 });
                 return;
             }
-            
+
             // para cada fila de la tabla
             $('#clientsTable tbody tr').each(function(index) {
                 var client = {}; // objeto para almacenar un cliente
@@ -326,8 +351,6 @@
         }
     </style>
 
-
-
     {{-- Nestable --}}
     <script type="text/javascript">
         $(document).ready(function() {
@@ -354,6 +377,62 @@
 
             $('#nestable-menu').nestable();
         });
+    </script>
+
+    {{-- Scripts para repartidor --}}
+
+    <script>
+        $(document).ready(function() {
+            $('#searchClient').on('input', function() {
+                var searchText = $(this).val().toLowerCase();
+                $('#clientTableBody tr').each(function() {
+                    var clientName = $(this).find('td:first').text().toLowerCase();
+                    if (clientName.includes(searchText)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+        });
+
+        function addClientBydealer(client) {
+            var clients_array = JSON.stringify([{ id: client.id }]);
+            $.ajax({
+                url: "{{ url('/route/addClients') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    route_id: {{$route->id}},
+                    clients_array: clients_array,
+                },
+                success: function(response) {
+                    Swal.fire({
+                        title: response.message,
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#1e88e5',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{{ route('route.details', ['id' => $route->id] ) }}";
+                        }
+                    })
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        }
+
     </script>
 
 @endsection

@@ -24,6 +24,7 @@ class Client extends Model
         'tax_condition',
         'cuit',
         'tax_address',
+        'abono_id',
     ];
 
     public function Products()
@@ -39,5 +40,15 @@ class Client extends Model
     public function Carts()
     {
         return $this->hasMany(Cart::class, 'client_id');
+    }
+
+    public function BottleClient()
+    {
+        return $this->hasMany(BottleClient::class, 'client_id');
+    }
+
+    public function getDebtOfTheMonth()
+    {
+        return DebtPaymentLog::where('client_id', $this->id)->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->sum('debt');
     }
 }

@@ -3,29 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductsClient extends Model
+class Transfer extends Model
 {
     use HasFactory;
-    public $timestamps = false;
-    public $incrementing = false;
-    protected $primaryKey = 'client_id';
-    protected $table = 'products_client';
+    use SoftDeletes;
     protected $fillable = [
+        'amount',
         'client_id',
-        'product_id',
-        'stock',
+        'user_id',
+        'created_at',
+        'updated_at',
     ];
-
 
     public function Client()
     {
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    public function Product()
+    public function User()
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

@@ -11,6 +11,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'price',
+        'bottle_type_id',
     ];
 
     public function Clients()

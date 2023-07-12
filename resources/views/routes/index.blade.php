@@ -50,13 +50,13 @@
         <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Repartos</h3>
+                <h3 class="text-themecolor m-b-0 m-t-0">Planillass</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item active">Repartos</li>
+                    <li class="breadcrumb-item active">Planillass</li>
                 </ol>
             </div>
-            @if (auth()->user()->rol_id == '1')  
+            @if (auth()->user()->rol_id == '1')
             <div class="col-md-7 col-4 align-self-center">
                 <div class="d-flex m-t-10 justify-content-end">
                     <div class="d-flex m-r-20 m-l-10 hidden-md-down">
@@ -84,7 +84,7 @@
             <div class="col-lg-12">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Reparto Lunes</h4>
+                        <h4 class="card-title">Planilla Lunes</h4>
                         <div class="table-responsive m-t-20">
                             <table class="table stylish-table">
                                 <thead>
@@ -125,7 +125,7 @@
                 </div>
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Reparto Martes</h4>
+                        <h4 class="card-title">Planilla Martes</h4>
                         <div class="table-responsive m-t-20">
                             <table class="table stylish-table">
                                 <thead>
@@ -166,7 +166,7 @@
                 </div>
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Reparto Miércoles</h4>
+                        <h4 class="card-title">Planilla Miércoles</h4>
                         <div class="table-responsive m-t-20">
                             <table class="table stylish-table">
                                 <thead>
@@ -207,7 +207,7 @@
                 </div>
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Reparto Jueves</h4>
+                        <h4 class="card-title">Planilla Jueves</h4>
                         <div class="table-responsive m-t-20">
                             <table class="table stylish-table">
                                 <thead>
@@ -248,7 +248,7 @@
                 </div>
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Reparto Viernes</h4>
+                        <h4 class="card-title">Planilla Viernes</h4>
                         <div class="table-responsive m-t-20">
                             <table class="table stylish-table">
                                 <thead>
@@ -334,5 +334,5 @@
             });
         });
     </script>
-    
+
 @endsection

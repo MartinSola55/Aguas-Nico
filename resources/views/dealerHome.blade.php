@@ -25,7 +25,7 @@
                 <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex no-block">
-                            <h4 class="card-title">Repartos</h4>
+                            <h4 class="card-title">Planillas</h4>
                             <div class="ml-auto">
                                 <form method="GET" action="{{ url('/route/showRoutes') }}" id="formSearchRoutes" novalidate>
                                     <label for="day_of_week" class="mb-0">Día</label>

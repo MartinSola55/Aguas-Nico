@@ -7,13 +7,13 @@
         <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Repartos</h3>
+                <h3 class="text-themecolor m-b-0 m-t-0">Planillas</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item active">Repartos</li>
+                    <li class="breadcrumb-item active">Planillas</li>
                 </ol>
             </div>
-            @if (auth()->user()->rol_id == '1')  
+            @if (auth()->user()->rol_id == '1')
             <div class="col-md-7 col-4 align-self-center">
                 <div class="d-flex m-t-10 justify-content-end">
                     <div class="d-flex m-r-20 m-l-10 hidden-md-down">
@@ -38,7 +38,7 @@
                 <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex no-block">
-                            <h4 class="card-title">Repartos</h4>
+                            <h4 class="card-title">Planillas</h4>
                             <div class="ml-auto">
                                 <form method="GET" action="{{ url('/route/showRoutes') }}" id="formSearchRoutes" novalidate>
                                     <label for="day_of_week" class="mb-0">Día</label>

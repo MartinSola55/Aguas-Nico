@@ -13,16 +13,16 @@ class ClientObserver
      */
     public function created(Client $client): void
     {
-        if ((auth()->user()->rol_id == '2')) {
-            $products = Product::all();
-            foreach ($products as $product) {
-                ProductsClient::create([
-                    'client_id' => $client->id,
-                    'product_id' => $product->id,
-                    'stock' => 0
-                ]);
-            }
-        }
+        // if ((auth()->user()->rol_id == '2')) {
+        //     $products = Product::all();
+        //     foreach ($products as $product) {
+        //         ProductsClient::create([
+        //             'client_id' => $client->id,
+        //             'product_id' => $product->id,
+        //             'stock' => 0
+        //         ]);
+        //     }
+        // }
     }
 
     /**

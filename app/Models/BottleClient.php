@@ -5,27 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductsClient extends Model
+class BottleClient extends Model
 {
     use HasFactory;
     public $timestamps = false;
     public $incrementing = false;
     protected $primaryKey = 'client_id';
-    protected $table = 'products_client';
+
     protected $fillable = [
         'client_id',
-        'product_id',
+        'bottle_types_id',
         'stock',
     ];
 
-
-    public function Client()
+    public function BottleType()
     {
-        return $this->belongsTo(Client::class, 'client_id');
-    }
-
-    public function Product()
-    {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(BottleType::class, 'bottle_types_id');
     }
 }

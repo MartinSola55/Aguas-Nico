@@ -28,11 +28,11 @@
         <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
             <div class="modal-dialog">
-                <form role="form" class="needs-validation" method="POST" action="{{ url('/cart/confirm') }}" id="form-confirm" autocomplete="off" novalidate>
-                    @csrf
+                <form role="form" class="needs-validation" id="form-confirm" autocomplete="off" novalidate>
                     <input type="hidden" name="cart_id" value="">
                     <input type="hidden" name="products_quantity" value="">
-                    <input type="hidden" name="payment_methods" value="">
+                    <input type="hidden" name="cash" value="">
+                    <input type="hidden" name="renew_abono" value="0">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Confirmar pedido</h4>
@@ -40,6 +40,8 @@
                         </div>
                         <div class="modal-body">
                             <div class="row">
+                                <div class="col-lg-12" id="colAbono">
+                                </div>
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
                                         <table class="table" id="modalTable">
@@ -54,44 +56,20 @@
                                             </tbody>
                                         </table>
                                         <hr>
-                                        <div class="d-flex flex-row justify-content-between">
-                                            <p id="totalAmount" class="mr-2 mb-0">Total pedido: $0</p>
-                                            <p id="modalClientDebt"></p>
+                                        <div class="d-flex row justify-content-between">
+                                            <p id="totalAmount" class="col-12 align-items-center justify-content-end mb-0">Total pedido: $0</p>
                                         </div>
                                         <hr>
                                         <div class="d-flex flex-column">
                                             <div class="d-flex flex-row justify-content-between mb-3">
-                                                <div class="col-6 d-flex flex-row align-items-center">
-                                                    <div class="switch">
-                                                        <label>
-                                                            <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="demo-switch-title">{{ $cash->method }}</div>
+                                                <div class="col-3 d-flex flex-row align-items-center">
+                                                    <div class="demo-switch-title">Entrega</div>
                                                 </div>
-                                                <div id="cash_input_container" class="input-group">
+                                                <div id="cash_input_container" class="col-9 input-group">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">$</span>
                                                     </div>
                                                     <input id="cash_input" type="number" min="0" class="form-control mr-1" disabled data-id="{{ $cash->id }}">
-                                                </div>
-                                            </div>
-                                            <div class="d-flex flex-row justify-content-between mb-3">
-                                                <div class="col-6 d-flex flex-row align-items-center">
-                                                    <div class="switch">
-                                                        <label>
-                                                            <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-teal"></span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="demo-switch-title">Otro</div>
-                                                </div>
-                                                <div id="methods_input_container" class="input-group" style="display: none">
-                                                    <select name="method" id="payment_method" class="form-control mr-1" disabled>
-                                                        <option value="" disabled selected>Seleccionar</option>
-                                                        @foreach ($payment_methods as $pm)
-                                                            <option value="{{ $pm->id }}">{{ $pm->method }}</option>
-                                                        @endforeach
-                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="d-flex justify-content-end">
@@ -105,15 +83,84 @@
                                         </div>
                                     </div>
                                     <hr />
-                                    <div class="d-flex flex-row justify-content-end">
-                                        <button id="btnOpenModalProductsReturned" onclick="openModalProductsReturned()" data-id="" data-dismiss="modal" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalProductsReturned">Devuelve productos</button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
                             <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Pagar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- End Modal -->
+
+        <!-- Modal edit cart -->
+        <div id="modalEditCart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+            style="display: none;">
+            <div class="modal-dialog">
+                <form role="form" class="needs-validation" id="form-edit-bajada" autocomplete="off" novalidate>
+                    <input type="hidden" name="cart_id" value="">
+                    <input type="hidden" name="products_quantity" value="">
+                    <input type="hidden" name="cash" value="">
+                    <input type="hidden" name="renew_abono" value="0">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Editar Bajada</h4>
+                            <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12" id="colAbono">
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="table-responsive">
+                                        <table class="table" id="modalTableEditCart">
+                                            <thead>
+                                                <tr>
+                                                    <th>Producto</th>
+                                                    <th>Precio</th>
+                                                    <th>Cantidad</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tableEditCart" class="cart-items">
+                                            </tbody>
+                                        </table>
+                                        <hr>
+                                        <div class="d-flex row justify-content-between">
+                                            <p id="totalAmountEditCart" class="col-12 align-items-center justify-content-end mb-0"></p>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex flex-column">
+                                            <div class="d-flex flex-row justify-content-between mb-3">
+                                                <div class="col-3 d-flex flex-row align-items-center">
+                                                    <div class="demo-switch-title">Entrega</div>
+                                                </div>
+                                                <div id="cash_input_container" class="col-9 input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input id="cash_input_edit_cart" type="number" min="0" class="form-control mr-1">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-end">
+                                                <div id="amount_input_container" class="input-group w-50 mb-1" style="display: none">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input type="number" min="0" class="form-control mr-1" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                            <button type="button" id="btnEditCart" class="btn btn-success waves-effect waves-light">Editar</button>
                         </div>
                     </div>
                 </form>
@@ -181,7 +228,7 @@
     @endif
 
     @if (auth()->user()->rol_id == '2')
-        <!-- Modal route products returned -->
+        <!-- Modal route products returned general -->
         <div id="modalProductsReturned" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
             <div class="modal-dialog">
@@ -237,6 +284,44 @@
             </div>
         </div>
         <!-- End Modal -->
+
+        <!-- Modal route products returned by client -->
+        <div id="modalProductsReturnedByClient" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Cargar devolución </h4>
+                        <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12" id="colAbono">
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                {{-- <th>Tiene</th> --}}
+                                                <th>Devuelve</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableBodyReturnedByClient">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Modal -->
     @endif
 
     <div class="container-fluid">
@@ -264,7 +349,7 @@
                 <div class="col-md-7 col-4 align-self-center">
                     <div class="d-flex m-t-10 justify-content-end">
                         <div class="d-flex m-r-20 m-l-10">
-                            <button id="btnProductsReturned" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalProductsReturned">Productos devueltos</button>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalProductsReturned">Productos devueltos</button>
                         </div>
                     </div>
                 </div>
@@ -419,12 +504,22 @@
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-header d-flex flex-row justify-content-between">
-                        <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
+                        <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h3>
                         @if (auth()->user()->rol_id == '1')
                         <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar reparto</button>
                         @endif
                     </div>
                     <div class="card-body">
+                        @if (($route->is_static === false && auth()->user()->rol_id == '2') || $route->is_static === true)
+                            <div class="d-flex flex-row justify-content-end">
+                                <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Fuera de reparto</a>
+                            </div>
+                        @endif
+                        @if ($route->is_static === false && auth()->user()->rol_id == '1')
+                            <div class="d-flex flex-row justify-content-end">
+                                <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newManualCart') }}">Agregar venta manual</a>
+                            </div>
+                        @endif
                         <ul class="timeline">
                             <?php
                                 $contador = 0;
@@ -455,20 +550,39 @@
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
 
-                                            {{-- Deuda / saldo a favor --}}
-                                            @if ($cart->Client->debt > 0)
-                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt }}</small></p>
-                                            @elseif ($cart->Client->debt < 0)
-                                                <p class="m-0"><small style="color: #30d577">Saldo a favor: ${{ $cart->Client->debt * -1 }}</small></p>
+                                            @if ($cart->Client->debtMonth >= 0)    
+
+                                                {{-- Deuda / saldo a favor --}}
+                                                @if ($cart->Client->debt == 0)
+                                                    <p class="m-0"><small class="text-muted">Sin deuda</small></p>
+                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt - $cart->Client->debtMonth }}</small></p>
+                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth < 0)
+                                                    <p class="m-0"><small class="text-success">A favor: ${{ ($cart->Client->debt - $cart->Client->debtMonth) * -1 }}</small></p>
+                                                @endif
+
+                                                {{-- Deuda / saldo a favor del mes --}}
+                                                @if ($cart->Client->debt != 0)
+                                                    @if ($cart->Client->debtMonth != 0)
+                                                        <p class="m-0"><small class="text-danger">Deuda de este mes: ${{ $cart->Client->debtMonth }}</small></p>
+                                                    @else
+                                                        <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
+                                                    @endif
+                                                @endif
+
                                             @else
-                                                <p class="m-0"><small class="text-muted">Sin deuda</small></p>
+                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt + $cart->Client->debtMonth }}</small></p>
                                             @endif
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
+                                            @if ($cart->state && auth()->user()->rol_id == '1')
+                                            <p class="mb-0"><small class="text-muted"><i class="bi bi-calendar-check"></i> {{ $cart->updated_at->format('d-m-Y H:i') }}&nbsp;hs. </small></p>
+                                            @endif
                                         </div>
                                         <div class="timeline-body">
                                             @if ($cart->state === 1)
                                                 <div class="row">
                                                     <div class="col-lg-12">
+                                                    @if ($cart->ProductsCart->count() > 0)
                                                         <div class="table-responsive">
                                                             <table class="table">
                                                                 <thead>
@@ -489,18 +603,23 @@
                                                                 </tbody>
                                                             </table>
                                                         </div>
+                                                    @endif
                                                     </div>
+                                                    @if (isset($cart->AbonoClient))
+                                                    <div class="col-lg-12">
+                                                        <strong class="m-0"> Renovación {{$cart->AbonoClient->Abono->name }}</strong>
+                                                    </div>
+                                                    @endif
                                                 </div>
-                                                <div class="d-flex flex-row justify-content-end">
-                                                    <p class="m-0">Total del pedido: ${{ $cart->ProductsCart->sum(function($product_cart) {
+                                                <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-info">Devuelve</button>
+                                                <button type="button" onclick="editCart({{ $cart }})" class="btn btn-info">Editar Bajada</button>
+                                                <div class="d-flex flex-row justify-content-start">
+                                                    <p class="m-0">Total del pedido: $
+                                                        {{ $cart->ProductsCart->sum(function($product_cart) {
                                                         return $product_cart->setted_price * $product_cart->quantity;
-                                                    }) }}</p>
+                                                        }) + ($cart->AbonoClient ? $cart->AbonoClient->setted_price : 0) }}
+                                                    </p>
                                                 </div>
-                                            @endif
-
-                                            @if ($cart->Client->observation != "" && $cart->Client->observation != null)
-                                                <hr>
-                                                <p><b>Observaciones:</b> {{ $cart->Client->observation }}</p>
                                             @endif
 
                                             @if ($cart->state === 0)
@@ -511,7 +630,7 @@
                                                         <div class="btn-group">
                                                             <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">Acción</button>
                                                             <div class="dropdown-menu">
-                                                                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Confirmar</b></button>
+                                                                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#modalConfirmation" style="cursor: pointer;" onclick="openModal({{ $cart->id }}, {{ $cart->Client->id }}, {{ $cart->Client->debt }})"><b>Bajar</b></button>
                                                                 <div class="dropdown-divider"></div>
                                                                 <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(2, {{ $cart->id }}, 'no estaba')">No estaba</button>
                                                                 <button class="dropdown-item" type="button" style="cursor: pointer;" onclick="sendStateChange(3, {{ $cart->id }}, 'no necesitaba')">No necesitaba</button>
@@ -521,7 +640,7 @@
                                                     @endif
                                                 </div>
                                             @elseif ($cart->state === 1)
-                                                <div class="row">
+                                                {{-- <div class="row">
                                                     <div class="col-lg-12">
                                                         <div class="table-responsive">
                                                             <table class="table">
@@ -547,7 +666,7 @@
                                                             }) }}</p>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> --}}
                                             @endif
                                             {{-- 1 = admin --}}
                                             @if (auth()->user()->rol_id == '1' && $cart->is_static === false)
@@ -566,16 +685,6 @@
                                 </li>
                             @endforeach
                         </ul>
-                        @if (($route->is_static === false && auth()->user()->rol_id == '2') || $route->is_static === true)
-                            <div class="d-flex flex-row justify-content-end">
-                                <a class="btn btn-info btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar nuevo cliente</a>
-                            </div>
-                        @endif
-                        @if ($route->is_static === false && auth()->user()->rol_id == '1')
-                            <div class="d-flex flex-row justify-content-end">
-                                <a class="btn btn-info btn-rounded m-t-30 float-right" href="{{ url('/route/' . $route->id . '/newManualCart') }}">Agregar venta manual</a>
-                            </div>
-                        @endif
                     </div>
                 </div>
                 {{-- Delete Route --}}
@@ -598,6 +707,28 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const SwalAlert = (text) => {
+            Swal.fire({
+                icon: 'warning',
+                title: 'ALERTA',
+                text: text,
+                showCancelButton: false,
+                confirmButtonColor: '#1e88e5',
+                confirmButtonText: 'OK',
+                allowOutsideClick: false,
+            });
+            return false;
+        };
+        const SwalError = (text) => {
+            Swal.fire({
+                icon: 'error',
+                title: text,
+                confirmButtonColor: '#1e88e5',
+            });
+        };
+    </script>
 
     {{-- Productos en el camión de un repartidor --}}
     <script>
@@ -624,78 +755,35 @@
             });
             $("#formRouteProducts input[name='products_quantity']").val(JSON.stringify(products));
 
-            function updateProducts() {
-                $.ajax({
-                    url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
-                    method: $("#formRouteProducts").attr('method'), // Utiliza el método del formulario
-                    data: $("#formRouteProducts").serialize(), // Utiliza los datos del formulario
-                    success: function(response) {
-                        $("#btnCloseModalProducts").click();
-                        Swal.fire({
-                            title: response.message,
-                            icon: 'success',
-                            showCancelButton: false,
-                            confirmButtonColor: '#1e88e5',
-                            confirmButtonText: 'OK',
-                            allowOutsideClick: false,
-                        })
-                        .then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        })
-                    },
-                    error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                            confirmButtonColor: '#1e88e5',
-                        });
-                    }
-                });
-            }
-
-            if (products.length <= 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'ALERTA',
-                    text: 'Debes ingresar al menos un producto',
-                    showCancelButton: false,
-                    confirmButtonColor: '#1e88e5',
-                    confirmButtonText: 'OK',
-                    allowOutsideClick: false,
-                })
-            } else {
-                updateProducts();
-            }
+            $.ajax({
+                url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
+                method: $("#formRouteProducts").attr('method'), // Utiliza el método del formulario
+                data: $("#formRouteProducts").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnCloseModalProducts").click();
+                    Swal.fire({
+                        title: response.message,
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#1e88e5',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    })
+                },
+                error: function(errorThrown) {
+                    SwalError(errorThrown.responseJSON.message);
+                }
+            });
         });
     </script>
 
     {{-- Productos que devuelve un cliente --}}
     <script>
-        $("#btnProductsReturned").on('click', function() {
-            $("#table_products_client").css('display', 'none');
-            $("#modalProductsReturned input[type='number']").val("");
-            $("#modalProductsReturned select").prop('selectedIndex', 0);
-        });
-
-        // Se abre dentro del modal de confirmar
-        function openModalProductsReturned() {
-            let id = $("#btnOpenModalProductsReturned").data("id");
-            $("#table_products_client").css('display', 'none');
-            $("#modalProductsReturned input[type='number']").val("");
-            $("#modalProductsReturned select").val(id);
-            searchProductsClient();
-        }
-
-        $("#modalProductsReturned input[type='number']").on("input", function() {
-            if ($(this).val() < 0) {
-                $(this).val(0);
-            } else if ($(this).val() > 10000){
-                $(this).val(10000);
-            }
-        });
-
         function searchProductsClient() {
             $("#client_id").val($("#selectClientToReturn").val());
             $("#table_products_client table tbody").html("");
@@ -717,11 +805,7 @@
                     $("#table_products_client table tbody").html(content);
                 },
                 error: function(errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: errorThrown.responseJSON.message,
-                        confirmButtonColor: '#1e88e5',
-                    });
+                    SwalError(errorThrown.responseJSON.message);
                 }
             });
         }
@@ -745,56 +829,59 @@
             });
             $("#formProductsReturned input[name='products_quantity']").val(JSON.stringify(products));
 
-            function updateProductsReturned() {
-                $.ajax({
-                    url: $("#formProductsReturned").attr('action'), // Utiliza la ruta del formulario
-                    method: $("#formProductsReturned").attr('method'), // Utiliza el método del formulario
-                    data: $("#formProductsReturned").serialize(), // Utiliza los datos del formulario
-                    success: function(response) {
-                        $("#btnCloseModalProductsReturned").click();
-                        Swal.fire({
-                            title: response.message,
-                            icon: 'success',
-                            showCancelButton: false,
-                            confirmButtonColor: '#1e88e5',
-                            confirmButtonText: 'OK',
-                            allowOutsideClick: true,
-                        });
-                    },
-                    error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                            confirmButtonColor: '#1e88e5',
-                        });
-                    }
-                });
-            }
+            $.ajax({
+                url: $("#formProductsReturned").attr('action'), // Utiliza la ruta del formulario
+                method: $("#formProductsReturned").attr('method'), // Utiliza el método del formulario
+                data: $("#formProductsReturned").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    $("#btnCloseModalProductsReturned").click();
 
-            if (products.length <= 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'ALERTA',
-                    text: 'Debes ingresar al menos un producto',
-                    showCancelButton: false,
-                    confirmButtonColor: '#1e88e5',
-                    confirmButtonText: 'OK',
-                    allowOutsideClick: false,
-                })
-            } else if ($("#selectClientToReturn").val() === null) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'ALERTA',
-                    text: 'Debes ingresar un cliente',
-                    showCancelButton: false,
-                    confirmButtonColor: '#1e88e5',
-                    confirmButtonText: 'OK',
-                    allowOutsideClick: false,
-                })
-            } else {
-                updateProductsReturned();
-            }
+                },
+                error: function(errorThrown) {
+                    SwalError(errorThrown.responseJSON.message);
+                }
+            });
         });
+
+        function getReturnStock(client_id, client_name, cart_id) {
+            $.ajax({
+                url: "{{ url('/client/products/') }}" +"/"+ client_id,
+                type: "GET",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    cart_id: cart_id,
+                },
+                success: function(response) {
+                    $("#modalProductsReturnedByClient").modal("show");
+                    $("#modalProductsReturnedByClient .modal-title").text("Cargar devolución " + client_name);
+                    let cont = "";
+                    if (response.data.bottle) {
+                    response.data.bottle.forEach(function(bottle) {
+                        let cont = '<tr>';
+                        cont += '<td><input type="hidden" class="form-control" id="bottle_id_' + bottle.id + '" value="' + bottle.log_id + '">' + bottle.name + '</td>';
+                        cont += '<td><input type="number" class="form-control" id="bottle-' + bottle.id + '" value="' + bottle.stock + '" min="0" max="10000"></td>';
+                        cont += '<td><button type="button" onclick="returnProduct($(\'#bottle_id_' + bottle.id + '\').val(), false ,'+ bottle.id +','+ response.data.cart_id + ', $(\'#bottle-' + bottle.id + '\').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
+                        cont += '</tr>';
+                    });
+                    }
+                    if (response.data.products){
+                    response.data.products.forEach(function(product) {
+                        cont += '<tr>';
+                        cont += '<td><input type="hidden" class="form-control" id="product_id_' + product.id + '" value="' + product.log_id + '">' + product.name + '</td>';
+                        cont += '<td><input type="number" class="form-control" id="product-' + product.id + '" value="' + product.stock + '" min="0" max="10000"></td>';
+                        cont += '<td><button type="button" onclick="returnProduct($(\'#product_id_' + product.id + '\').val(), true,'+ product.id +','+ response.data.cart_id + ', $(\'#product-' + product.id + '\').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
+                        cont += '</tr>';
+                    });
+                    }
+                    $("#tableBodyReturnedByClient").html(cont);
+                },
+                error: function(errorThrown) {
+                    SwalError(errorThrown.responseJSON.message);
+                }
+            });
+        }
     </script>
 
     {{-- Pagar un carrito --}}
@@ -808,111 +895,49 @@
                 if (quantity !== "" && quantity > 0) {
                     products.push({
                         product_id: productId,
-                        quantity: quantity
+                        quantity: quantity,
                     });
                 }
             });
             $("#form-confirm input[name='products_quantity']").val(JSON.stringify(products));
 
             // Métodos de pago
-            let payment_methods = [];
-            let cash = $("#cash_input").val();
-            if (cash !== "" && cash > 0) {
-                payment_methods.push({
-                    method: $("#cash_input").data('id'),
-                    amount: cash
-                });
-            }
-            let other = $("#amount_input").val();
-            if (other !== "" && other > 0) {
-                payment_methods.push({
-                    method: $("#payment_method").val(),
-                    amount: other
-                });
-            }
-            $("#form-confirm input[name='payment_methods']").val(JSON.stringify(payment_methods));
+            $("#form-confirm input[name='cash']").val($("#cash_input").val());
 
-            function payCart() {
+            discountAbono()
+            .then(() => {
                 $.ajax({
-                    url: $("#form-confirm").attr('action'), // Utiliza la ruta del formulario
-                    method: $("#form-confirm").attr('method'), // Utiliza el método del formulario
-                    data: $("#form-confirm").serialize(), // Utiliza los datos del formulario
+                    url: "{{ url('/cart/confirm') }}",
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: $("#form-confirm").serialize(),
                     success: function(response) {
                         $("#btnCloseModal").click();
                         Swal.fire({
-                                title: response.message,
-                                icon: 'success',
-                                showCancelButton: false,
-                                confirmButtonColor: '#1e88e5',
-                                confirmButtonText: 'OK',
-                                allowOutsideClick: false,
-                            })
-                            .then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.reload();
-                                }
-                            })
+                            title: response.message,
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonColor: '#1e88e5',
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        });
                     },
                     error: function(errorThrown) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: errorThrown.responseJSON.message,
-                            confirmButtonColor: '#1e88e5',
-                        });
+                        console.log(errorThrown);
+                        console.log(data);
+                       // SwalError(errorThrown.responseJSON.message);
                     }
                 });
-            }
-
-            if (products.length > 0 && payment_methods.length >= 0) {
-                if (payment_methods.length === 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'ALERTA',
-                        text: '¿Seguro que quieres cargar todo en la cuenta corriente del cliente?',
-                        showCancelButton: true,
-                        confirmButtonText: 'OK',
-                        allowOutsideClick: false,
-                        buttonsStyling: false,
-                        customClass: {
-                            confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
-                            cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
-                        }
-                    })
-                    .then((result) => {
-                        if (result.isConfirmed) {
-                            payCart();
-                        }
-                    })
-                } else {
-                    payCart();
-                }
-            } else if (products.length == 0 && payment_methods.length > 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'ALERTA',
-                    text: '¿Seguro que quieres pagar la cuenta corriente del cliente?',
-                    showCancelButton: true,
-                    confirmButtonText: 'OK',
-                    allowOutsideClick: false,
-                    buttonsStyling: false,
-                    customClass: {
-                        confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
-                        cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
-                    }
-                }).
-                then((result) => {
-                    if (result.isConfirmed) {
-                        payCart();
-                    }
-                })
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: "ERROR",
-                    text: "Debes ingresar al menos un producto o un método de pago",
-                    confirmButtonColor: '#1e88e5',
-                });
-            }
+            })
+            .catch((error) => {
+                SwalError(errorThrown.responseJSON.message);
+            });
         });
     </script>
 
@@ -968,11 +993,12 @@
         function esNumero(valor) {
             return /^\d+$/.test(valor);
         }
-
+        let totalRenewAbono = 0;
         // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
         function fillModal(data) {
+            $("#colAbono").empty();
             let content = "";
-            data.forEach(p => {
+            data.products.forEach(p => {
                 content += '<tr>';
                 content += '<td>' + p.product.name + '</td>';
                 content += '<td class="precioProducto">$ ' + p.product.price + '</td>';
@@ -980,11 +1006,44 @@
                 content += "</tr>";
             });
             $("#tableBody").html(content);
-
-            // Calcular el total dentro del modal
+            if (data.abonoClient !== null) {
+                //Abono corriente disponible para descontar
+                let cont = "";
+                cont += '<input type="hidden" name="abono_id" value="'+ data.abonoClient.id +'">';
+                cont += '<div class="table-responsive"><table class="table"><thead><tr>';
+                cont += '<th>Abono</th>';
+                cont += '<th>Disponible</th>';
+                cont += '<th>Baja</th></tr>';
+                cont += '</thead><tr>';
+                cont += '<td>' + data.abonoType.name + ' $' + data.abonoType.price + '</td>';
+                if (data.abonoClient.available === 0) {
+                cont += '<td>no disponible</td>';
+                } else {
+                cont += '<td>' + data.abonoClient.available + '</td>';
+                cont += '<td><input type="number" min="0" max="' + data.abonoClient.available + '" id="dump_truck" value="0"></td>';
+                }
+                cont += '</tr>';
+                cont += '</tbody></table><hr></div>';
+                $("#colAbono").html(cont);
+            }else if (data.client_abono_id !== null){
+                //Renovacion de Abono
+                let cont = "";
+                cont += '<div class="table-responsive"><table class="table"><thead><tr>';
+                cont += '<th>Abono</th>';
+                cont += '<th>Disponible</th>';
+                cont += '<th></th></tr>';
+                cont += '</thead><tr>';
+                cont += '<td>' + data.abonoType.name + ' $' + data.abonoType.price + '</td>';
+                cont += '<td></td>';
+                cont += '<td><button type="button" class="btn btn-success waves-effect waves-light" onclick="renewAbono('+ data.abonoType.id +','+ data.abonoType.price +','+ data.abonoType.client_id +')">Renovar Abono</button></td>';
+                cont += "</tr>";
+                cont += '</tbody></table><hr></div>';
+                $("#colAbono").html(cont);
+            }
 
             $(".quantity-input").on("input", function() {
-                let total = 0;
+                total = 0 + totalRenewAbono; // Reiniciar el valor total a cero en cada iteración
+
                 $("#modalTable tbody tr").each(function() {
                     let precioUnit = $(this).find(".precioProducto").text().replace('$', '');
                     let cantidad = $(this).find(".quantity-input").val();
@@ -997,17 +1056,8 @@
         };
 
         function openModal(cart_id, client_id, debt) {
-            $("#btnOpenModalProductsReturned").data('id', client_id);
-
             // Para el modal
             $("#form-confirm input[name='cart_id']").val(cart_id);
-            if (debt > 0) {
-                $("#modalClientDebt").text("Deuda: $" + debt);
-            } else if (debt < 0) {
-                $("#modalClientDebt").text("Saldo a favor: $" + debt * -1);
-            } else {
-                $("#modalClientDebt").text("Sin deuda");
-            }
             $("#tableBody").html("");
             $("#client_id").val(client_id);
             $("#cash_checkbox").prop("checked", true);
@@ -1027,7 +1077,7 @@
                 method: $("#form_search_products").attr('method'), // Utiliza el método del formulario
                 data: $("#form_search_products").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
-                    fillModal(response.products);
+                    fillModal(response);
                 },
                 error: function(errorThrown) {
                     Swal.fire({
@@ -1073,11 +1123,7 @@
                             });
                         },
                         error: function(errorThrown) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: errorThrown.responseJSON.message,
-                                confirmButtonColor: '#1e88e5',
-                            });
+                            SwalError(errorThrown.responseJSON.message);
                         }
                     });
                 }
@@ -1119,11 +1165,7 @@
                             });
                         },
                         error: function(errorThrown) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: errorThrown.responseJSON.message,
-                                confirmButtonColor: '#1e88e5',
-                            });
+                            SwalError(errorThrown.responseJSON.message);
                         }
                     });
                 }
@@ -1172,11 +1214,7 @@
                             })
                         },
                         error: function(errorThrown) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: errorThrown.responseJSON.message,
-                                confirmButtonColor: '#1e88e5',
-                            });
+                            SwalError(errorThrown.responseJSON.message);
                         }
                     });
                 }
@@ -1208,5 +1246,228 @@
                 }
             });
         });
+    </script>
+
+    {{-- Abonos --}}
+    <script>
+        function renewAbono(abono_id,abono_price,client_id) {
+            Swal.fire({
+            title: '¿Desea renovar abono?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Confirmar',
+            cancelButtonText : 'Cancelar'
+            }).then((result) => {
+                totalRenewAbono += abono_price;
+                $('input[name="renew_abono"]').val(abono_price);
+                $("#totalAmount").html("Total pedido: $" + totalRenewAbono);
+                $.ajax({
+                    url: "{{ url('/abono/renew') }}",
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        abono_id: abono_id,
+                        client_id: client_id,
+                        cart_id: $("input[name='cart_id']").val(),
+                    },
+                    success: function(response) {
+                        let cont = "";
+                        cont += '<input type="hidden" name="abono_id" value="'+ response.data.abonoClient.id +'">';
+                        cont += '<div class="table-responsive"><table class="table"><thead><tr>';
+                        cont += '<th>Abono</th>';
+                        cont += '<th>Disponible</th>';
+                        cont += '<th>Baja</th></tr>';
+                        cont += '</thead><tr>';
+                        cont += '<td>' + response.data.abonoType.name + ' $' + response.data.abonoType.price + '</td>';
+                        if (response.data.abonoClient.available === 0) {
+                        cont += '<td>no disponible</td>';
+                        } else if (response.client_abono_id !== null){
+                        cont += '<td>' + response.data.abonoClient.available + '</td>';
+                        cont += '<td><input type="number" min="0" max="' + response.data.abonoClient.available + '" id="dump_truck" value="0"></td>';
+                        }
+                        cont += '</tr>';
+                        cont += '</tbody></table><hr></div>';
+                        $("#colAbono").html(cont);
+                    },
+                    error: function(errorThrown) {
+                        SwalError(errorThrown.responseJSON.message);
+                    }
+                });
+
+            });
+        }
+
+        function discountAbono() {
+            return new Promise((resolve, reject) => {
+                let abono_id = $("input[name='abono_id']").val();
+                let discount = $("#dump_truck").val();
+                resolve();
+                if (abono_id !== undefined && discount !== undefined) {
+                    $.ajax({
+                        url: "{{ url('/abono/discount') }}",
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            abono_id: abono_id,
+                            discount: discount,
+                        },
+                        success: function(response) {
+                            resolve();
+                        },
+                        error: function(errorThrown) {
+                            SwalError(errorThrown.responseJSON.message);
+                            reject(errorThrown);
+                        }
+                    });
+                } else {
+                    resolve();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // Calcular el total del carrito
+        function calculateTotal() {
+            let total = 0;
+            $(".cart-items tr").each(function() {
+                let precioUnit = parseFloat($(this).find(".precioProducto").text().replace("$ ", ""));
+                let cantidad = parseInt($(this).find(".quantityedit-input").val());
+                let subtotal = precioUnit * cantidad;
+                total += subtotal;
+            });
+            return total;
+        }
+        // METODO EDITAR CARRITO
+        function editCart(cart) {
+            $("#form-edit-bajada input[name='cart_id']").val(cart.id);
+            calculateTotal();
+            console.log(cart);
+            $("#modalEditCart").modal("show");
+            let content = '';
+            cart.products_cart.forEach(p => {
+                content += '<tr>';
+                content += '<td>' + p.product.name + '</td>';
+                content += '<td class="precioProducto">$ ' + p.product.price + '</td>';
+                content += '<td><input type="number" min="0" max="1000" class="form-control quantityedit-input" value="' + p.quantity + '" data-id="' + p.product.id + '" ></td>';
+                content += "</tr>";
+            });
+
+            // Actualizar el total al modificar la cantidad
+            $(document).ready(function() {
+                function updateTotal() {
+                    let total = calculateTotal();
+                    $("#totalAmountEditCart").text("Total carrito: $" + total);
+                }
+                updateTotal();
+                $(".quantityedit-input").on("input", updateTotal);
+            });
+
+            if (cart.cart_payment_method[0].amount) {
+                $("#cash_input_edit_cart").val(cart.cart_payment_method[0].amount);
+            } else {
+                $("#cash_input_edit_cart").val('0');
+            }
+
+            $("#tableEditCart").html(content);
+        }
+
+        $("#btnEditCart").on("click", function() {
+            let cart_id = $("#form-edit-bajada input[name='cart_id']").val();
+            let cash = $("#cash_input_edit_cart").val();
+            let products = [];
+            $(".quantityedit-input").each(function() {
+                let product_id = $(this).data("id");
+                let quantity = $(this).val();
+                products.push({
+                    product_id: product_id,
+                    quantity: quantity
+                });
+            });
+            
+            $.ajax({
+                url: "{{ url('/cart/edit') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    cart_id: cart_id,
+                    cash: cash,
+                    products_quantity: JSON.stringify(products),
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        confirmButtonColor: '#1e88e5',
+                        allowOutsideClick: false,
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
+                    });
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function returnProduct(id, product, type_id, cart_id, quantity) {
+            // acá el type_id puede ser
+            $.ajax({
+                url: "{{ url('/cart/return') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    log_id: id,
+                    product: product,
+                    type_id: type_id,
+                    quantity: quantity,
+                    cart_id: cart_id,
+                },
+                success: function(response) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'bottom-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: response.message
+                    });
+                    if (response.data !== null) {
+                        if (product === true) {
+                            $(`#product_id_${type_id}`).val(response.data.id);
+                        } else{
+                            $(`#bottle_id_${type_id}`).val(response.data.id);
+                        }
+                    }
+                },
+                error: function(errorThrown) {
+                    SwalError(errorThrown.responseJSON.message);
+                }
+            });
+        }
     </script>
 @endsection

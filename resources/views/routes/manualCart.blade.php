@@ -55,7 +55,7 @@
                                 <hr>
                                 <div class="d-flex flex-column">
                                     <div class="d-flex flex-row justify-content-between mb-3">
-                                        <div class="col-6 d-flex flex-row align-items-center">    
+                                        <div class="col-6 d-flex flex-row align-items-center">
                                             <div class="switch">
                                                 <label>
                                                     <input id="cash_checkbox" type="checkbox" checked><span class="lever switch-col-teal"></span>
@@ -71,7 +71,7 @@
                                         </div>
                                     </div>
                                     <div class="d-flex flex-row justify-content-between mb-3">
-                                        <div class="col-6 d-flex flex-row align-items-center">    
+                                        <div class="col-6 d-flex flex-row align-items-center">
                                             <div class="switch">
                                                 <label>
                                                     <input id="method_checkbox" type="checkbox" @checked(false)><span class="lever switch-col-teal"></span>
@@ -83,7 +83,7 @@
                                             <select name="method" id="payment_method" class="form-control mr-1" disabled>
                                                 <option value="" disabled selected>Seleccionar</option>
                                                 @foreach ($payment_methods as $pm)
-                                                    <option value="{{ $pm->id }}">{{ $pm->method }}</option>      
+                                                    <option value="{{ $pm->id }}">{{ $pm->method }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -103,7 +103,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
                         <button type="button" onclick="validateForm()" class="btn btn-success waves-effect waves-light">Confirmar</button>
-                    </div>                    
+                    </div>
                 </div>
             </form>
         </div>

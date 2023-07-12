@@ -6,11 +6,11 @@
 
     <!-- Datepicker -->
     <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
-    
-    
+
+
     <!-- This is data table -->
     <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
-    
+
     <!-- Datepicker -->
     <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
     <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
@@ -64,10 +64,10 @@
         <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Repartos</h3>
+                <h3 class="text-themecolor m-b-0 m-t-0">Planillas</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url('/route/index') }}">Repartos</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url('/route/index') }}">Planillas</a></li>
                     <li class="breadcrumb-item active">Nuevo</li>
                 </ol>
             </div>

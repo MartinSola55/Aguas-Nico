@@ -161,7 +161,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl">
+                    <div class="col-md-6">
                         <div class="card shadow">
                             <div class="card-body">
                                 <div class="row align-items-center">
@@ -203,6 +203,48 @@
                                         <div class="row" id="divSaveProducts" style="display: none">
                                             <div class="col-md-12 d-flex justify-content-end">
                                                 <button type="button" id="btnSaveProducts" class="btn btn-sm btn-success btn-rounded px-3">Guardar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-8">
+                                        <h3 class="card-title">Abonos asociados</h3>
+                                    </div>
+                                    <div class="col-4 text-right mb-3">
+                                        <button id="btnEditAbonos" class="btn btn-sm btn-outline-info btn-rounded px-3">Editar</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <form role="form" method="POST" action="{{ url('/client/updateAbono') }}" id="form-abonos">
+                                        <table class="table table-hover table-bordered table-grey" id="abonos_table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="col-1">Asociar</th>
+                                                    <th scope="col" class="col-11">Nombre</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($abonos as $abono)
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <input id="abono_{{ $abono['id'] }}" type="checkbox" class="form-control abono-checkbox" {{ $client->abono_id == $abono['id'] ? 'checked' : '' }} disabled>
+                                                            <label for="abono_{{ $abono['id'] }}" class="pl-3 mb-0"></label>
+                                                        </td>
+                                                        <td>{{ $abono['name'] }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        <div class="row" id="divSaveAbonos" style="display: none">
+                                            <div class="col-md-12 d-flex justify-content-end">
+                                                <button type="button" id="btnSaveAbonos" class="btn btn-sm btn-success btn-rounded px-3">Guardar</button>
                                             </div>
                                         </div>
                                     </form>
@@ -367,7 +409,7 @@
                 var forms = $('.needs-validation');
                 forms.on('submit', function(event) {
                     event.preventDefault();
-                    
+
                     var form = $(this);
                     if (form[0].checkValidity() === false) {
                         event.stopPropagation();
@@ -587,6 +629,73 @@
                         icon: 'error',
                         title: errorThrown.responseJSON.title,
                         text: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        });
+    </script>
+
+    {{-- Abonos asociados al cliente --}}
+    <script>
+        $(document).ready(function() {
+            $('.abono-checkbox').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('.abono-checkbox').not(this).prop('checked', false);
+                    abono_id = $(this).attr('id').replace('abono_', '');
+                } else {
+                    abono_id = null;
+                }
+            });
+        });
+
+        let abono_id = null;
+
+        $("#btnEditAbonos").on("click", function() {
+            $("#form-abonos :input[type='checkbox']").prop('disabled', function(i, val) {
+                return !val;
+            });
+            $("#divSaveAbonos").toggle();
+
+            if ($("#abonos_table").hasClass("table-grey")) {
+                $("#abonos_table").removeClass("table-grey");
+            } else {
+                $("#abonos_table").addClass("table-grey");
+            }
+        });
+
+
+        $("#btnSaveAbonos").on("click", function(e) {
+            $.ajax({
+                url: $("#form-abonos").attr('action'),
+                method: $("#form-abonos").attr('method'),
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data:{
+                    client_id: {{ $client->id }},
+                    abono_id: abono_id,
+                },
+                success: function(response) {
+                    $("#btnEditAbonos").click();
+                    Swal.fire({
+                        title: response.message,
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#1e88e5',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON.message,
                         confirmButtonColor: '#1e88e5',
                     });
                 }

@@ -7,11 +7,13 @@ use App\Http\Requests\Client\ClientShowRequest;
 use App\Http\Requests\Client\ClientUpdateInvoiceRequest;
 use App\Http\Requests\Client\ClientUpdateRequest;
 use App\Http\Requests\Client\SearchSalesRequest;
+use App\Models\Abono;
 use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductsCart;
 use App\Models\ProductsClient;
+use App\Models\StockLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -103,7 +105,9 @@ class ClientController extends Controller
 
         $client_products = $this->getProducts($client);
 
-        return view('clients.details', compact('client', 'graph', 'client_products'));
+        $abonos = Abono::all();
+
+        return view('clients.details', compact('client', 'graph', 'client_products', 'abonos'));
     }
 
     public function searchSales(SearchSalesRequest $request){
@@ -235,6 +239,54 @@ class ClientController extends Controller
         return $productList;
     }
 
+    public function getStock(Client $client, Request $request)
+    {
+        $list = [];
+        try {
+            $stockLog = StockLog::where('cart_id', $request->input('cart_id'))
+                ->where('l_r', 1)
+                ->get();
+
+            foreach ($client->ProductsClient as $product) {
+                if ($product->Product->bottle_type_id === null) {
+                    $existingLog = $stockLog->where('product_id', $product->product_id)->first();
+
+                    $list['products'][] = [
+                        'id' => $product->product_id,
+                        'name' => $product->Product->name,
+                        'stock' => $existingLog ? $existingLog->quantity : 0,
+                        'log_id' => $existingLog ? $existingLog->id : null, // Asignar log_id como el ID del log existente o null
+                    ];
+                }
+            }
+
+            foreach ($client->BottleClient as $bottle) {
+                $existingLog = $stockLog->where('bottle_types_id', $bottle->bottle_types_id)->first();
+
+                $list['bottle'][] = [
+                    'id' => $bottle->bottle_types_id,
+                    'name' => $bottle->BottleType->name,
+                    'stock' => $existingLog ? $existingLog->quantity : 0,
+                    'log_id' => $existingLog ? $existingLog->id : null, // Asignar log_id como el ID del log existente o null
+                ];
+            }
+
+            $list['cart_id'] = $request->input('cart_id');
+
+            return response()->json([
+                'success' => true,
+                'data' => $list,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al actualizar el estado del cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
     public function updateProducts(Request $request)
     {
         try {
@@ -265,6 +317,30 @@ class ClientController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al actualizar los productos',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function updateAbono(Request $request)
+    {
+        try {
+            $client_id = $request->input('client_id');
+            $abono_id = $request->input('abono_id');
+            DB::beginTransaction();
+                Client::find($client_id)->update(['abono_id' => $abono_id]);
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Abono actualizado correctamente',
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al actualizar el abono',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);
