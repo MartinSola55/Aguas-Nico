@@ -8,10 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class StockLog extends Model
 {
     use HasFactory;
-    protected $enumOptions = [
-        0 => 'Loaded',
-        1 => 'Returned',
-    ];
 
     protected $fillable = [
         'client_id',
@@ -23,16 +19,6 @@ class StockLog extends Model
         'created_at',
         'updated_at',
     ];
-
-    public function getLRAttribute($value)
-    {
-        return $this->enumOptions[$value];
-    }
-
-    public function setLRAttribute($value)
-    {
-        $this->attributes['l_r'] = array_search($value, $this->enumOptions);
-    }
 
     public function Client()
     {

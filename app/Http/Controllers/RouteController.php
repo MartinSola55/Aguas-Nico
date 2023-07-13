@@ -17,6 +17,7 @@ use App\Models\ProductDispatched;
 use App\Models\ProductsCart;
 use App\Models\ProductsClient;
 use App\Models\Route;
+use App\Models\StockLog;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTimeZone;
@@ -111,13 +112,16 @@ class RouteController extends Controller
             $product->total_returned = 0;
         }
 
-        foreach ($route->ProductsReturned as $pr) {
+        $cartsIds = collect($route->Carts)->pluck('id')->unique()->toArray();
+        $logs = StockLog::whereIn('cart_id', $cartsIds)->where('l_r', 1)->get();
+
+        foreach ($logs as $log) {
 
             // Verificar si ya se agregó este producto a la colección "products_sold"
             $foundProduct = false;
             foreach ($data->products_sold as &$product) {
-                if ($product->Product->id === $pr->Product->id) {
-                    $product->total_returned = $pr->quantity;
+                if ($product->Product->id === $log->product_id) {
+                    $product->total_returned = $log->quantity;
                     $foundProduct = true;
                     break;
                 }
@@ -127,9 +131,9 @@ class RouteController extends Controller
             if (!$foundProduct) {
 
                 $productCart = new ProductsCart();
-                $productCart->product()->associate($pr->Product);
+                $productCart->product()->associate($log->Product);
                 $productCart->total_sold = 0;
-                $productCart->total_returned = $pr->quantity;
+                $productCart->total_returned = $log->quantity;
 
                 $data->products_sold[] = $productCart;
             }
@@ -181,7 +185,7 @@ class RouteController extends Controller
         if ($route->Carts()->count() === 0) {
             $data->in_deposit_routes++;
         }
-        //dd($data->payment_used);
+        //dd($data);
         return $data;
     }
 

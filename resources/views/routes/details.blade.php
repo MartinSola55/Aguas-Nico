@@ -95,7 +95,8 @@
             </div>
         </div>
         <!-- End Modal -->
-
+    @endif
+    
         <!-- Modal edit cart -->
         <div id="modalEditCart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
@@ -167,7 +168,6 @@
             </div>
         </div>
         <!-- End Modal -->
-    @endif
 
     @if (auth()->user()->rol_id == '1')
         <!-- Modal route products -->
@@ -303,7 +303,6 @@
                                         <thead>
                                             <tr>
                                                 <th>Producto</th>
-                                                {{-- <th>Tiene</th> --}}
                                                 <th>Devuelve</th>
                                                 <th></th>
                                             </tr>
@@ -578,6 +577,9 @@
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-calendar-check"></i> {{ $cart->updated_at->format('d-m-Y H:i') }}&nbsp;hs. </small></p>
                                             @endif
                                         </div>
+                                        @if ($cart->state === 1)
+                                        <hr>
+                                        @endif
                                         <div class="timeline-body">
                                             @if ($cart->state === 1)
                                                 <div class="row">
@@ -611,8 +613,13 @@
                                                     </div>
                                                     @endif
                                                 </div>
-                                                <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-info">Devuelve</button>
-                                                <button type="button" onclick="editCart({{ $cart }})" class="btn btn-info">Editar Bajada</button>
+                                                <div class="d-flex flex-row justify-content-end">
+                                                    @if (auth()->user()->rol_id == 2)
+                                                        <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-sm btn-info btn-rounded px-3">Devuelve</button>
+                                                    @endif
+                                                    <button type="button" onclick="editCart({{ $cart }})" class="btn btn-sm btn-info btn-rounded px-3">Editar Bajada</button>
+                                                </div>
+                                                <hr>
                                                 <div class="d-flex flex-row justify-content-start">
                                                     <p class="m-0">Total del pedido: $
                                                         {{ $cart->ProductsCart->sum(function($product_cart) {
@@ -983,7 +990,7 @@
         });
 
         $("input[type='number']").on("input", function() {
-            if ($(this).val() <= 0 || !esNumero($(this).val())) {
+            if ($(this).val() < 0 || !esNumero($(this).val())) {
                 $(this).val("");
             }
         });
@@ -1020,7 +1027,7 @@
                 cont += '<td>no disponible</td>';
                 } else {
                 cont += '<td>' + data.abonoClient.available + '</td>';
-                cont += '<td><input type="number" min="0" max="' + data.abonoClient.available + '" id="dump_truck" value="0"></td>';
+                cont += '<td><input type="number" class="form-control" min="0" max="' + data.abonoClient.available + '" id="dump_truck" value="0"></td>';
                 }
                 cont += '</tr>';
                 cont += '</tbody></table><hr></div>';
@@ -1257,45 +1264,47 @@
             showCancelButton: true,
             confirmButtonText: 'Confirmar',
             cancelButtonText : 'Cancelar'
-            }).then((result) => {
-                totalRenewAbono += abono_price;
-                $('input[name="renew_abono"]').val(abono_price);
-                $("#totalAmount").html("Total pedido: $" + totalRenewAbono);
-                $.ajax({
-                    url: "{{ url('/abono/renew') }}",
-                    type: "POST",
-                    headers: {
-                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        abono_id: abono_id,
-                        client_id: client_id,
-                        cart_id: $("input[name='cart_id']").val(),
-                    },
-                    success: function(response) {
-                        let cont = "";
-                        cont += '<input type="hidden" name="abono_id" value="'+ response.data.abonoClient.id +'">';
-                        cont += '<div class="table-responsive"><table class="table"><thead><tr>';
-                        cont += '<th>Abono</th>';
-                        cont += '<th>Disponible</th>';
-                        cont += '<th>Baja</th></tr>';
-                        cont += '</thead><tr>';
-                        cont += '<td>' + response.data.abonoType.name + ' $' + response.data.abonoType.price + '</td>';
-                        if (response.data.abonoClient.available === 0) {
-                        cont += '<td>no disponible</td>';
-                        } else if (response.client_abono_id !== null){
-                        cont += '<td>' + response.data.abonoClient.available + '</td>';
-                        cont += '<td><input type="number" min="0" max="' + response.data.abonoClient.available + '" id="dump_truck" value="0"></td>';
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    totalRenewAbono += abono_price;
+                    $('input[name="renew_abono"]').val(abono_price);
+                    $("#totalAmount").html("Total pedido: $" + totalRenewAbono);
+                    $.ajax({
+                        url: "{{ url('/abono/renew') }}",
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            abono_id: abono_id,
+                            client_id: client_id,
+                            cart_id: $("input[name='cart_id']").val(),
+                        },
+                        success: function(response) {
+                            let cont = "";
+                            cont += '<input type="hidden" name="abono_id" value="'+ response.data.abonoClient.id +'">';
+                            cont += '<div class="table-responsive"><table class="table"><thead><tr>';
+                            cont += '<th>Abono</th>';
+                            cont += '<th>Disponible</th>';
+                            cont += '<th>Baja</th></tr>';
+                            cont += '</thead><tr>';
+                            cont += '<td>' + response.data.abonoType.name + ' $' + response.data.abonoType.price + '</td>';
+                            if (response.data.abonoClient.available === 0) {
+                            cont += '<td>no disponible</td>';
+                            } else if (response.client_abono_id !== null){
+                            cont += '<td>' + response.data.abonoClient.available + '</td>';
+                            cont += '<td><input class="form-control" type="number" min="0" max="' + response.data.abonoClient.available + '" id="dump_truck" value="0"></td>';
+                            }
+                            cont += '</tr>';
+                            cont += '</tbody></table><hr></div>';
+                            $("#colAbono").html(cont);
+                        },
+                        error: function(errorThrown) {
+                            SwalError(errorThrown.responseJSON.message);
                         }
-                        cont += '</tr>';
-                        cont += '</tbody></table><hr></div>';
-                        $("#colAbono").html(cont);
-                    },
-                    error: function(errorThrown) {
-                        SwalError(errorThrown.responseJSON.message);
-                    }
-                });
-
+                    });
+                }
             });
         }
 
@@ -1434,7 +1443,6 @@
                     'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: {
-                    log_id: id,
                     product: product,
                     type_id: type_id,
                     quantity: quantity,

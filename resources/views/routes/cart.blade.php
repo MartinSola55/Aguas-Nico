@@ -120,7 +120,7 @@
                                                     <button type="button" class="btn btn-info" onclick="addClient({{ json_encode($client) }})"><i class="bi bi-arrow-left"></i></button>
                                                 </td>
                                                 <td>{{ $client->name }}</td>
-                                                <td>{{ $client->adress }}</td>
+                                                <td>{{ $client->address }}</td>
                                                 <td>{{ $client->dni }}</td>
                                             </tr>
                                         @endforeach
@@ -247,6 +247,7 @@
         }
 
         function fillTable(client, table_id, action, btn_color, btn_icon, btn_size = "") {
+            console.log(client);
             let totalClients = $(`#${table_id}`).DataTable().rows().count() + 1;
             let dni = "<td></td>";
             let index = "";
@@ -263,7 +264,7 @@
                         <button type="button" class="btn btn-${btn_color} ${btn_size}" onclick='${action}(${JSON.stringify(client)})'><i class="bi bi-${btn_icon}"></i></button>
                     </td>
                     <td>${client.name}</td>
-                    <td>${client.adress}</td>
+                    <td>${client.address}</td>
                     ${dni}
                 </tr>`;
             $(`#${table_id}`).DataTable().row.add($(content)).draw();

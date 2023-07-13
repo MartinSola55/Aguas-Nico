@@ -8,7 +8,9 @@ use App\Models\AbonoLog;
 use App\Models\BottleClient;
 use App\Models\Product;
 use App\Models\StockLog;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AbonoClientController extends Controller
 {
@@ -44,6 +46,8 @@ class AbonoClientController extends Controller
             $abonoClient = AbonoClient::find($request->input('abono_id'));
             $productModel = Product::find($abonoClient->abono->product_id);
             $bottleType = $productModel->bottle_type_id;
+
+            DB::beginTransaction();
             if ($bottleType !== null) {
                 StockLog::create([
                     'client_id' => $abonoClient->client_id,
@@ -57,10 +61,31 @@ class AbonoClientController extends Controller
             }
             $abonoClient->available -= $request->input('discount');
             $abonoClient->save();
+
+            // Crear log de abono
+            $abonoLog = AbonoLog::firstOrCreate(
+                [
+                    'cart_id' => $abonoClient->cart_id,
+                    'abono_clients_id' => $abonoClient->id
+                ],
+                [
+                    'cart_id' => $abonoClient->cart_id,
+                    'abono_clients_id' => $abonoClient->id,
+                    'quantity' => 0,
+                    'created_at' => Carbon::now(),
+                ]
+            );
+
+            $abonoLog->quantity += $request->input('discount');
+            $abonoLog->updated_at = Carbon::now();
+            $abonoLog->save();
+
+            DB::commit();
             return response()->json([
                 'success' => true,
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'title' => 'Error al actualizar el descuento del abono',

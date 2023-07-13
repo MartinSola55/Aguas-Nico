@@ -9,7 +9,7 @@ class AbonoLog extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'client_id',
+        'cart_id',
         'abono_clients_id',
         'quantity',
         'created_at',
