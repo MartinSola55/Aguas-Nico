@@ -96,7 +96,7 @@
         </div>
         <!-- End Modal -->
     @endif
-    
+
         <!-- Modal edit cart -->
         <div id="modalEditCart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
@@ -373,34 +373,27 @@
                                 <table class="table stylish-table">
                                     <thead>
                                         <tr>
-                                            <th style="width:90px;">Producto</th>
-                                            <th>Descripción</th>
+                                            <th style="width:10%;"></th>
+                                            <th>Producto/Envase</th>
                                             <th>Vendidos</th>
                                             <th>Devueltos</th>
-                                            <th>Llenos</th>
-                                            <th>Vacíos</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($data->products_sold as $item)
-                                        <tr>
-                                            <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
-                                            <td>
-                                                <h6>{{ $item->Product->name }}</h6><small class="text-muted">Precio: ${{ $item->Product->price }}</small>
-                                            </td>
-                                            <td>
-                                                <h5>{{ $item->total_sold }}</h5>
-                                            </td>
-                                            <td>
-                                                <h5>{{ $item->total_returned }}</h5>
-                                            </td>
-                                            <td>
-                                                <h5>{{ $item->full_units }}</h5>
-                                            </td>
-                                            <td>
-                                                <h5>{{ $item->empty_units }}</h5>
-                                            </td>
-                                        </tr>
+                                        @foreach ($data->items as $item)
+                                            <tr>
+                                                <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
+                                                <td>
+                                                    <h6>{{ $item['name'] }}</h6>
+                                                </td>
+                                                <td>
+                                                    <h5>{{ $item['sold'] }}</h5>
+                                                </td>
+                                                <td>
+                                                    <h5>{{ $item['returned'] }}</h5>
+                                                </td>
+                                                </td>
+                                            </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -549,7 +542,7 @@
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
 
-                                            @if ($cart->Client->debtMonth >= 0)    
+                                            @if ($cart->Client->debtMonth >= 0)
 
                                                 {{-- Deuda / saldo a favor --}}
                                                 @if ($cart->Client->debt == 0)
@@ -613,11 +606,11 @@
                                                     </div>
                                                     @endif
                                                 </div>
-                                                <div class="d-flex flex-md-row flex-column justify-content-end">
+                                                <div class="d-flex flex-row justify-content-end">
                                                     @if (auth()->user()->rol_id == 2)
-                                                        <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-sm btn-info btn-rounded px-3 mr-2 ml-auto mb-md-0 mb-2">Devuelve</button>
+                                                        <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-sm btn-info btn-rounded px-3">Devuelve</button>
                                                     @endif
-                                                    <button type="button" onclick="editCart({{ $cart }})" class="btn btn-sm btn-info btn-rounded px-3 ml-auto ml-md-0">Editar Bajada</button>
+                                                    <button type="button" onclick="editCart({{ $cart }})" class="btn btn-sm btn-info btn-rounded px-3">Editar Bajada</button>
                                                 </div>
                                                 <hr>
                                                 <div class="d-flex flex-row justify-content-start">
@@ -674,19 +667,6 @@
                                                         </div>
                                                     </div>
                                                 </div> --}}
-                                            @endif
-                                            {{-- Resetear estado del carrito (no confirmado) --}}
-                                            @if ($cart->is_static === false && $cart->state != 1 && $cart->state != 0)
-                                                <hr>
-                                                <div class="d-flex flex-row justify-content-end">
-                                                    {{-- Reset cart state --}}
-                                                    <form id="formResetCartState_{{ $cart->id }}" action="{{ url('/cart/changeState') }}" method="POST">
-                                                        @csrf
-                                                        <input type="hidden" name="id" value="{{ $cart->id }}">
-                                                        <input type="hidden" name="state" value="0">
-                                                        <button name="btnResetCartState" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-danger btn-rounded px-3">Cancelar estado</button>
-                                                    </form>
-                                                </div>
                                             @endif
                                             {{-- 1 = admin --}}
                                             @if (auth()->user()->rol_id == '1' && $cart->is_static === false)
@@ -1192,47 +1172,6 @@
                 }
             })
         });
-        
-        $("button[name='btnResetCartState']").on("click", function() {
-            let id = $(this).val();
-            Swal.fire({
-                title: "Esta acción no se puede revertir",
-                text: '¿Seguro deseas resetear el estado del reparto?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                buttonsStyling: false,
-                customClass: {
-                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
-                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
-                }
-            })
-            .then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: $("#formResetCartState_" + id).attr('action'), // Utiliza la ruta del formulario
-                        method: $("#formResetCartState_" + id).attr('method'), // Utiliza el método del formulario
-                        data: $("#formResetCartState_" + id).serialize(), // Utiliza los datos del formulario
-                        success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                confirmButtonColor: '#1e88e5',
-                                allowOutsideClick: false,
-                            })
-                            .then((result) => {
-                                if (result.isConfirmed) {
-                                    location.reload();
-                                }
-                            });
-                        },
-                        error: function(errorThrown) {
-                            SwalError(errorThrown.responseJSON.message);
-                        }
-                    });
-                }
-            })
-        });
     </script>
 
     {{-- Acciones carrito --}}
@@ -1452,7 +1391,7 @@
                     quantity: quantity
                 });
             });
-            
+
             $.ajax({
                 url: "{{ url('/cart/edit') }}",
                 type: "POST",

@@ -34,9 +34,14 @@ class StockLog extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
-    
+
     public function BottleType()
     {
         return $this->belongsTo(BottleType::class, 'bottle_types_id');
+    }
+
+    public function Route_id()
+    {
+        return $this->Cart->Route->id;
     }
 }

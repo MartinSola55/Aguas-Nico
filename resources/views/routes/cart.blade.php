@@ -132,33 +132,34 @@
                 </div>
             @elseif (auth()->user()->rol_id == '2')
                 <div class="col-12">
-                    <div class="card shadow">
-                        <div class="card-body">
-                            <h5 class="text-left">Agregar cliente al reparto del <b>{{ $diasSemana[$route->day_of_week] }}</b> de <b>{{ $route->user->name }}</b></h5>
-                            <hr />
-                            <div class="d-flex flex-md-row flex-column">
-                                <div class="col-12 col-sm-8 col-md-6 col-xl-4 mb-md-0 mb-2">
-                                    <input type="text" class="form-control" id="searchClient" placeholder="Ingrese el nombre del cliente">
-                                </div>
-                                <div class="col-12 col-sm-4 col-md-6 col-xl-8">
-                                    <button id="btnSearchClients" type="button" class="btn btn-primary waves-effect waves-light">Buscar</button>
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table" id="clientsTable">
-                                    <thead>
-                                    <tr>
-                                        <th class="col-4">Nombre</th>
-                                        <th class="col-6">Dirección</th>
-                                        <th class="col-2">Agregar</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <h5 class="text-left">Agregar cliente al reparto del <b>{{ $diasSemana[$route->day_of_week] }}</b> de <b>{{ $route->user->name }}</b></h5>
+                    <hr />
+                </div>
+                <div class="form-group">
+                    <label for="searchClient">Buscar Cliente</label>
+                    <input type="text" class="form-control" id="searchClient" placeholder="Ingrese el nombre del cliente">
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Agregar</th>
+                        </tr>
+                        </thead>
+                        <tbody id="clientTableBody">
+                        @foreach($clients as $client)
+                        <tr>
+                            <td>{{ $client->name }}</td>
+                            <td>{{ $client->address }}</td>
+                            <td>
+                                <button type="button" class="btn btn-info" onclick="addClientBydealer({{ json_encode($client) }})">Agregar</button>
+                            </td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
                 </div>
             @endif
         </div>
@@ -211,7 +212,12 @@
                 });
             } else {
                 $('#clientsTable').DataTable({
-                    "ordering": false,
+                    columnDefs: [
+                        { orderable: false, targets: [0] } // Deshabilita la ordenación en la columna del control de reordenamiento
+                    ],
+                    scrollY: '50vh',
+                    scrollCollapse: true,
+                    paging: false,
                     "language": {
                         "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
                         "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
@@ -375,7 +381,22 @@
     </script>
 
     {{-- Scripts para repartidor --}}
+
     <script>
+        $(document).ready(function() {
+            $('#searchClient').on('input', function() {
+                var searchText = $(this).val().toLowerCase();
+                $('#clientTableBody tr').each(function() {
+                    var clientName = $(this).find('td:first').text().toLowerCase();
+                    if (clientName.includes(searchText)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+        });
+
         function addClientBydealer(client) {
             var clients_array = JSON.stringify([{ id: client.id }]);
             $.ajax({
@@ -413,53 +434,6 @@
             });
         }
 
-        $("#btnSearchClients").on("click", function() {
-            let name = $("#searchClient").val();
-
-            if (name == '') {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Debe ingresar un nombre',
-                    confirmButtonColor: '#1e88e5',
-                });
-                return;
-            }
-
-            $('#clientsTable').DataTable().clear().draw();
-
-            $.ajax({
-                url: "{{ url('/cart/searchClients') }}",
-                type: "GET",
-                headers: {
-                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    name: name,
-                },
-                success: function(response) {
-                    response.data.forEach(client => {
-                        let content = `
-                            <tr>
-                                <td>${client.name}</td>
-                                <td>${client.address}</td>
-                                <td>
-                                    <button type="button" class="btn btn-info" onclick='addClientBydealer(${JSON.stringify(client)})'>Agregar</button>
-                                </td>
-                            </tr>`;
-                        $('#clientsTable').DataTable().row.add($(content)).draw();
-                    });
-                },
-                error: function(errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: errorThrown.responseJSON.message,
-                        confirmButtonColor: '#1e88e5',
-                    });
-                }
-            });
-        });
-
-        
     </script>
 
 @endsection
