@@ -844,6 +844,7 @@
         });
 
         function getReturnStock(client_id, client_name, cart_id) {
+            $("#tableBodyReturnedByClient").html("");
             $.ajax({
                 url: "{{ url('/client/products/') }}" +"/"+ client_id,
                 type: "GET",
@@ -859,7 +860,7 @@
                     let cont = "";
                     if (response.data.bottle) {
                     response.data.bottle.forEach(function(bottle) {
-                        let cont = '<tr>';
+                        cont += '<tr>';
                         cont += '<td><input type="hidden" class="form-control" id="bottle_id_' + bottle.id + '" value="' + bottle.log_id + '">' + bottle.name + '</td>';
                         cont += '<td><input type="number" class="form-control" id="bottle-' + bottle.id + '" value="' + bottle.stock + '" min="0" max="10000"></td>';
                         cont += '<td><button type="button" onclick="returnProduct($(\'#bottle_id_' + bottle.id + '\').val(), false ,'+ bottle.id +','+ response.data.cart_id + ', $(\'#bottle-' + bottle.id + '\').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
