@@ -490,6 +490,9 @@ class RouteController extends Controller
                     'priority' => $cart->priority,
                     'state' => 0,
                     'is_static' => false,
+                    'take_debt' => 0,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ];
             }
             DB::table('carts')->insert($newCarts);
