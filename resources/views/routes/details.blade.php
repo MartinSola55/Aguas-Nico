@@ -96,7 +96,7 @@
         </div>
         <!-- End Modal -->
     @endif
-    
+
         <!-- Modal edit cart -->
         <div id="modalEditCart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
@@ -373,34 +373,27 @@
                                 <table class="table stylish-table">
                                     <thead>
                                         <tr>
-                                            <th style="width:90px;">Producto</th>
-                                            <th>Descripción</th>
+                                            <th style="width:10%;"></th>
+                                            <th>Producto/Enbase</th>
                                             <th>Vendidos</th>
                                             <th>Devueltos</th>
-                                            <th>Llenos</th>
-                                            <th>Vacíos</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($data->products_sold as $item)
-                                        <tr>
-                                            <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
-                                            <td>
-                                                <h6>{{ $item->Product->name }}</h6><small class="text-muted">Precio: ${{ $item->Product->price }}</small>
-                                            </td>
-                                            <td>
-                                                <h5>{{ $item->total_sold }}</h5>
-                                            </td>
-                                            <td>
-                                                <h5>{{ $item->total_returned }}</h5>
-                                            </td>
-                                            <td>
-                                                <h5>{{ $item->full_units }}</h5>
-                                            </td>
-                                            <td>
-                                                <h5>{{ $item->empty_units }}</h5>
-                                            </td>
-                                        </tr>
+                                        @foreach ($data->items as $item)
+                                            <tr>
+                                                <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
+                                                <td>
+                                                    <h6>{{ $item['name'] }}</h6>
+                                                </td>
+                                                <td>
+                                                    <h5>{{ $item['sold'] }}</h5>
+                                                </td>
+                                                <td>
+                                                    <h5>{{ $item['returned'] }}</h5>
+                                                </td>
+                                                </td>
+                                            </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -549,7 +542,7 @@
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
 
-                                            @if ($cart->Client->debtMonth >= 0)    
+                                            @if ($cart->Client->debtMonth >= 0)
 
                                                 {{-- Deuda / saldo a favor --}}
                                                 @if ($cart->Client->debt == 0)
@@ -1397,7 +1390,7 @@
                     quantity: quantity
                 });
             });
-            
+
             $.ajax({
                 url: "{{ url('/cart/edit') }}",
                 type: "POST",

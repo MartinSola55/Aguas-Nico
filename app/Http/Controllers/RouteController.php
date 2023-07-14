@@ -8,6 +8,7 @@ use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Abono;
 use App\Models\AbonoClient;
+use App\Models\BottleType;
 use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Expense;
@@ -92,59 +93,145 @@ class RouteController extends Controller
             'completed_carts' => 0,
             'pending_carts' => 0,
             'payment_used' => [],
-            'products_returned' => [],
-            'products_sold' => [],
+            'products' => [],
+            'bottles' => [],
+            'bottles_sold' => [],
             'in_deposit_routes' => 0,
         ];
 
-        $data->products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_sold'))
-            ->with('product:id,name,price')
-            ->whereHas('cart', function ($query) use ($route) {
-                $query->whereHas('route', function ($query) use ($route) {
-                    $query->where('id', $route->id);
-                });
-            })
-            ->groupBy('product_id')
-            ->orderBy('total_sold', 'desc')
-        ->get();
+        // $route_logs = StockLog::where('cart_id->Route', $route)->get();
 
-        foreach ($data->products_sold as &$product) {
-            $product->total_returned = 0;
-        }
+        // foreach ($route_logs as $route_log) {
+        //     if ($route_log->product_id !== null) { // Si es un producto
+        //         $product = (object) [
+        //             'product_id' => $route_log->product_id,
+        //             'product_name' => $route_log->product_id->name, // Asumiendo que tienes un modelo "Product" para los productos
+        //             'quantity' => $route_log->quantity,
+        //         ];
 
-        $cartsIds = collect($route->Carts)->pluck('id')->unique()->toArray();
-        $logs = StockLog::whereIn('cart_id', $cartsIds)->where('l_r', 1)->get();
+        //         if ($route_log->l_r === 0) { // Sold
+        //             $data->products['sold'][] = $product;
+        //         } elseif ($route_log->l_r === 1) { // Returned
+        //             $data->products['returned'][] = $product;
+        //         }
+        //     } elseif ($route_log->bottle_types_id !== null) { // Si es una botella
+        //         $bottle = (object) [
+        //             'bottle_type_id' => $route_log->bottle_types_id,
+        //             'bottle_type_name' => $route_log->bottle_types_id->name, // Asumiendo que tienes un modelo "BottleType" para los tipos de botella
+        //             'quantity' => $route_log->quantity,
+        //         ];
 
-        foreach ($logs as $log) {
+        //         if ($route_log->l_r === 0) { // Sold
+        //             $data->bottles['sold'][] = $bottle;
+        //         } elseif ($route_log->l_r === 1) { // Returned
+        //             $data->bottles['returned'][] = $bottle;
+        //         }
+        //     }
+        // }
 
-            // Verificar si ya se agregó este producto a la colección "products_sold"
-            $foundProduct = false;
-            foreach ($data->products_sold as &$product) {
-                if ($product->Product->id === $log->product_id) {
-                    $product->total_returned = $log->quantity;
-                    $foundProduct = true;
-                    break;
+
+        $route_logs = StockLog::whereHas('cart.route', function ($query) use ($route) {
+            $query->where('id', $route->id);
+        })->get();
+
+        foreach ($route_logs as $route_log) {
+            if ($route_log->product_id !== null) { // Si es un producto
+                $productId = $route_log->product_id;
+                $productName = Product::find($productId)->name; // Obtener el nombre del producto desde el modelo "Product"
+                $quantity = $route_log->quantity;
+
+                if (!isset($data->products[$productId])) {
+                    $data->products[$productId] = [
+                        'id' => $productId,
+                        'name' => $productName,
+                        'sold' => 0,
+                        'returned' => 0,
+                    ];
+                }
+
+                if ($route_log->l_r === 0) { // Sold
+                    $data->products[$productId]['sold'] += $quantity;
+                } elseif ($route_log->l_r === 1) { // Returned
+                    $data->products[$productId]['returned'] += $quantity;
+                }
+            } elseif ($route_log->bottle_types_id !== null) { // Si es una botella
+                $bottleTypeId = $route_log->bottle_types_id;
+                $bottleTypeName = BottleType::find($bottleTypeId)->name; // Obtener el nombre del tipo de botella desde el modelo "BottleType"
+                $quantity = $route_log->quantity;
+
+                if (!isset($data->bottles[$bottleTypeId])) {
+                    $data->bottles[$bottleTypeId] = [
+                        'id' => $bottleTypeId,
+                        'name' => $bottleTypeName,
+                        'sold' => 0,
+                        'returned' => 0,
+                    ];
+                }
+
+                if ($route_log->l_r === 0) { // Sold
+                    $data->bottles[$bottleTypeId]['sold'] += $quantity;
+                } elseif ($route_log->l_r === 1) { // Returned
+                    $data->bottles[$bottleTypeId]['returned'] += $quantity;
                 }
             }
-
-            // Si no se encontró, agregarlo a la colección "products_sold"
-            if (!$foundProduct) {
-
-                $productCart = new ProductsCart();
-                $productCart->product()->associate($log->Product);
-                $productCart->total_sold = 0;
-                $productCart->total_returned = $log->quantity;
-
-                $data->products_sold[] = $productCart;
-            }
         }
 
-        foreach ($data->products_sold as &$product) {
-            $total_dispatched = $productsDispatched->where('product_id', $product->Product->id)->sum('quantity');
+        $data->items = array_merge(array_values($data->bottles), array_values($data->products));
 
-            $product->full_units = $total_dispatched != 0 ? ($total_dispatched - $product->total_sold) : 0;
-            $product->empty_units = $product->total_returned + $product->total_sold;
-        }
+        // Eliminar las propiedades innecesarias
+        unset($data->bottles);
+        unset($data->products);
+
+
+
+        // $data->products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+        //     ->with('product:id,name,price')
+        //     ->whereHas('cart', function ($query) use ($route) {
+        //         $query->whereHas('route', function ($query) use ($route) {
+        //             $query->where('id', $route->id);
+        //         });
+        //     })
+        //     ->groupBy('product_id')
+        //     ->orderBy('total_sold', 'desc')
+        // ->get();
+
+        // foreach ($data->products_sold as &$product) {
+        //     $product->total_returned = 0;
+        // }
+
+        // $cartsIds = collect($route->Carts)->pluck('id')->unique()->toArray();
+        // $logs = StockLog::whereIn('cart_id', $cartsIds)->where('l_r', 1)->get();
+
+        // foreach ($logs as $log) {
+
+        //     // Verificar si ya se agregó este producto a la colección "products_sold"
+        //     $foundProduct = false;
+        //     foreach ($data->products_sold as &$product) {
+        //         if ($product->Product->id === $log->product_id) {
+        //             $product->total_returned = $log->quantity;
+        //             $foundProduct = true;
+        //             break;
+        //         }
+        //     }
+
+        //     // Si no se encontró, agregarlo a la colección "products_sold"
+        //     if (!$foundProduct) {
+
+        //         $productCart = new ProductsCart();
+        //         $productCart->product()->associate($log->Product);
+        //         $productCart->total_sold = 0;
+        //         $productCart->total_returned = $log->quantity;
+
+        //         $data->products_sold[] = $productCart;
+        //     }
+        // }
+
+        // foreach ($data->products_sold as &$product) {
+        //     $total_dispatched = $productsDispatched->where('product_id', $product->Product->id)->sum('quantity');
+
+        //     $product->full_units = $total_dispatched != 0 ? ($total_dispatched - $product->total_sold) : 0;
+        //     $product->empty_units = $product->total_returned + $product->total_sold;
+        // }
 
         foreach ($route->Carts as $cart) {
             // Calcular la cantidad de repartos completados
@@ -185,7 +272,6 @@ class RouteController extends Controller
         if ($route->Carts()->count() === 0) {
             $data->in_deposit_routes++;
         }
-        //dd($data);
         return $data;
     }
 
