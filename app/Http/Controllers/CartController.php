@@ -8,6 +8,7 @@ use App\Http\Requests\Cart\ConfirmRequest;
 use App\Models\BottleClient;
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
+use App\Models\Client;
 use App\Models\DebtPaymentLog;
 use App\Models\Product;
 use App\Models\ProductsCart;
@@ -244,6 +245,34 @@ class CartController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al eliminar el reparto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function searchClients(Request $request)
+    {
+        try {
+            $name = $request->input('name');
+            $clients = Client::whereRaw('LOWER(name) LIKE ?', ["%" . strtolower($name) . "%"])->get();
+
+            $response = [];
+            $i = 0;
+            foreach ($clients as $client) {
+                $response[$i]['id'] = $client->id;
+                $response[$i]['name'] = $client->name;
+                $response[$i]['address'] = $client->adress;
+                $i++;
+            }
+            return response()->json([
+                'success' => true,
+                'data' => $response
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al buscar los clientes',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);

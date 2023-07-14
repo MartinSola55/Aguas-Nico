@@ -97,8 +97,10 @@ class RouteController extends Controller
             'in_deposit_routes' => 0,
         ];
 
+        /*
+
         $data->products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_sold'))
-            ->with('product:id,name,price')
+            ->with('Product:id,name,price')
             ->whereHas('cart', function ($query) use ($route) {
                 $query->whereHas('route', function ($query) use ($route) {
                     $query->where('id', $route->id);
@@ -116,11 +118,14 @@ class RouteController extends Controller
         $logs = StockLog::whereIn('cart_id', $cartsIds)->where('l_r', 1)->get();
 
         foreach ($logs as $log) {
-
             // Verificar si ya se agregó este producto a la colección "products_sold"
             $foundProduct = false;
             foreach ($data->products_sold as &$product) {
-                if ($product->Product->id === $log->product_id) {
+                if ($log->product_id !== null && $product->Product->id === $log->product_id) {
+                    $product->total_returned = $log->quantity;
+                    $foundProduct = true;
+                    break;
+                } else if ($product->Product->id === $log->BottleType->Products->any()->id) {
                     $product->total_returned = $log->quantity;
                     $foundProduct = true;
                     break;
@@ -145,6 +150,7 @@ class RouteController extends Controller
             $product->full_units = $total_dispatched != 0 ? ($total_dispatched - $product->total_sold) : 0;
             $product->empty_units = $product->total_returned + $product->total_sold;
         }
+        */
 
         foreach ($route->Carts as $cart) {
             // Calcular la cantidad de repartos completados
@@ -181,11 +187,9 @@ class RouteController extends Controller
 
         }
 
-
         if ($route->Carts()->count() === 0) {
             $data->in_deposit_routes++;
         }
-        //dd($data);
         return $data;
     }
 
@@ -282,6 +286,11 @@ class RouteController extends Controller
     public function newCart($id)
     {
         $route = Route::find($id);
+        $products = Product::all();
+        if (auth()->user()->rol_id === 2) {
+            return view('routes.cart', compact('route', 'products'));
+        }
+
         $clients = Client::select('id', 'name', 'adress as address', 'dni', 'phone')->orderBy('name')->get();
         foreach ($clients as $client) {
             $client->priority = $route->Carts()->where('client_id', $client->id)->value('priority') ?? null;
@@ -290,7 +299,6 @@ class RouteController extends Controller
             return is_null($client->priority) ? 1 : 0;
         });
         $clients = $clients->where('priority', '==', null);
-        $products = Product::all();
         return view('routes.cart', compact('route', 'clients', 'clientsSelected', 'products'));
     }
 
