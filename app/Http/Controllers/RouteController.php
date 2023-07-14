@@ -406,6 +406,8 @@ class RouteController extends Controller
                 'priority' => null,
                 'state' => 1,
                 'is_static' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             $products_cart = [];

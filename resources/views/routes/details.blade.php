@@ -374,7 +374,7 @@
                                     <thead>
                                         <tr>
                                             <th style="width:10%;"></th>
-                                            <th>Producto/Enbase</th>
+                                            <th>Producto/Envase</th>
                                             <th>Vendidos</th>
                                             <th>Devueltos</th>
                                         </tr>
