@@ -39,7 +39,7 @@ class RouteController extends Controller
         if ($user->rol_id == '1') {
             $routes = Route::where('day_of_week', date('N'))
                 ->where('is_static', true)
-                ->with(['Carts' => function($query) {
+                ->with(['Carts' => function ($query) {
                     $query->orderBy('priority');
                 }])
                 ->get();
@@ -68,8 +68,7 @@ class RouteController extends Controller
         }
 
 
-        if (auth()->user()->rol_id == '1')
-        {
+        if (auth()->user()->rol_id == '1') {
             $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
 
             $data = $this->getStats($route, $productsDispatched);
@@ -98,37 +97,6 @@ class RouteController extends Controller
             'bottles_sold' => [],
             'in_deposit_routes' => 0,
         ];
-
-        // $route_logs = StockLog::where('cart_id->Route', $route)->get();
-
-        // foreach ($route_logs as $route_log) {
-        //     if ($route_log->product_id !== null) { // Si es un producto
-        //         $product = (object) [
-        //             'product_id' => $route_log->product_id,
-        //             'product_name' => $route_log->product_id->name, // Asumiendo que tienes un modelo "Product" para los productos
-        //             'quantity' => $route_log->quantity,
-        //         ];
-
-        //         if ($route_log->l_r === 0) { // Sold
-        //             $data->products['sold'][] = $product;
-        //         } elseif ($route_log->l_r === 1) { // Returned
-        //             $data->products['returned'][] = $product;
-        //         }
-        //     } elseif ($route_log->bottle_types_id !== null) { // Si es una botella
-        //         $bottle = (object) [
-        //             'bottle_type_id' => $route_log->bottle_types_id,
-        //             'bottle_type_name' => $route_log->bottle_types_id->name, // Asumiendo que tienes un modelo "BottleType" para los tipos de botella
-        //             'quantity' => $route_log->quantity,
-        //         ];
-
-        //         if ($route_log->l_r === 0) { // Sold
-        //             $data->bottles['sold'][] = $bottle;
-        //         } elseif ($route_log->l_r === 1) { // Returned
-        //             $data->bottles['returned'][] = $bottle;
-        //         }
-        //     }
-        // }
-
 
         $route_logs = StockLog::whereHas('cart.route', function ($query) use ($route) {
             $query->where('id', $route->id);
@@ -182,57 +150,6 @@ class RouteController extends Controller
         unset($data->bottles);
         unset($data->products);
 
-
-
-        // $data->products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_sold'))
-        //     ->with('product:id,name,price')
-        //     ->whereHas('cart', function ($query) use ($route) {
-        //         $query->whereHas('route', function ($query) use ($route) {
-        //             $query->where('id', $route->id);
-        //         });
-        //     })
-        //     ->groupBy('product_id')
-        //     ->orderBy('total_sold', 'desc')
-        // ->get();
-
-        // foreach ($data->products_sold as &$product) {
-        //     $product->total_returned = 0;
-        // }
-
-        // $cartsIds = collect($route->Carts)->pluck('id')->unique()->toArray();
-        // $logs = StockLog::whereIn('cart_id', $cartsIds)->where('l_r', 1)->get();
-
-        // foreach ($logs as $log) {
-
-        //     // Verificar si ya se agregó este producto a la colección "products_sold"
-        //     $foundProduct = false;
-        //     foreach ($data->products_sold as &$product) {
-        //         if ($product->Product->id === $log->product_id) {
-        //             $product->total_returned = $log->quantity;
-        //             $foundProduct = true;
-        //             break;
-        //         }
-        //     }
-
-        //     // Si no se encontró, agregarlo a la colección "products_sold"
-        //     if (!$foundProduct) {
-
-        //         $productCart = new ProductsCart();
-        //         $productCart->product()->associate($log->Product);
-        //         $productCart->total_sold = 0;
-        //         $productCart->total_returned = $log->quantity;
-
-        //         $data->products_sold[] = $productCart;
-        //     }
-        // }
-
-        // foreach ($data->products_sold as &$product) {
-        //     $total_dispatched = $productsDispatched->where('product_id', $product->Product->id)->sum('quantity');
-
-        //     $product->full_units = $total_dispatched != 0 ? ($total_dispatched - $product->total_sold) : 0;
-        //     $product->empty_units = $product->total_returned + $product->total_sold;
-        // }
-
         foreach ($route->Carts as $cart) {
             // Calcular la cantidad de repartos completados
             if ($cart->state !== 0) {
@@ -265,9 +182,7 @@ class RouteController extends Controller
                 // Sumar al total de day_collected
                 $data->day_collected += $pm->amount;
             }
-
         }
-
 
         if ($route->Carts()->count() === 0) {
             $data->in_deposit_routes++;
@@ -318,7 +233,7 @@ class RouteController extends Controller
         } else {
             $abonoType = null;
         }
-        return response()->json(['products' => $products,'abonoType' => $abonoType,'abonoClient' => $abonoClient, 'client_abono_id' => $client->abono_id]);
+        return response()->json(['products' => $products, 'abonoType' => $abonoType, 'abonoClient' => $abonoClient, 'client_abono_id' => $client->abono_id]);
     }
 
     /**
@@ -331,7 +246,7 @@ class RouteController extends Controller
     {
         return Route::where('day_of_week', $day)
             ->where('is_static', true)
-            ->with(['Carts' => function($query) {
+            ->with(['Carts' => function ($query) {
                 $query->orderBy('priority');
             }])
             ->get();
@@ -347,14 +262,14 @@ class RouteController extends Controller
     public function getDealerRoutes(int $day, int $id)
     {
         $route = Route::where('user_id', $id)
-        ->limit(10)
-        ->orderBy('start_date', 'desc')
-        ->where('is_static', false)
-        ->where('day_of_week', $day)
-        ->with(['Carts' => function($query) {
-            $query->orderBy('priority');
-        }])
-        ->get();
+            ->limit(10)
+            ->orderBy('start_date', 'desc')
+            ->where('is_static', false)
+            ->where('day_of_week', $day)
+            ->with(['Carts' => function ($query) {
+                $query->orderBy('priority');
+            }])
+            ->get();
 
         return $route;
     }
@@ -372,7 +287,7 @@ class RouteController extends Controller
         foreach ($clients as $client) {
             $client->priority = $route->Carts()->where('client_id', $client->id)->value('priority') ?? null;
         }
-        $clientsSelected = $clients->where('priority', '!=', null)->sortBy('priority')->sortBy(function($client) {
+        $clientsSelected = $clients->where('priority', '!=', null)->sortBy('priority')->sortBy(function ($client) {
             return is_null($client->priority) ? 1 : 0;
         });
         $clients = $clients->where('priority', '==', null);
@@ -537,22 +452,6 @@ class RouteController extends Controller
                 'message' => 'Route creation failed: ' . $e->getMessage(),
             ], 400);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Route $route)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(RouteUpdateRequest $request)
-    {
-        //
     }
 
     // For admin. Deletes and creates all static carts.
