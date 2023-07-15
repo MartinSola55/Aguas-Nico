@@ -95,14 +95,27 @@ class AbonoClientController extends Controller
         }
     }
 
-    public function getQuantity(Request $request)
+    public function getLog(Request $request)
     {
         try {
-            $quantity = AbonoLog::where('abono_clients_id', $request->input('abono_clients_id'))->sum('quantity');
-            return response()->json([
-                'success' => true,
-                'data' => $quantity,
-            ], 201);
+            $log = AbonoLog::where('cart_id', $request->input('cart_id'))->first();
+
+            if ($log) {
+                $abonoType = AbonoClient::find($log->abono_clients_id);
+                $log->name = $abonoType->Abono->name;
+                $log->available = $log->Abonoclient->available + $log->quantity;
+
+                return response()->json([
+                    'success' => true,
+                    'data' => $log,
+                ], 201);
+            } else {
+                // No se encontró ningún registro
+                return response()->json([
+                    'success' => true,
+                    'data' => null,
+                ], 201);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

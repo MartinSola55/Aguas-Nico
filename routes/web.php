@@ -132,6 +132,6 @@ Route::middleware(['auth'])->group(function () {
     //ABONOS
     Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
     Route::post('/abono/discount', [App\Http\Controllers\AbonoClientController::class, 'update']);
-    Route::get('/abono/getQuantity', [App\Http\Controllers\AbonoClientController::class, 'getQuantity']);
+    Route::get('/abono/getlog', [App\Http\Controllers\AbonoClientController::class, 'getLog']);
 });
 

@@ -113,7 +113,7 @@
                         </div>
                         <div class="modal-body">
                             <div class="row">
-                                <div class="col-lg-12" id="colAbono">
+                                <div class="col-lg-12" id="colAbonoEdit">
                                 </div>
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
@@ -1398,13 +1398,50 @@
                 $(".quantityedit-input").on("input", updateTotal);
             });
 
-            if (cart.cart_payment_method[0].amount) {
-                $("#cash_input_edit_cart").val(cart.cart_payment_method[0].amount);
+            if (cart.cart_payment_method && cart.cart_payment_method.length > 0) {
+                $("#cash_input_edit_cart").val(cart.cart_payment_method[0].amount || '0');
             } else {
                 $("#cash_input_edit_cart").val('0');
             }
 
+
             $("#tableEditCart").html(content);
+
+            $.ajax({
+                url: "{{ url('/abono/getlog') }}",
+                type: "GET",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    cart_id: cart.id,
+                },
+
+                success: function(response) {
+                    if (response.data !== null) {
+                        console.log(response);
+                        let cont = "";
+                        cont += '<input type="hidden" name="abono_log_id" value="'+ response.data.id +'">';
+                        cont += '<div class="table-responsive"><table class="table"><thead><tr>';
+                        cont += '<th>Abono</th>';
+                        cont += '<th>Disponia</th>';
+                        cont += '<th>Bajo</th></tr>';
+                        cont += '</thead><tr>';
+                        cont += '<td>' + response.data.name + ' $' + response.data.abonoclient.setted_price + '</td>';
+                        if (cart.abono_client.available === 0) {
+                        cont += '<td>no disponible</td>';
+                        }else {
+                        cont += '<td>' + response.data.available + '</td>';
+                        cont += '<td><input class="form-control" type="number" min="0" max="' + response.data.available + '" id="dump_truck" value="' + response.data.quantity + '"></td>';
+                        }
+                        cont += '</tr>';
+                        cont += '</tbody></table><hr></div>';
+
+                        $("#colAbonoEdit").html(cont);
+                    }
+                },
+            })
+
         }
 
         $("#btnEditCart").on("click", function() {
