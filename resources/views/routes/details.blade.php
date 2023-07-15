@@ -542,7 +542,7 @@
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
 
-                                            @if ($cart->Client->debtMonth >= 0)
+                                            @if ($cart->Client->debtMonth > 0)
 
                                                 {{-- Deuda / saldo a favor --}}
                                                 @if ($cart->Client->debt == 0)
