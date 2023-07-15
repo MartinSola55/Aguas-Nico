@@ -62,11 +62,7 @@ class RouteController extends Controller
                 $query->orderBy('priority', 'asc');
             }])->find($id);
 
-        // Agregar deuda del mes actual a cada cliente como un atributo nuevo, sacando esa deuda del modelo DebpaymentLog
-        foreach ($route->Carts as $cart) {
-            $cart->Client->debtMonth = $cart->Client->getDebtOfTheMonth();
-        }
-
+        $route = $this->getClientsDebt($route);
 
         if (auth()->user()->rol_id == '1') {
             $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
@@ -82,6 +78,20 @@ class RouteController extends Controller
             $clients = $clients->sortBy('name')->unique('id')->values();
             return view('routes.details', compact('route', 'payment_methods', 'cash', 'clients'));
         }
+    }
+
+    private function getClientsDebt($route) {
+
+        // Agregar deuda del mes actual a cada cliente como un atributo nuevo, sacando esa deuda del modelo DebpaymentLog
+        foreach ($route->Carts as $cart) {
+            $cart->Client->debtMonth = $cart->Client->getDebtOfTheMonth();
+        }
+
+        foreach ($route->Carts as $cart) {
+            $cart->Client->debt -= $cart->Client->debtMonth;
+        }
+
+        return $route;
     }
 
     private function getStats($route, $productsDispatched)
