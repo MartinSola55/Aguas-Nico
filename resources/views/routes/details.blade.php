@@ -552,7 +552,7 @@
                                                 @elseif($cart->Client->debtMonth > 0)
                                                     <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
                                                 @else
-                                                    <p class="m-0"><small class="text-success">A favor este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
+                                                    <p class="m-0"><small class="text-success">Entregó este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
                                                 @endif
                                             @else
                                                     <p class="m-0"><small class="text-success">Saldo a favor: ${{ $cart->Client->debt * -1 }}</small></p>
@@ -561,7 +561,7 @@
                                                 @elseif($cart->Client->debtMonth > 0)
                                                     <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
                                                 @else
-                                                    <p class="m-0"><small class="text-success">A favor este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
+                                                    <p class="m-0"><small class="text-success">Entregó este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
                                                 @endif
                                             @endif
 
@@ -1421,19 +1421,15 @@
                     if (response.data !== null) {
                         console.log(response);
                         let cont = "";
-                        cont += '<input type="hidden" name="abono_log_id" value="'+ response.data.id +'">';
+                        cont += '<input type="hidden" name="abono_log_id_edit" value="'+ response.data.id +'">';
                         cont += '<div class="table-responsive"><table class="table"><thead><tr>';
                         cont += '<th>Abono</th>';
                         cont += '<th>Disponia</th>';
                         cont += '<th>Bajo</th></tr>';
                         cont += '</thead><tr>';
                         cont += '<td>' + response.data.name + ' $' + response.data.abonoclient.setted_price + '</td>';
-                        if (cart.abono_client.available === 0) {
-                        cont += '<td>no disponible</td>';
-                        }else {
                         cont += '<td>' + response.data.available + '</td>';
-                        cont += '<td><input class="form-control" type="number" min="0" max="' + response.data.available + '" id="dump_truck" value="' + response.data.quantity + '"></td>';
-                        }
+                        cont += '<td><input class="form-control" type="number" min="0" max="' + response.data.available + '" id="abono_log_quantity_edit" value="' + response.data.quantity + '"></td>';
                         cont += '</tr>';
                         cont += '</tbody></table><hr></div>';
 
@@ -1457,6 +1453,8 @@
                 });
             });
 
+            let abono_log_quantity_edit = $("#abono_log_quantity_edit").val();
+            let abono_log_id_edit = $("#abono_log_id_edit").val();
             $.ajax({
                 url: "{{ url('/cart/edit') }}",
                 type: "POST",
@@ -1467,7 +1465,8 @@
                     cart_id: cart_id,
                     cash: cash,
                     products_quantity: JSON.stringify(products),
-                    abono: abono///EDITAR ABONOOOOO
+                    abono_log_id_edit: abono_log_id_edit ? abono_log_id_edit : null,
+                    abono_log_quantity_edit: abono_log_quantity_edit ? abono_log_quantity_edit : null,
                 },
                 success: function(response) {
                     Swal.fire({

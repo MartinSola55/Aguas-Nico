@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Cart\CartCreateRequest;
 use App\Http\Requests\Cart\CartUpdateRequest;
 use App\Http\Requests\Cart\ConfirmRequest;
+use App\Models\AbonoLog;
 use App\Models\BottleClient;
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
@@ -36,6 +37,11 @@ class CartController extends Controller
         $products_quantity = json_decode($request->input('products_quantity'), true);
         $cash = $request->input('cash');
 
+        if ($request->input('abono_log_id_edit') !== null && $request->input('abono_log_quantity_edit') !== null) {
+            dd($request);
+        //    $log AbonoLog::find
+        }
+
         $total_cart = 0;
         foreach ($cart->ProductsCart as $pc) {
             foreach ($products_quantity as $product) {
@@ -44,6 +50,15 @@ class CartController extends Controller
                     $pc->save();
 
                     $total_cart += $product['quantity'] * $pc->setted_price;
+                }
+            }
+        }
+
+        foreach ($cart->StockLogs->where('l_r', 0) as $sl) {
+            foreach ($products_quantity as $product) {
+                if ($sl->product_id == $product['product_id'] && $sl->client_id == $cart->client_id) {
+                    $sl->quantity = $product['quantity'];
+                    $sl->save();
                 }
             }
         }
