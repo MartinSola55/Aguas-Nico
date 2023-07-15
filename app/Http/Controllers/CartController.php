@@ -8,6 +8,7 @@ use App\Http\Requests\Cart\ConfirmRequest;
 use App\Models\BottleClient;
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
+use App\Models\Client;
 use App\Models\DebtPaymentLog;
 use App\Models\Product;
 use App\Models\ProductsCart;
@@ -122,7 +123,7 @@ class CartController extends Controller
                     'l_r' => 0,          //si es 0=l, si es 1=r
                 ]);
                 if ($bottleType !== null) {
-                    BottleClient::firstOrCreate(['client_id' => $client->id,'bottle_types_id' => $bottleType])
+                    BottleClient::firstOrCreate(['client_id' => $client->id, 'bottle_types_id' => $bottleType])
                         ->increment('stock', $product['quantity']);
                 } else {
                     ProductsClient::firstOrCreate(['client_id' => $client->id, 'product_id' => $product['product_id']])
@@ -140,11 +141,11 @@ class CartController extends Controller
             $client->increment('debt', $total_cart - $cash);
 
             // DebtPaymentLog::create([
-                //     'client_id' => $client->id,
-                //     'cart_id' => $cart->id,
-                //     'debt' => $cart->ProductsCart()->sum('quantity', '*', 'setted_price')
-                // ]);
-            
+            //     'client_id' => $client->id,
+            //     'cart_id' => $cart->id,
+            //     'debt' => $cart->ProductsCart()->sum('quantity', '*', 'setted_price')
+            // ]);
+
             // Tiene que ir SI O SI primero la creacion de productos y despues la actualizacion del carrito
             DB::table('products_cart')->insert($products_cart);
             $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
@@ -189,7 +190,6 @@ class CartController extends Controller
                         'l_r' => 1,
                     ]
                 );
-                
             } else {
                 $log = StockLog::firstOrCreate(
                     [
@@ -209,7 +209,7 @@ class CartController extends Controller
             $log->quantity = $request->input('quantity');
             $log->updated_at = Carbon::now();
             $log->save();
-            
+
             DB::commit();
 
             return response()->json([
@@ -244,6 +244,34 @@ class CartController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al eliminar el reparto',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function searchClients(Request $request)
+    {
+        try {
+            $name = $request->input('name');
+            $clients = Client::whereRaw('LOWER(name) LIKE ?', ["%" . strtolower($name) . "%"])->get();
+
+            $response = [];
+            $i = 0;
+            foreach ($clients as $client) {
+                $response[$i]['id'] = $client->id;
+                $response[$i]['name'] = $client->name;
+                $response[$i]['address'] = $client->adress;
+                $i++;
+            }
+            return response()->json([
+                'success' => true,
+                'data' => $response
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al buscar los clientes',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);
