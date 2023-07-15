@@ -542,29 +542,29 @@
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
 
-                                            @if ($cart->Client->debtMonth > 0)
-
-                                                {{-- Deuda / saldo a favor --}}
-                                                @if ($cart->Client->debt == 0)
+                                            {{-- Mostrar las duedas de cada cliente --}}
+                                            @if ($cart->Client->debt == 0)
                                                     <p class="m-0"><small class="text-muted">Sin deuda</small></p>
-                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth > 0)
-                                                    <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt - $cart->Client->debtMonth }}</small></p>
-                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth < 0)
-                                                    <p class="m-0"><small class="text-success">A favor: ${{ ($cart->Client->debt - $cart->Client->debtMonth) * -1 }}</small></p>
+                                            @elseif ($cart->Client->debt > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt }}</small></p>
+                                                @if ($cart->Client->debtMonth == 0)
+                                                    <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
+                                                @elseif($cart->Client->debtMonth > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
+                                                @else
+                                                    <p class="m-0"><small class="text-success">A favor este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
                                                 @endif
-
-                                                {{-- Deuda / saldo a favor del mes --}}
-                                                @if ($cart->Client->debt != 0)
-                                                    @if ($cart->Client->debtMonth != 0)
-                                                        <p class="m-0"><small class="text-danger">Deuda de este mes: ${{ $cart->Client->debtMonth }}</small></p>
-                                                    @else
-                                                        <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
-                                                    @endif
-                                                @endif
-
                                             @else
-                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt + $cart->Client->debtMonth }}</small></p>
+                                                    <p class="m-0"><small class="text-success">Saldo a favor: ${{ $cart->Client->debt * -1 }}</small></p>
+                                                @if ($cart->Client->debtMonth == 0)
+                                                    <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
+                                                @elseif($cart->Client->debtMonth > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
+                                                @else
+                                                    <p class="m-0"><small class="text-success">A favor este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
+                                                @endif
                                             @endif
+
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                             @if ($cart->state && auth()->user()->rol_id == '1')
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-calendar-check"></i> {{ $cart->updated_at->format('d-m-Y H:i') }}&nbsp;hs. </small></p>
