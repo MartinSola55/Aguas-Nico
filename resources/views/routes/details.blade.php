@@ -1439,6 +1439,7 @@
                     cart_id: cart_id,
                     cash: cash,
                     products_quantity: JSON.stringify(products),
+                    abono: abono///EDITAR ABONOOOOO
                 },
                 success: function(response) {
                     Swal.fire({
