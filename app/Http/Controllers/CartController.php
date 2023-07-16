@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Cart\CartCreateRequest;
 use App\Http\Requests\Cart\CartUpdateRequest;
 use App\Http\Requests\Cart\ConfirmRequest;
+use App\Models\AbonoClient;
 use App\Models\AbonoLog;
 use App\Models\BottleClient;
 use App\Models\Cart;
@@ -37,9 +38,13 @@ class CartController extends Controller
         $products_quantity = json_decode($request->input('products_quantity'), true);
         $cash = $request->input('cash');
 
-        if ($request->input('abono_log_id_edit') !== null && $request->input('abono_log_quantity_edit') !== null) {
-            dd($request);
-        //    $log AbonoLog::find
+        if ($request->input('abono_log_id_edit') !== null) {
+            $abonoLog = AbonoLog::find($request->input('abono_log_id_edit'));
+            $edit_available = AbonoClient::find($abonoLog->abono_clients_id)->first();
+            $edit_available->available = $request->input('abono_log_quantity_available_edit') - $request->input('abono_log_quantity_new_edit');
+            $abonoLog->quantity = $request->input('abono_log_quantity_new_edit');
+            $edit_available->save();
+            $abonoLog->save();
         }
 
         $total_cart = 0;

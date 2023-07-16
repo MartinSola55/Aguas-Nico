@@ -1422,6 +1422,7 @@
                         console.log(response);
                         let cont = "";
                         cont += '<input type="hidden" name="abono_log_id_edit" value="'+ response.data.id +'">';
+                        cont += '<input type="hidden" name="abono_log_quantity_available_edit" value="'+ response.data.available +'">';
                         cont += '<div class="table-responsive"><table class="table"><thead><tr>';
                         cont += '<th>Abono</th>';
                         cont += '<th>Disponia</th>';
@@ -1429,7 +1430,7 @@
                         cont += '</thead><tr>';
                         cont += '<td>' + response.data.name + ' $' + response.data.abonoclient.setted_price + '</td>';
                         cont += '<td>' + response.data.available + '</td>';
-                        cont += '<td><input class="form-control" type="number" min="0" max="' + response.data.available + '" id="abono_log_quantity_edit" value="' + response.data.quantity + '"></td>';
+                        cont += '<td><input class="form-control" type="number" min="0" max="' + response.data.available + '" id="abono_log_quantity_new_edit" value="' + response.data.quantity + '"></td>';
                         cont += '</tr>';
                         cont += '</tbody></table><hr></div>';
 
@@ -1453,8 +1454,10 @@
                 });
             });
 
-            let abono_log_quantity_edit = $("#abono_log_quantity_edit").val();
             let abono_log_id_edit = $("#abono_log_id_edit").val();
+            let abono_log_quantity_available_edit = $("#abono_log_quantity_available_edit").val();
+            let abono_log_quantity_new_edit = $("#abono_log_quantity_new_edit").val();
+
             $.ajax({
                 url: "{{ url('/cart/edit') }}",
                 type: "POST",
@@ -1466,7 +1469,8 @@
                     cash: cash,
                     products_quantity: JSON.stringify(products),
                     abono_log_id_edit: abono_log_id_edit ? abono_log_id_edit : null,
-                    abono_log_quantity_edit: abono_log_quantity_edit ? abono_log_quantity_edit : null,
+                    abono_log_quantity_available_edit: abono_log_quantity_available_edit ? abono_log_quantity_available_edit : null,
+                    abono_log_quantity_new_edit: abono_log_quantity_new_edit ? abono_log_quantity_new_edit : null,
                 },
                 success: function(response) {
                     Swal.fire({
