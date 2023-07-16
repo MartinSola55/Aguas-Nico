@@ -64,6 +64,11 @@ class RouteController extends Controller
 
         $route = $this->getClientsDebt($route);
 
+        // Agregar a cada cliente de cada carrito un atributo con la fecha y el estado del último carrito, que no sea el actual
+        foreach ($route->Carts as $cart) {
+            $cart->Client->lastCart = $cart->Client->getLastCart($id);
+        }
+
         if (auth()->user()->rol_id == '1') {
             $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
 

@@ -541,10 +541,21 @@
                                             @else
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
+                                            
+                                            {{-- Datos del último reparto --}}
+                                            @if ($cart->Client->lastCart != null)
+                                            <p class="m-0">Último reparto: {{ $cart->Client->lastCart->created_at->format('d/m/Y') }} - {{ $states[$cart->Client->lastCart->state] }}</p>
+                                            @endif
 
                                             {{-- Mostrar las duedas de cada cliente --}}
                                             @if ($cart->Client->debt == 0)
+                                                @if ($cart->Client->debtMonth == 0)
                                                     <p class="m-0"><small class="text-muted">Sin deuda</small></p>
+                                                @elseif($cart->Client->debtMonth > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
+                                                @else
+                                                    <p class="m-0"><small class="text-success">Entregó este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
+                                                @endif
                                             @elseif ($cart->Client->debt > 0)
                                                     <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt }}</small></p>
                                                 @if ($cart->Client->debtMonth == 0)
