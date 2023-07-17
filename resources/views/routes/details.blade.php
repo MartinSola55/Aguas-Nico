@@ -625,8 +625,8 @@
                                                 </div>
                                                 <hr>
                                                 <div class="d-flex flex-row justify-content-start">
-                                                    <p class="m-0">Total del pedido: $
-                                                        {{ $cart->ProductsCart->sum(function($product_cart) {
+                                                    <p class="m-0">Total del pedido:
+                                                        ${{ $cart->ProductsCart->sum(function($product_cart) {
                                                         return $product_cart->setted_price * $product_cart->quantity;
                                                         }) + ($cart->AbonoClient ? $cart->AbonoClient->setted_price : 0) }}
                                                     </p>

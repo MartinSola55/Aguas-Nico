@@ -61,6 +61,25 @@ class CartController extends Controller
                             'quantity' => $request->input('abono_log_quantity_new_edit')
                         ]);
                     }
+
+                    $stockLog = StockLog::firstOrCreate(
+                        [
+                            'product_id' => $abonoLog->product_id,
+                            'client_id' => $cart->client_id,
+                            'l_r' => 0,
+                            'cart_id' => $cart->id,
+                        ],
+                        [
+                            'product_id' => $abonoLog->product_id,
+                            'client_id' => $cart->client_id,
+                            'l_r' => 0,
+                            'cart_id' => $cart->id,
+                            'created_at' => Carbon::now(),
+                        ]
+                    );
+                    $stockLog->quantity = $request->input('abono_log_quantity_new_edit');
+                    $stockLog->updated_at = Carbon::now();
+                    $stockLog->save();
                 }
             }
 
@@ -133,7 +152,7 @@ class CartController extends Controller
     {
         try {
             $products_quantity = json_decode($request->input('products_quantity'), true);
-            $cash = $request->input('cash');
+            $cash = $request->input('cash') ?? 0;
             $renew_abono = json_decode($request->input('renew_abono'), true);
 
             $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
@@ -166,11 +185,11 @@ class CartController extends Controller
                 // Obtener el modelo del producto correspondiente al product_id
                 $productModel = Product::find($productId);
 
-                $bottleType = $productModel->bottle_type_id;
+                $bottleType = $productModel->bottle_type_id ?? null;
                 StockLog::create([
                     'client_id' => $client->id,
                     'cart_id' => $cart->id,
-                    'bottle_type_id' => $bottleType,
+                    'bottle_types_id' => $bottleType,
                     'product_id' => $bottleType === null ? $productId : null,
                     'quantity' => $product['quantity'],
                     'l_r' => 0,          //si es 0=l, si es 1=r

@@ -52,7 +52,7 @@ class AbonoClientController extends Controller
                 StockLog::create([
                     'client_id' => $abonoClient->client_id,
                     'cart_id' => $abonoClient->cart_id,
-                    'bottle_type_id' => $bottleType,
+                    'bottle_types_id' => $bottleType,
                     'quantity' => $request->input('discount'),
                     'l_r' => 0,          //si es 0=l, si es 1=r
                 ]);
