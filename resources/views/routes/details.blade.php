@@ -928,9 +928,7 @@
                         });
                     },
                     error: function(errorThrown) {
-                        console.log(errorThrown);
-                        console.log(data);
-                       // SwalError(errorThrown.responseJSON.message);
+                       SwalError(errorThrown.responseJSON.message);
                     }
                 });
             })
@@ -1388,7 +1386,6 @@
         function editCart(cart) {
             $("#form-edit-bajada input[name='cart_id']").val(cart.id);
             calculateTotal();
-            console.log(cart);
             $("#modalEditCart").modal("show");
             let content = '';
             cart.products_cart.forEach(p => {
@@ -1467,6 +1464,15 @@
             let abono_log_id_edit = $("#modalEditCart #abono_log_id_edit").val();
             let abono_log_quantity_available_edit = $("#abono_log_quantity_available_edit").val();
             let abono_log_quantity_new_edit = $("#abono_log_quantity_new_edit").val();
+
+            if (abono_log_quantity_new_edit > abono_log_quantity_available_edit) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No puedes bajar más de lo que disponía',
+                    confirmButtonColor: '#1e88e5',
+                });
+                return;
+            }
 
             $.ajax({
                 url: "{{ url('/cart/edit') }}",
