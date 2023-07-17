@@ -34,15 +34,24 @@ class CartController extends Controller
 
     public function edit(Request $request)
     {
-        try{
+        try {
             $cart = Cart::find($request->input('cart_id'));
             $products_quantity = json_decode($request->input('products_quantity'), true);
             $cash = $request->input('cash');
+            
+            DB::beginTransaction();
             if ($request->input('abono_log_id_edit') != "null") {
                 $abonoLog = AbonoLog::find($request->input('abono_log_id_edit'));
                 if ($abonoLog) {
                     $edit_available = AbonoClient::where('id', $abonoLog->abono_clients_id)->latest()->first();
 
+                    if ($request->input('abono_log_quantity_new_edit') > $request->input('abono_log_quantity_available_edit')) {
+                        return response()->json([
+                            'success' => false,
+                            'title' => 'Error al actualizar el reparto',
+                            'message' => 'La cantidad de abono a utilizar es mayor a la disponible',
+                        ], 400);
+                    }
                     if ($edit_available) {
                         $edit_available->update([
                             'available' => $request->input('abono_log_quantity_available_edit') - $request->input('abono_log_quantity_new_edit')
@@ -81,13 +90,14 @@ class CartController extends Controller
             CartPaymentMethod::where('cart_id', $cart->id)->where('payment_method_id', 1)->update(['amount' => $cash]);
 
             $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
-
+            DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Bajada actualizada',
                 'data' => $cart
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'title' => 'Error al actualizar el reparto',
