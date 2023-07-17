@@ -920,11 +920,22 @@
                             showCancelButton: false,
                             confirmButtonColor: '#1e88e5',
                             confirmButtonText: 'OK',
-                            allowOutsideClick: false,
                         }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
+                            Swal.fire({
+                                title: '¿Devuelve envases?',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonText: 'Si',
+                                cancelButtonText : 'No',
+                                confirmButtonColor: '#1e88e5',
+                            })
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    getReturnStock(response.data.client_id, response.data.client.name, response.data.id);
+                                } else {
+                                    location.reload();
+                                }
+                            });
                         });
                     },
                     error: function(errorThrown) {
@@ -1290,11 +1301,12 @@
     <script>
         function renewAbono(abono_id,abono_price,client_id) {
             Swal.fire({
-            title: '¿Desea renovar abono?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Confirmar',
-            cancelButtonText : 'Cancelar'
+                title: '¿Seguro deseas renovar el abono?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText : 'Cancelar',
+                confirmButtonColor: '#1e88e5',
             })
             .then((result) => {
                 if (result.isConfirmed) {
