@@ -159,7 +159,7 @@ class CartController extends Controller
             $prices = Product::whereIn('id', $productIds)->pluck('price', 'id');
 
             $client = Cart::find($request->input('cart_id'))->Client;
-            $cart = Cart::find($request->input('cart_id'));
+            $cart = Cart::find($request->input('cart_id'))->load('Client');
 
             if ($renew_abono > 0) {
                 $total_cart = $renew_abono;
@@ -226,7 +226,8 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Reparto confirmado'
+                'message' => 'Reparto confirmado',
+                'data' => $cart
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
