@@ -109,7 +109,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Editar Bajada</h4>
-                            <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <button id="btnCloseModalEdit" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
@@ -1419,10 +1419,9 @@
 
                 success: function(response) {
                     if (response.data !== null) {
-                        console.log(response);
                         let cont = "";
-                        cont += '<input type="hidden" name="abono_log_id_edit" value="'+ response.data.id +'">';
-                        cont += '<input type="hidden" name="abono_log_quantity_available_edit" value="'+ response.data.available +'">';
+                        cont += '<input type="hidden" id="abono_log_id_edit" value="'+ response.data.id +'">';
+                        cont += '<input type="hidden" id="abono_log_quantity_available_edit" value="'+ response.data.available +'">';
                         cont += '<div class="table-responsive"><table class="table"><thead><tr>';
                         cont += '<th>Abono</th>';
                         cont += '<th>Disponia</th>';
@@ -1454,7 +1453,7 @@
                 });
             });
 
-            let abono_log_id_edit = $("#abono_log_id_edit").val();
+            let abono_log_id_edit = $("#modalEditCart #abono_log_id_edit").val();
             let abono_log_quantity_available_edit = $("#abono_log_quantity_available_edit").val();
             let abono_log_quantity_new_edit = $("#abono_log_quantity_new_edit").val();
 
@@ -1478,12 +1477,8 @@
                         title: response.message,
                         confirmButtonColor: '#1e88e5',
                         allowOutsideClick: false,
-                    })
-                    .then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload();
-                        }
                     });
+                    $('#btnCloseModalEdit').click();
                 },
                 error: function(errorThrown) {
                     Swal.fire({
