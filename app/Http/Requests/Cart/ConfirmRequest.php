@@ -26,7 +26,6 @@ class ConfirmRequest extends BaseFormRequest
             'products_quantity' => ['required'],
             'products_quantity.*.product_id' => ['required', 'exists:products,id'],
             'products_quantity.*.quantity' => ['required', 'integer', 'min:1'],
-            'cash' => ['required', 'numeric', 'min:0'],
         ]);
 
         return [

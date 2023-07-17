@@ -21,8 +21,10 @@ class AbonoLog extends Model
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    public function AbonoClients()
+    public function AbonoClient()
     {
         return $this->belongsTo(AbonoClient::class, 'abono_clients_id');
     }
+
+
 }

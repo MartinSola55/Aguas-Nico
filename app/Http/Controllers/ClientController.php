@@ -219,11 +219,12 @@ class ClientController extends Controller
     }
 
     public function getProducts(Client $client) {
-        $products = Product::all();
+        $products = Product::orderBy('name', 'asc')->get();
         $productList = [];
         foreach ($products as $key => $product) {
             $productList[$key]['id'] = $product->id;
             $productList[$key]['name'] = $product->name;
+            $productList[$key]['price'] = $product->price;
             $client_products = $client->Products;
 
             $exists = $client_products->contains('id',$product->id);

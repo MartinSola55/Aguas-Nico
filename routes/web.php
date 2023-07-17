@@ -98,6 +98,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/route/{id}/newCart', [App\Http\Controllers\RouteController::class, 'newCart']);
     Route::post('/route/updateReturned', [App\Http\Controllers\RouteController::class, 'updateReturned']);
 
+    // Buscar clientes
+    Route::get('/cart/searchClients', [App\Http\Controllers\CartController::class, 'searchClients']);
 
     // Cambiar estado del carrito
     Route::post('/cart/changeState', [App\Http\Controllers\CartController::class, 'changeState']);
@@ -130,6 +132,6 @@ Route::middleware(['auth'])->group(function () {
     //ABONOS
     Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
     Route::post('/abono/discount', [App\Http\Controllers\AbonoClientController::class, 'update']);
-    Route::get('/abono/getQuantity', [App\Http\Controllers\AbonoClientController::class, 'getQuantity']);
+    Route::get('/abono/getlog', [App\Http\Controllers\AbonoClientController::class, 'getLog']);
 });
 

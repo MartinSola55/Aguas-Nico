@@ -109,11 +109,11 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Editar Bajada</h4>
-                            <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <button id="btnCloseModalEdit" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
-                                <div class="col-lg-12" id="colAbono">
+                                <div class="col-lg-12" id="colAbonoEdit">
                                 </div>
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
@@ -541,30 +541,41 @@
                                             @else
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
-
-                                            @if ($cart->Client->debtMonth >= 0)
-
-                                                {{-- Deuda / saldo a favor --}}
-                                                @if ($cart->Client->debt == 0)
-                                                    <p class="m-0"><small class="text-muted">Sin deuda</small></p>
-                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth > 0)
-                                                    <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt - $cart->Client->debtMonth }}</small></p>
-                                                @elseif ($cart->Client->debt - $cart->Client->debtMonth < 0)
-                                                    <p class="m-0"><small class="text-success">A favor: ${{ ($cart->Client->debt - $cart->Client->debtMonth) * -1 }}</small></p>
-                                                @endif
-
-                                                {{-- Deuda / saldo a favor del mes --}}
-                                                @if ($cart->Client->debt != 0)
-                                                    @if ($cart->Client->debtMonth != 0)
-                                                        <p class="m-0"><small class="text-danger">Deuda de este mes: ${{ $cart->Client->debtMonth }}</small></p>
-                                                    @else
-                                                        <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
-                                                    @endif
-                                                @endif
-
-                                            @else
-                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt + $cart->Client->debtMonth }}</small></p>
+                                            
+                                            {{-- Datos del último reparto --}}
+                                            @if ($cart->Client->lastCart != null)
+                                            <p class="m-0">Último reparto: {{ $cart->Client->lastCart->created_at->format('d/m/Y') }} - {{ $states[$cart->Client->lastCart->state] }}</p>
                                             @endif
+
+                                            {{-- Mostrar las duedas de cada cliente --}}
+                                            @if ($cart->Client->debt == 0)
+                                                @if ($cart->Client->debtMonth == 0)
+                                                    <p class="m-0"><small class="text-muted">Sin deuda</small></p>
+                                                @elseif($cart->Client->debtMonth > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
+                                                @else
+                                                    <p class="m-0"><small class="text-success">Entregó este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
+                                                @endif
+                                            @elseif ($cart->Client->debt > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt }}</small></p>
+                                                @if ($cart->Client->debtMonth == 0)
+                                                    <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
+                                                @elseif($cart->Client->debtMonth > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
+                                                @else
+                                                    <p class="m-0"><small class="text-success">Entregó este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
+                                                @endif
+                                            @else
+                                                    <p class="m-0"><small class="text-success">Saldo a favor: ${{ $cart->Client->debt * -1 }}</small></p>
+                                                @if ($cart->Client->debtMonth == 0)
+                                                    <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
+                                                @elseif($cart->Client->debtMonth > 0)
+                                                    <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
+                                                @else
+                                                    <p class="m-0"><small class="text-success">Entregó este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
+                                                @endif
+                                            @endif
+
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                             @if ($cart->state && auth()->user()->rol_id == '1')
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-calendar-check"></i> {{ $cart->updated_at->format('d-m-Y H:i') }}&nbsp;hs. </small></p>
@@ -606,16 +617,16 @@
                                                     </div>
                                                     @endif
                                                 </div>
-                                                <div class="d-flex flex-row justify-content-end">
+                                                <div class="d-flex flex-md-row flex-column justify-content-end">
                                                     @if (auth()->user()->rol_id == 2)
-                                                        <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-sm btn-info btn-rounded px-3">Devuelve</button>
+                                                        <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-sm btn-info btn-rounded px-3 mb-2 mb-md-0 ml-auto ml-md-0">Devuelve</button>
                                                     @endif
-                                                    <button type="button" onclick="editCart({{ $cart }})" class="btn btn-sm btn-info btn-rounded px-3">Editar Bajada</button>
+                                                    <button type="button" onclick="editCart({{ $cart }})" class="btn btn-sm btn-info btn-rounded px-3 ml-auto ml-md-2">Editar Bajada</button>
                                                 </div>
                                                 <hr>
                                                 <div class="d-flex flex-row justify-content-start">
-                                                    <p class="m-0">Total del pedido: $
-                                                        {{ $cart->ProductsCart->sum(function($product_cart) {
+                                                    <p class="m-0">Total del pedido:
+                                                        ${{ $cart->ProductsCart->sum(function($product_cart) {
                                                         return $product_cart->setted_price * $product_cart->quantity;
                                                         }) + ($cart->AbonoClient ? $cart->AbonoClient->setted_price : 0) }}
                                                     </p>
@@ -639,35 +650,22 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                            @elseif ($cart->state === 1)
-                                                {{-- <div class="row">
-                                                    <div class="col-lg-12">
-                                                        <div class="table-responsive">
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Método de pago</th>
-                                                                        <th>Cantidad</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($cart->CartPaymentMethod as $pm)
-                                                                        <tr>
-                                                                            <td>{{ $pm->PaymentMethod->method}}</td>
-                                                                            <td>${{ $pm->amount }}</td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                        <div class="d-flex flex-row justify-content-end">
-                                                            <p class="m-0">Total abonado: ${{ $cart->CartPaymentMethod->sum(function($pm) {
-                                                                return $pm->amount;
-                                                            }) }}</p>
-                                                        </div>
-                                                    </div>
-                                                </div> --}}
                                             @endif
+
+                                            {{-- Resetear estado del carrito (no confirmado) --}}
+                                            @if ($cart->is_static === false && $cart->state != 1 && $cart->state != 0)
+                                                <hr>
+                                                <div class="d-flex flex-row justify-content-end">
+                                                    {{-- Reset cart state --}}
+                                                    <form id="formResetCartState_{{ $cart->id }}" action="{{ url('/cart/changeState') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="id" value="{{ $cart->id }}">
+                                                        <input type="hidden" name="state" value="0">
+                                                        <button name="btnResetCartState" value="{{ $cart->id }}" type="button" class="btn btn-sm btn-danger btn-rounded px-3">Cancelar estado</button>
+                                                    </form>
+                                                </div>
+                                            @endif
+
                                             {{-- 1 = admin --}}
                                             @if (auth()->user()->rol_id == '1' && $cart->is_static === false)
                                                 <hr>
@@ -930,9 +928,7 @@
                         });
                     },
                     error: function(errorThrown) {
-                        console.log(errorThrown);
-                        console.log(data);
-                       // SwalError(errorThrown.responseJSON.message);
+                       SwalError(errorThrown.responseJSON.message);
                     }
                 });
             })
@@ -1221,6 +1217,47 @@
                 }
             })
         }
+
+        $("button[name='btnResetCartState']").on("click", function() {
+            let id = $(this).val();
+            Swal.fire({
+                title: "Esta acción no se puede revertir",
+                text: '¿Seguro deseas resetear el estado del reparto?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                }
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: $("#formResetCartState_" + id).attr('action'), // Utiliza la ruta del formulario
+                        method: $("#formResetCartState_" + id).attr('method'), // Utiliza el método del formulario
+                        data: $("#formResetCartState_" + id).serialize(), // Utiliza los datos del formulario
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                confirmButtonColor: '#1e88e5',
+                                allowOutsideClick: false,
+                            })
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload();
+                                }
+                            });
+                        },
+                        error: function(errorThrown) {
+                            SwalError(errorThrown.responseJSON.message);
+                        }
+                    });
+                }
+            })
+        });
     </script>
 
     {{-- Añadir cantidad de productos cargados --}}
@@ -1349,7 +1386,6 @@
         function editCart(cart) {
             $("#form-edit-bajada input[name='cart_id']").val(cart.id);
             calculateTotal();
-            console.log(cart);
             $("#modalEditCart").modal("show");
             let content = '';
             cart.products_cart.forEach(p => {
@@ -1370,13 +1406,46 @@
                 $(".quantityedit-input").on("input", updateTotal);
             });
 
-            if (cart.cart_payment_method[0].amount) {
-                $("#cash_input_edit_cart").val(cart.cart_payment_method[0].amount);
+            if (cart.cart_payment_method && cart.cart_payment_method.length > 0) {
+                $("#cash_input_edit_cart").val(cart.cart_payment_method[0].amount || '0');
             } else {
                 $("#cash_input_edit_cart").val('0');
             }
 
+
             $("#tableEditCart").html(content);
+
+            $.ajax({
+                url: "{{ url('/abono/getlog') }}",
+                type: "GET",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    cart_id: cart.id,
+                },
+
+                success: function(response) {
+                    if (response.data !== null) {
+                        let cont = "";
+                        cont += '<input type="hidden" id="abono_log_id_edit" value="'+ response.data.id +'">';
+                        cont += '<input type="hidden" id="abono_log_quantity_available_edit" value="'+ response.data.available +'">';
+                        cont += '<div class="table-responsive"><table class="table"><thead><tr>';
+                        cont += '<th>Abono</th>';
+                        cont += '<th>Disponia</th>';
+                        cont += '<th>Bajo</th></tr>';
+                        cont += '</thead><tr>';
+                        cont += '<td>' + response.data.name + ' $' + response.data.abonoclient.setted_price + '</td>';
+                        cont += '<td>' + response.data.available + '</td>';
+                        cont += '<td><input class="form-control" type="number" min="0" max="' + response.data.available + '" id="abono_log_quantity_new_edit" value="' + response.data.quantity + '"></td>';
+                        cont += '</tr>';
+                        cont += '</tbody></table><hr></div>';
+
+                        $("#colAbonoEdit").html(cont);
+                    }
+                },
+            })
+
         }
 
         $("#btnEditCart").on("click", function() {
@@ -1392,6 +1461,19 @@
                 });
             });
 
+            let abono_log_id_edit = $("#modalEditCart #abono_log_id_edit").val();
+            let abono_log_quantity_available_edit = $("#abono_log_quantity_available_edit").val();
+            let abono_log_quantity_new_edit = $("#abono_log_quantity_new_edit").val();
+
+            if (abono_log_quantity_new_edit > abono_log_quantity_available_edit) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No puedes bajar más de lo que disponía',
+                    confirmButtonColor: '#1e88e5',
+                });
+                return;
+            }
+
             $.ajax({
                 url: "{{ url('/cart/edit') }}",
                 type: "POST",
@@ -1402,6 +1484,9 @@
                     cart_id: cart_id,
                     cash: cash,
                     products_quantity: JSON.stringify(products),
+                    abono_log_id_edit: abono_log_id_edit ? abono_log_id_edit : null,
+                    abono_log_quantity_available_edit: abono_log_quantity_available_edit ? abono_log_quantity_available_edit : null,
+                    abono_log_quantity_new_edit: abono_log_quantity_new_edit ? abono_log_quantity_new_edit : null,
                 },
                 success: function(response) {
                     Swal.fire({
@@ -1409,12 +1494,8 @@
                         title: response.message,
                         confirmButtonColor: '#1e88e5',
                         allowOutsideClick: false,
-                    })
-                    .then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload();
-                        }
                     });
+                    $('#btnCloseModalEdit').click();
                 },
                 error: function(errorThrown) {
                     Swal.fire({
