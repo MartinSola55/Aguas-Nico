@@ -947,6 +947,10 @@
                 SwalError(errorThrown.responseJSON.message);
             });
         });
+
+        $("#modalProductsReturnedByClient").on("hidden.bs.modal", function() {
+            location.reload();
+        });
     </script>
 
     {{-- Habilitar los medios de pago --}}
