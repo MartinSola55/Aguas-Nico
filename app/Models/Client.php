@@ -51,4 +51,9 @@ class Client extends Model
     {
         return DebtPaymentLog::where('client_id', $this->id)->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->sum('debt');
     }
+
+    public function getLastCart($route_id)
+    {
+        return Cart::where('client_id', $this->id)->where('route_id', '!=', $route_id)->where('is_static', false)->orderBy('created_at', 'desc')->first();
+    }
 }
