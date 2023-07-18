@@ -543,7 +543,7 @@
                                             @endif
                                             
                                             {{-- Datos del último reparto --}}
-                                            @if ($cart->Client->lastCart != null)
+                                            @if ($cart->Client->lastCart != null && $cart->Client->lastCart->created_at != null)
                                             <p class="m-0">Último reparto: {{ $cart->Client->lastCart->created_at->format('d/m/Y') }} - {{ $states[$cart->Client->lastCart->state] }}</p>
                                             @endif
 
