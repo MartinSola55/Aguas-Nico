@@ -30,30 +30,28 @@
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h2 class="card-title">Listado de repartidores</h4>
-                            <div class="table-responsive m-t-10">
-                                <table id="dealersTable" class="table table-bordered table-striped">
-                                    <thead>
+                        <h2 class="card-title">Listado de repartidores</h2>
+                        <div class="table-responsive m-t-10">
+                            <table id="dealersTable" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Camión</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($users as $user)
                                         <tr>
-                                            <th>Nombre</th>
-                                            <th>Camión</th>
-                                            <th>Email</th>
+                                            <td>
+                                                <a href="{{ route('dealer.details', ['id' => $user->id]) }}">{{ $user->name }}</a>
+                                            </td>
+                                            <td>{{ $user->truck_number }}</td>
+                                            <td>{{ $user->email }}</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($users as $user)
-                                            <tr>
-                                                <td>
-                                                    <a href="{{ route('dealer.details', ['id' => $user->id]) }}">{{ $user->name }}</a>
-                                                </td>
-                                                <td>{{ $user->truck_number }}</td>
-                                                <td>{{ $user->email }}</td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

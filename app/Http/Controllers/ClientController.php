@@ -32,14 +32,6 @@ class ClientController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(ClientCreateRequest $request)
@@ -85,29 +77,17 @@ class ClientController extends Controller
         $cartIds = Cart::where('client_id', $id)
             ->where('is_static', false)
             ->where('state', '!=', 0)
+            ->orderBy('created_at', 'desc')
+            ->limit(25)
             ->pluck('id');
 
-        $products = ProductsCart::whereIn('cart_id', $cartIds)->get();
-
-        $auxGraph = [];
-        foreach ($products as $product) {
-            if (isset($auxGraph[$product->product_id])) {
-                $auxGraph[$product->product_id]['data'] += $product->quantity;
-            } else {
-                $auxGraph[$product->product_id]['label'] = $product->Product->name;
-                $auxGraph[$product->product_id]['data'] = $product->quantity;
-                $auxGraph[$product->product_id]['color'] = '#' . substr(md5(Str::slug($product->Product->name)), 0, 6);
-            }
-        }
-
-        // Reindex array
-        $graph = array_values($auxGraph);
+        $products = ProductsCart::whereIn('cart_id', $cartIds)->get()->load('Product');
 
         $client_products = $this->getProducts($client);
 
         $abonos = Abono::all();
 
-        return view('clients.details', compact('client', 'graph', 'client_products', 'abonos'));
+        return view('clients.details', compact('client', 'client_products', 'abonos', 'products'));
     }
 
     public function searchSales(SearchSalesRequest $request){
@@ -142,20 +122,6 @@ class ClientController extends Controller
                 'error' => $e->getMessage()
             ], 400);
         }
-    }
-
-    public function show_invoice($id)
-    {
-        $client = Client::find($id);
-        return view('clients.invoice', compact('client'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Client $client)
-    {
-        //
     }
 
     /**

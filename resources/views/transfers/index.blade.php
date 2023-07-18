@@ -83,7 +83,7 @@
 
         <!-- Modal transfer client -->
         <div id="modalTransferClient" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <form role="form" class="needs-validation" method="POST" action="{{ url('/transfer/create') }}" id="form-create" autocomplete="off" novalidate>
                     <div class="modal-content">
                         <div class="modal-header">
@@ -108,11 +108,13 @@
                                             <button id="btnSearchClients" type="button" class="btn btn-primary waves-effect waves-light pr-3">Buscar</button>
                                         </div>
 
-                                        <div id="ClientsTableContainer" class="table-responsive m-t-20">
+                                        <div id="ClientsTableContainer" class="m-t-20">
                                             <table id="ClientsTable" class="table table-bordered table-striped">
                                                 <thead>
                                                     <tr>
                                                         <th>Nombre</th>
+                                                        <th>Dirección</th>
+                                                        <th>Deuda</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -375,6 +377,10 @@
             background-color: #a1bef787;
         }
 
+        #ClientsTable_wrapper {
+            width: 100%;
+        }
+
     </style>
 
     {{-- Genéricos --}}
@@ -407,6 +413,8 @@
                 let content = `
                     <tr data-id='${client.id}' style='cursor: pointer'>
                         <td>${client.name}</td>
+                        <td>${client.address}</td>
+                        <td>$${client.debt}</td>
                     </tr>`;
                 $('#ClientsTable').DataTable().row.add($(content)).draw();
             });
