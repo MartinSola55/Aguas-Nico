@@ -177,9 +177,6 @@
                                             <th>Dirección</th>
                                             <th>Teléfono</th>
                                             <th>Stock</th>
-                                            {{-- <th>Email</th>
-                                            <th>DNI</th>
-                                            <th>Factura</th> --}}
                                             <th>Deuda</th>
                                             <th>Observación</th>
                                             <th>Activo</th>
@@ -239,11 +236,6 @@
     @if (auth()->user()->rol_id == '1')
         <script>
             function fillTable(client) {
-                console.log(client.invoice);
-                // let invoice = `<i class="bi bi-x-lg" style="font-size: 1.3rem"></i>`;
-                // if (client.invoice == true) {
-                //     invoice = `<i class="bi bi-check2" style="font-size: 1.5rem"></i>`;
-                // }
                 if (client.observation == null) {
                     client.observation = "";
                 }
@@ -257,6 +249,7 @@
                     </td>
                     <td>` + client.adress + `</td>
                     <td>` + client.phone + `</td>
+                    <td></td>
                     <td>$` + client.debt + `</td>
                     <td>` + client.observation + `</td>
                     <td class="text-center"><i class="bi bi-check2" style="font-size: 1.5rem"></i></td>

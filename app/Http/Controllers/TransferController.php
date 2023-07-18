@@ -177,6 +177,8 @@ class TransferController extends Controller
             foreach ($clients as $client) {
                 $response[$i]['id'] = $client->id;
                 $response[$i]['name'] = $client->name;
+                $response[$i]['address'] = $client->adress;
+                $response[$i]['debt'] = $client->debt;
                 $i++;
             }
             return response()->json([
