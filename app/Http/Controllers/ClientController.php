@@ -295,9 +295,7 @@ class ClientController extends Controller
         try {
             $client_id = $request->input('client_id');
             $abono_id = $request->input('abono_id');
-            DB::beginTransaction();
-                Client::find($client_id)->update(['abono_id' => $abono_id]);
-            DB::commit();
+            Client::find($client_id)->update(['abono_id' => $abono_id]);
 
             return response()->json([
                 'success' => true,

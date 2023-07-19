@@ -186,6 +186,9 @@
                                 <a class="waves-effect waves-dark" href="{{ url('/transfer/index') }}" aria-expanded="false"><i class="bi bi-bank"></i><span class="hide-menu">Transferencias</span></a>
                             </li>
                             <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/abono/clientes') }}" aria-expanded="false"><i class="bi bi-clipboard"></i><span class="hide-menu">Abonos</span></a>
+                            </li>
+                            <li>
                                 <a class="waves-effect waves-dark" href="{{ url('/expense/index') }}" aria-expanded="false"><i class="bi bi-cash"></i><span class="hide-menu">Gastos</span></a>
                             </li>
 
