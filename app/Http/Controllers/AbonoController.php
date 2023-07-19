@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Abono;
+use App\Models\AbonoClient;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AbonoController extends Controller
 {
@@ -11,54 +15,50 @@ class AbonoController extends Controller
      */
     public function index()
     {
-        //
+        $abonos = Abono::all();
+        return view('abonos.index', compact('abonos'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function abonoClients()
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        $abonos = AbonoClient::whereDate('created_at', '>=', date('Y-m-01'))->get()->load('Client');
+        return view('abonos.clientes', compact('abonos'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
+        $abono = AbonoClient::find($request->input('abono_id'))->load('Client', 'Abono');
+        try {
+            if ($request->input('available') > $abono->Abono->quantity || $request->input('available') < 0) {
+                return response()->json([
+                    'success' => false,
+                    'title' => 'Error al editar el abono',
+                    'message' => 'El abono no puede ser mayor al disponible',
+                ], 400);
+            }
+            $abono->update([
+                'available' => $request->input('available'),
+                'updated_at' => Carbon::now(),
+            ]);
 
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            return response()->json([
+                'success' => true,
+                'message' => 'Abono editado correctamente',
+                'data' => $abono
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al editar el abono',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
     }
 }

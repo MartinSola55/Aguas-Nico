@@ -22,4 +22,9 @@ class AbonoClient extends Model
     {
         return $this->belongsTo(Abono::class, 'abono_id');
     }
+    
+    public function Client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
 }
