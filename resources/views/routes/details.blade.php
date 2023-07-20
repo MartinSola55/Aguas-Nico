@@ -63,7 +63,7 @@
                                         <div class="d-flex flex-column">
                                             <div class="d-flex flex-row justify-content-between mb-3">
                                                 <div class="col-3 d-flex flex-row align-items-center">
-                                                    <div class="demo-switch-title">Entrega</div>
+                                                    <div class="demo-switch-title">Entrega:</div>
                                                 </div>
                                                 <div id="cash_input_container" class="col-9 input-group">
                                                     <div class="input-group-prepend">
@@ -136,7 +136,7 @@
                                         <div class="d-flex flex-column">
                                             <div class="d-flex flex-row justify-content-between mb-3">
                                                 <div class="col-3 d-flex flex-row align-items-center">
-                                                    <div class="demo-switch-title">Entrega</div>
+                                                    <div class="demo-switch-title">Entrega:</div>
                                                 </div>
                                                 <div id="cash_input_container" class="col-9 input-group">
                                                     <div class="input-group-prepend">
@@ -625,10 +625,11 @@
                                                 </div>
                                                 <hr>
                                                 <div class="d-flex flex-row justify-content-start">
-                                                    <p class="m-0">Total del pedido:
-                                                        ${{ $cart->ProductsCart->sum(function($product_cart) {
-                                                        return $product_cart->setted_price * $product_cart->quantity;
-                                                        }) + ($cart->AbonoClient ? $cart->AbonoClient->setted_price : 0) }}
+                                                    <p class="m-0">Entrega en efectivo:
+                                                        ${{ $cart->CartPaymentMethod->sum(function($pm) {
+                                                            if ($pm->PaymentMethod->method == 'Efectivo') return $pm->amount;
+                                                            return 0;
+                                                        }) }}
                                                     </p>
                                                 </div>
                                             @endif
