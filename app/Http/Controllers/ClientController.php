@@ -8,6 +8,7 @@ use App\Http\Requests\Client\ClientUpdateInvoiceRequest;
 use App\Http\Requests\Client\ClientUpdateRequest;
 use App\Http\Requests\Client\SearchSalesRequest;
 use App\Models\Abono;
+use App\Models\AbonoLog;
 use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Product;
@@ -74,20 +75,20 @@ class ClientController extends Controller
     public function show($id)
     {
         $client = Client::find($id);
-        $cartIds = Cart::where('client_id', $id)
+        
+        $carts = Cart::where('client_id', $id)
             ->where('is_static', false)
             ->where('state', '!=', 0)
             ->orderBy('created_at', 'desc')
-            ->limit(25)
-            ->pluck('id');
-
-        $products = ProductsCart::whereIn('cart_id', $cartIds)->get()->load('Product');
-
+            ->limit(10)
+            ->with('ProductsCart', 'ProductsCart.Product', 'AbonoClient', 'AbonoClient.Abono', 'CartPaymentMethod', 'AbonoLog', 'AbonoLog.AbonoClient', 'AbonoLog.AbonoClient.Abono')
+            ->get();
+        
         $client_products = $this->getProducts($client);
 
         $abonos = Abono::all();
 
-        return view('clients.details', compact('client', 'client_products', 'abonos', 'products'));
+        return view('clients.details', compact('client', 'client_products', 'abonos', 'carts'));
     }
 
     public function searchSales(SearchSalesRequest $request){

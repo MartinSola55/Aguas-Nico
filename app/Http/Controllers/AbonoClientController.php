@@ -45,13 +45,14 @@ class AbonoClientController extends Controller
         try {
             $abonoClient = AbonoClient::find($request->input('abono_id'));
             $productModel = Product::find($abonoClient->abono->product_id);
+            $cart_id = $request->input('cart_id');
             $bottleType = $productModel->bottle_type_id;
 
             DB::beginTransaction();
             if ($bottleType !== null) {
                 StockLog::create([
                     'client_id' => $abonoClient->client_id,
-                    'cart_id' => $abonoClient->cart_id,
+                    'cart_id' => $cart_id,
                     'bottle_types_id' => $bottleType,
                     'quantity' => $request->input('discount'),
                     'l_r' => 0,          //si es 0=l, si es 1=r
@@ -65,11 +66,11 @@ class AbonoClientController extends Controller
             // Crear log de abono
             $abonoLog = AbonoLog::firstOrCreate(
                 [
-                    'cart_id' => $abonoClient->cart_id,
+                    'cart_id' => $cart_id,
                     'abono_clients_id' => $abonoClient->id
                 ],
                 [
-                    'cart_id' => $abonoClient->cart_id,
+                    'cart_id' => $cart_id,
                     'abono_clients_id' => $abonoClient->id,
                     'quantity' => 0,
                     'created_at' => Carbon::now(),
