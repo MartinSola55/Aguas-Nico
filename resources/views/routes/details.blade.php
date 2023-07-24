@@ -1401,6 +1401,7 @@
         }
         // METODO EDITAR CARRITO
         function editCart(cart) {
+            $("#colAbonoEdit").html("");
             $("#form-edit-bajada input[name='cart_id']").val(cart.id);
             calculateTotal();
             $("#modalEditCart").modal("show");
