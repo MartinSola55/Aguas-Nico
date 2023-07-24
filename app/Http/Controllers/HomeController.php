@@ -7,6 +7,7 @@ use App\Models\Expense;
 use App\Models\ProductsCart;
 use App\Models\Route;
 use App\Http\Controllers\RouteController;
+use App\Models\AbonoClient;
 use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -120,6 +121,7 @@ class HomeController extends Controller
                       ->where('is_static', false);
             })->get();
             $products = ProductsCart::whereBetween('updated_at', [$dateFrom, $dateTo])->with('Cart', 'Product')->orderBy('updated_at', 'asc')->get();
+            $abonos = AbonoClient::whereBetween('created_at', [$dateFrom, $dateTo])->with('Client', 'Abono')->orderBy('created_at', 'asc')->get();
 
             $data = [
                 'clients' => []
@@ -131,12 +133,23 @@ class HomeController extends Controller
                 }
                 $clientData = [
                     'name' => $client->name,
-                    'products' => []
+                    'products' => [],
+                    'abonos' => []
                 ];
 
                 $clientProducts = $products->where('cart.client_id', $client->id);
+                $clientAbonos = $abonos->where('client_id', $client->id);
 
+                foreach ($clientAbonos as $abono) {
+                    $abonoData = [
+                        'id' => $abono->abono_id,
+                        'name' => $abono->Abono->name,
+                        'price' => $abono->Abono->price,
+                        'date' => $abono->created_at->format('d/m/Y')
+                    ];
 
+                    $clientData['abonos'][] = $abonoData;
+                }
 
                 foreach ($clientProducts as $product) {
                     $productData = [
