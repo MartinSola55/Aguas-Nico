@@ -498,13 +498,17 @@
                     <div class="card-header d-flex flex-row justify-content-between">
                         <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h3>
                         @if (auth()->user()->rol_id == '1')
-                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar reparto</button>
+                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar planilla</button>
                         @endif
                     </div>
                     <div class="card-body">
-                        @if (($route->is_static === false && auth()->user()->rol_id == '2') || $route->is_static === true)
+                        @if (auth()->user()->rol_id == '2')
                             <div class="d-flex flex-row justify-content-end">
-                                <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Fuera de reparto</a>
+                                <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar fuera de reparto</a>
+                            </div>
+                        @else
+                            <div class="d-flex flex-row justify-content-end">
+                                <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Editar planilla</a>
                             </div>
                         @endif
                         @if ($route->is_static === false && auth()->user()->rol_id == '1')
@@ -541,7 +545,7 @@
                                             @else
                                                 <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                             @endif
-                                            
+
                                             {{-- Datos del último reparto --}}
                                             @if ($cart->Client->lastCart != null && $cart->Client->lastCart->created_at != null)
                                             <p class="m-0">Último reparto: {{ $cart->Client->lastCart->created_at->format('d/m/Y') }} - {{ $states[$cart->Client->lastCart->state] }}</p>
