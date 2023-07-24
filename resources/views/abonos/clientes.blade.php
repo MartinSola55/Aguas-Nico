@@ -16,7 +16,7 @@
                 <h3 class="text-themecolor m-b-0 m-t-0">Abonos</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{{-- {{ url('/abono/index') }}--}}">Abonos</a></li> 
+                    <li class="breadcrumb-item"><a href="{{ url('/abono/index') }}">Abonos</a></li> 
                     <li class="breadcrumb-item active">Clientes</li>
                 </ol>
             </div>
