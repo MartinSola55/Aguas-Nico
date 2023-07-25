@@ -277,7 +277,7 @@ class RouteController extends Controller
     public function getDealerRoutes(int $day, int $id)
     {
         $route = Route::where('user_id', $id)
-            ->limit(10)
+            ->limit(1)
             ->orderBy('start_date', 'desc')
             ->where('is_static', false)
             ->where('day_of_week', $day)
