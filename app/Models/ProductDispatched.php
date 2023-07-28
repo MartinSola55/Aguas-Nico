@@ -12,6 +12,7 @@ class ProductDispatched extends Model
     protected $fillable = [
         'product_id',
         'route_id',
+        'bottle_types_id',
         'quantity',
     ];
 

@@ -187,7 +187,7 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
-                                        <table class="table" id="modalProductsTable">
+                                        <table class="table">
                                             <thead>
                                                 <tr>
                                                     <th>Producto</th>
@@ -195,21 +195,7 @@
                                                     <th>Agregar</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                                @foreach ($productsDispatched as $product)
-                                                    <tr data-id="{{ $product->product_id }}">
-                                                        <td>{{ $product->Product->name }}</td>
-                                                        <td><input type="number" name="quantity_dispatched" class="form-control" min="0" max="10000" value="{{ $product->quantity }}"></td>
-                                                        <td>
-                                                            <div class="input-group">
-                                                                <input type="number" class="form-control additional-quantity" min="0" max="10000" value="0">
-                                                                <div class="input-group-append">
-                                                                    <button type="button" class="btn btn-primary btn-add-quantity"><i class="bi bi-plus-lg"></i></button>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
+                                            <tbody id="modalProductsDispatchTable">
                                             </tbody>
                                         </table>
                                     </div>
@@ -340,7 +326,7 @@
                 <div class="col-md-7 col-4 align-self-center">
                     <div class="d-flex m-t-10 justify-content-end">
                         <div class="d-flex m-r-20 m-l-10">
-                            <button id="btnAddProducts" class="btn btn-info" data-toggle="modal" data-target="#modalProducts">Productos cargados</button>
+                            <button type="button" onclick="getProducts4dispatch({{ $route->id }})" class="btn btn-info" data-toggle="modal" data-target="#modalProducts">Productos cargados</button>
                         </div>
                     </div>
                 </div>
@@ -375,6 +361,7 @@
                                         <tr>
                                             <th style="width:10%;"></th>
                                             <th>Producto/Envase</th>
+                                            <th>Cargados</th>
                                             <th>Vendidos</th>
                                             <th>Devueltos</th>
                                         </tr>
@@ -385,6 +372,9 @@
                                                 <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
                                                 <td>
                                                     <h6>{{ $item['name'] }}</h6>
+                                                </td>
+                                                <td>
+                                                    <h6>{{ $item['dispatch'] }}</h6>
                                                 </td>
                                                 <td>
                                                     <h5>{{ $item['sold'] }}</h5>
@@ -744,24 +734,27 @@
         });
 
         $("#btnUpdateProducts").on("click", function() {
-            // Productos
             let products = [];
             $('#modalProducts table tbody tr').each(function() {
-                let productId = $(this).data('id');
-                let quantity = $(this).find('input').val();
+                let dispatch_id = $(this).data('id');
+                let quantity = $(this).find('input[name="quantity_dispatched"]').val()
+                let product_id = $(this).data('product_id');
+                let bottle_types_id = $(this).data('bottle_types_id');
                 if (quantity !== "") {
                     products.push({
-                        product_id: productId,
-                        quantity: quantity
+                        dispatch_id: dispatch_id,
+                        product_id: product_id,
+                        bottle_types_id: bottle_types_id,
+                        quantity: quantity,
                     });
                 }
             });
             $("#formRouteProducts input[name='products_quantity']").val(JSON.stringify(products));
 
             $.ajax({
-                url: $("#formRouteProducts").attr('action'), // Utiliza la ruta del formulario
-                method: $("#formRouteProducts").attr('method'), // Utiliza el método del formulario
-                data: $("#formRouteProducts").serialize(), // Utiliza los datos del formulario
+                url: $("#formRouteProducts").attr('action'),
+                method: $("#formRouteProducts").attr('method'),
+                data: $("#formRouteProducts").serialize(),
                 success: function(response) {
                     $("#btnCloseModalProducts").click();
                     Swal.fire({
@@ -772,17 +765,45 @@
                         confirmButtonText: 'OK',
                         allowOutsideClick: false,
                     })
-                    .then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();
-                        }
-                    })
+                    // .then((result) => {
+                    //     if (result.isConfirmed) {
+                    //         window.location.reload();
+                    //     }
+                    // })
                 },
                 error: function(errorThrown) {
                     SwalError(errorThrown.responseJSON.message);
                 }
             });
         });
+
+        function getProducts4dispatch(route) {
+            $.ajax({
+                url: "/route/getProductsDispatched/" + route,
+                type: "GET",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    console.log(response);
+                    let cont = "";
+                    response.data.forEach(function(product) {
+                        cont += '<tr data-id="' + product.id + '" data-product_id="'+ product.product_id +'" data-bottle_types_id="'+ product.bottle_type_id +'">';
+                        cont += '<td>'+ product.name +'</td>';
+                        cont += '<td><input type="number" name="quantity_dispatched" class="form-control" min="0" max="10000" value="'+ (product.quantity ? product.quantity : 0) +'"></td>';
+                        cont += '<td><div class="input-group"><input type="number" class="form-control additional-quantity" min="0" max="10000" value="0"><div class="input-group-append">';
+                        cont += '<button type="button" class="btn btn-primary btn-add-quantity"><i class="bi bi-plus-lg"></i></button>';
+                        cont += '</div></div></td>';
+                        cont += '</tr>';
+                    });
+
+                    $("#modalProductsDispatchTable").html(cont);
+                },
+                error: function(errorThrown) {
+                    SwalError(errorThrown.responseJSON.message);
+                }
+            });
+        }
     </script>
 
     {{-- Productos que devuelve un cliente --}}
@@ -1575,4 +1596,5 @@
             });
         }
     </script>
+
 @endsection
