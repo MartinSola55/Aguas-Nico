@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Abono extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'name',
+        'price',
+        'updated_at',
+    ];
 }

@@ -89,6 +89,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/abono/index', [App\Http\Controllers\AbonoController::class, 'index']);
     Route::get('/abono/clientes', [App\Http\Controllers\AbonoController::class, 'abonoClients'])->name('abono.clientes');
     Route::post('/abono/edit', [App\Http\Controllers\AbonoController::class, 'update']);
+    Route::post('/abono/updatePrice', [App\Http\Controllers\AbonoController::class, 'updatePrice']);
 });
 
 // EMPLOYEE

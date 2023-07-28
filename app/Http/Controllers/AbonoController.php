@@ -61,4 +61,35 @@ class AbonoController extends Controller
             ], 400);
         }
     }
+
+    public function updatePrice(Request $request)
+    {
+        $abono = Abono::find($request->input('abono_id'));
+        try {
+            if ($abono == null) {
+                return response()->json([
+                    'success' => false,
+                    'title' => 'Error al editar el abono',
+                    'message' => 'Intente nuevamente o comuníquese para soporte'
+                ], 400);
+            }
+            $abono->update([
+                'price' => $request->input('price'),
+                'updated_at' => Carbon::now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Abono editado correctamente',
+                'data' => $abono
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al editar el abono',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
 }

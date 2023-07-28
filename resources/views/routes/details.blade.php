@@ -88,7 +88,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                            <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Pagar</button>
+                            <button type="button" id="btnPayCart" class="btn btn-success waves-effect waves-light">Confirmar bajada</button>
                         </div>
                     </div>
                 </form>
@@ -1385,6 +1385,7 @@
             return new Promise((resolve, reject) => {
                 let abono_id = $("input[name='abono_id']").val();
                 let discount = $("#dump_truck").val();
+                let cart_id = $("#form-confirm input[name='cart_id']").val();
                 resolve();
                 if (abono_id !== undefined && discount !== undefined) {
                     $.ajax({
@@ -1396,6 +1397,7 @@
                         data: {
                             abono_id: abono_id,
                             discount: discount,
+                            cart_id: cart_id,
                         },
                         success: function(response) {
                             resolve();

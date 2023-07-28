@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Data table -->
+    <link href="{{ asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
+
+    <!-- This is data table -->
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
+    
     <script src="{{ asset('plugins/flot/excanvas.js') }}"></script>
     <script src="{{ asset('plugins/flot/jquery.flot.js') }}"></script>
     <script src="{{ asset('plugins/flot/jquery.flot.pie.js') }}"></script>
@@ -30,25 +36,37 @@
         <div class="row">
             <div class="col">
                 <div class="row">
-                    <div class="col-xl-6">
+                    <div class="col-xl-12">
                         <div class="card shadow">
                             <div class="card-body">
                                 <h4 id="proucts_ordered" class="card-title">Productos pedidos</h4>
                                 <div class="table-responsive m-t-10">
-                                    <table class="table table-bordered table-striped">
+                                    <table class="table table-bordered table-striped" id="table_products_sold">
                                         <thead>
                                             <tr>
-                                                <th>Producto</th>
-                                                <th>Cantidad</th>
-                                                <th>Fecha</th>
+                                                <th>Fecha bajada</th>
+                                                <th>Productos/Abono</th>
+                                                <th>Pago</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($products as $product)
+                                            @foreach ($carts as $cart)
                                                 <tr>
-                                                    <td>{{ $product->Product->name }}</td>
-                                                    <td>{{ $product->quantity }}</td>
-                                                    <td>{{ $product->created_at->format('d/m/Y') }}</td>
+                                                    <td>{{ $cart->created_at->format('d/m/Y') }}</td>
+                                                    <td>
+                                                        @foreach ($cart->ProductsCart as $pc)
+                                                            <p class="m-0">{{ $pc->Product->name }} x {{ $pc->quantity }} - ${{ $pc->quantity * $pc->setted_price }}</p><br>
+                                                        @endforeach
+                                                        @if ($cart->AbonoClient)
+                                                            <p class="m-0">{{ $cart->AbonoClient->Abono->name }} - ${{ $cart->AbonoClient->setted_price }}</p><br>
+                                                        @endif
+                                                        @if ($cart->AbonoLog && $cart->AbonoLog->quantity > 0)
+                                                            <p class="m-0">{{ $cart->AbonoLog->AbonoClient->Abono->name }} - Bajó: {{ $cart->AbonoLog->quantity }}</p><br>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        ${{ $cart->CartPaymentMethod->sum('amount') }}
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -56,125 +74,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xl-6">
-                        <div class="row">
-                            <div class="col-12 col-sm-6">
-                                <div class="ribbon-wrapper card shadow">
-                                    <div class="ribbon ribbon-default">Facturación</div>
-                                    <a href="{{ route('client.invoice', ['id' => $client->id]) }}"
-                                        class="btn btn-info btn-rounded m-t-10 float-right {{ $client->invoice === false ? 'disabled' : '' }}">{{ $client->invoice === false ? 'No habilitada' : 'Ir' }}</a>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="ribbon-wrapper card shadow">
-                                    @if ($client->debt === 0)
-                                        <div class="ribbon ribbon-default">Deuda</div>
-                                        <p class="ribbon-content" id="clientDebtText">Sin deuda</p>
-                                    @elseif ($client->debt > 0)
-                                        <div class="ribbon ribbon-default">Deuda</div>
-                                        <p class="ribbon-content" id="clientDebtText">${{ $client->debt }}</p>
-                                    @else
-                                        <div class="ribbon ribbon-default">Saldo a favor</div>
-                                        <p class="ribbon-content" id="clientDebtText">${{ $client->debt * -1 }}</p>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Invoice data --}}
-                        @if ($client->invoice == 'checked')
-                            <div class="row">
-                                <div class="col-xl-12">
-                                    <div class="card shadow" style="background-color: #ebebeb73">
-                                        <div class="card-header bg-white border-0">
-                                            <div class="row align-items-center">
-                                                <div class="col-8">
-                                                    <h3 class="mb-0">Datos de facturación</h3>
-                                                </div>
-                                                <div class="col-4 text-right">
-                                                    <button id="btnEditInvoice" class="btn btn-sm btn-outline-info btn-rounded px-3">Editar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <form role="form" class="needs-validation" method="POST" action="{{ url('/client/updateInvoiceData') }}" id="form-invoice" autocomplete="off" novalidate>
-                                                <div class="pl-lg-4">
-                                                    <input type="hidden" required value="{{ $client->id }}" name="id">
-                                                    @csrf
-                                                    <div class="row">
-                                                        <div class="col-lg-5">
-                                                            <div class="form-group focused">
-                                                                <label class="form-control-label" for="invoiceType">Tipo de factura</label>
-                                                                <select disabled required id="invoiceType" name="invoice_type" class="form-control form-select">
-                                                                    <option disabled value="" {{ $client->invoice_type === null ? 'selected' : '' }}>Seleccione un tipo</option>
-                                                                    <option value="A" {{ $client->invoice_type === 'A' ? 'selected' : '' }}>A</option>
-                                                                    <option value="B" {{ $client->invoice_type === 'B' ? 'selected' : '' }}>B</option>
-                                                                </select>
-                                                                <div class="invalid-feedback">
-                                                                    Por favor, ingrese un tipo de factura
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-7">
-                                                            <div class="form-group focused">
-                                                                <label class="form-control-label" for="taxCondition">Condición frente al IVA</label>
-                                                                <select disabled required id="taxCondition" name="tax_condition" class="form-control form-select">
-                                                                    <option disabled {{ $client->tax_condition === null ? 'selected' : '' }} value="">Seleccione una condición</option>
-                                                                    <option value="1" {{ $client->tax_condition == 1 ? 'selected' : '' }}>Responsable Inscripto</option>
-                                                                    <option value="2" {{ $client->tax_condition == 2 ? 'selected' : '' }}>Monotributista</option>
-                                                                    <option value="3" {{ $client->tax_condition == 3 ? 'selected' : '' }}>Excento</option>
-                                                                </select>
-                                                                <div class="invalid-feedback">
-                                                                    Por favor, ingrese una condición frente al IVA
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-lg-6">
-                                                            <div class="form-group">
-                                                                <label class="form-control-label" for="clientBusinessName">Razón Social</label>
-                                                                <input disabled required type="text" id="clientBusinessName" name="business_name" class="form-control form-control-alternative" value="{{ $client->business_name }}">
-                                                                <div class="invalid-feedback">
-                                                                    Por favor, ingrese una razón social
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-6">
-                                                            <div class="form-group">
-                                                                <label class="form-control-label" for="clientCUIT">CUIT</label>
-                                                                <input disabled required type="number" id="clientCUIT" name="cuit" class="form-control form-control-alternative" value="{{ $client->cuit }}">
-                                                                <div class="invalid-feedback">
-                                                                    Por favor, ingrese un CUIT
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-lg-12">
-                                                            <div class="form-group">
-                                                                <label class="form-control-label" for="clientTaxAdress">Dirección de facturación</label>
-                                                                <input disabled required type="text" id="clientTaxAdress" name="tax_address" class="form-control form-control-alternative" value="{{ $client->tax_address }}">
-                                                                <div class="invalid-feedback">
-                                                                    Por favor, ingrese una dirección de facturación
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row" id="divSaveInvoiceData" style="display: none">
-                                                        <hr class="my-4">
-                                                        <div class="d-flex flex-end">
-                                                            <button type="submit" class="btn btn-sm btn-success btn-rounded px-3 mr-3">Guardar</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
                     </div>
                 </div>
                 <div class="row">
@@ -272,6 +171,125 @@
                 </div>
             </div>
             <div class="col-xl-4">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <div class="ribbon-wrapper card shadow">
+                                <div class="ribbon ribbon-default">Facturación</div>
+                                <a href="{{ route('client.invoice', ['id' => $client->id]) }}"
+                                    class="btn btn-info btn-rounded m-t-10 float-right {{ $client->invoice === false ? 'disabled' : '' }}">{{ $client->invoice === false ? 'No habilitada' : 'Ir' }}</a>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="ribbon-wrapper card shadow">
+                                @if ($client->debt === 0)
+                                    <div class="ribbon ribbon-default">Deuda</div>
+                                    <p class="ribbon-content" id="clientDebtText">Sin deuda</p>
+                                @elseif ($client->debt > 0)
+                                    <div class="ribbon ribbon-default">Deuda</div>
+                                    <p class="ribbon-content" id="clientDebtText">${{ $client->debt }}</p>
+                                @else
+                                    <div class="ribbon ribbon-default">Saldo a favor</div>
+                                    <p class="ribbon-content" id="clientDebtText">${{ $client->debt * -1 }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Invoice data --}}
+                    @if ($client->invoice == 'checked')
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <div class="card shadow" style="background-color: #ebebeb73">
+                                    <div class="card-header bg-white border-0">
+                                        <div class="row align-items-center">
+                                            <div class="col-8">
+                                                <h3 class="mb-0">Datos de facturación</h3>
+                                            </div>
+                                            <div class="col-4 text-right">
+                                                <button id="btnEditInvoice" class="btn btn-sm btn-outline-info btn-rounded px-3">Editar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <form role="form" class="needs-validation" method="POST" action="{{ url('/client/updateInvoiceData') }}" id="form-invoice" autocomplete="off" novalidate>
+                                            <div class="pl-lg-4">
+                                                <input type="hidden" required value="{{ $client->id }}" name="id">
+                                                @csrf
+                                                <div class="row">
+                                                    <div class="col-lg-5">
+                                                        <div class="form-group focused">
+                                                            <label class="form-control-label" for="invoiceType">Tipo de factura</label>
+                                                            <select disabled required id="invoiceType" name="invoice_type" class="form-control form-select">
+                                                                <option disabled value="" {{ $client->invoice_type === null ? 'selected' : '' }}>Seleccione un tipo</option>
+                                                                <option value="A" {{ $client->invoice_type === 'A' ? 'selected' : '' }}>A</option>
+                                                                <option value="B" {{ $client->invoice_type === 'B' ? 'selected' : '' }}>B</option>
+                                                            </select>
+                                                            <div class="invalid-feedback">
+                                                                Por favor, ingrese un tipo de factura
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-7">
+                                                        <div class="form-group focused">
+                                                            <label class="form-control-label" for="taxCondition">Condición frente al IVA</label>
+                                                            <select disabled required id="taxCondition" name="tax_condition" class="form-control form-select">
+                                                                <option disabled {{ $client->tax_condition === null ? 'selected' : '' }} value="">Seleccione una condición</option>
+                                                                <option value="1" {{ $client->tax_condition == 1 ? 'selected' : '' }}>Responsable Inscripto</option>
+                                                                <option value="2" {{ $client->tax_condition == 2 ? 'selected' : '' }}>Monotributista</option>
+                                                                <option value="3" {{ $client->tax_condition == 3 ? 'selected' : '' }}>Excento</option>
+                                                            </select>
+                                                            <div class="invalid-feedback">
+                                                                Por favor, ingrese una condición frente al IVA
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="form-control-label" for="clientBusinessName">Razón Social</label>
+                                                            <input disabled required type="text" id="clientBusinessName" name="business_name" class="form-control form-control-alternative" value="{{ $client->business_name }}">
+                                                            <div class="invalid-feedback">
+                                                                Por favor, ingrese una razón social
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="form-control-label" for="clientCUIT">CUIT</label>
+                                                            <input disabled required type="number" id="clientCUIT" name="cuit" class="form-control form-control-alternative" value="{{ $client->cuit }}">
+                                                            <div class="invalid-feedback">
+                                                                Por favor, ingrese un CUIT
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <div class="form-group">
+                                                            <label class="form-control-label" for="clientTaxAdress">Dirección de facturación</label>
+                                                            <input disabled required type="text" id="clientTaxAdress" name="tax_address" class="form-control form-control-alternative" value="{{ $client->tax_address }}">
+                                                            <div class="invalid-feedback">
+                                                                Por favor, ingrese una dirección de facturación
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" id="divSaveInvoiceData" style="display: none">
+                                                    <hr class="my-4">
+                                                    <div class="d-flex flex-end">
+                                                        <button type="submit" class="btn btn-sm btn-success btn-rounded px-3 mr-3">Guardar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
                 <div class="card shadow" style="background-color: #ebebeb73">
                     <div class="card-header bg-white border-0">
                         <div class="row align-items-center">
@@ -717,6 +735,25 @@
                     });
                 }
             });
+        });
+    </script>
+
+    <script>
+        $('#table_products_sold').DataTable({
+            columnDefs: [{ orderable: false }],
+            scrollY: '50vh',
+            scrollCollapse: true,
+            paging: false,
+            searching: false,
+            info: false,
+            ordering: false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ bajadas",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 bajadas",
+                "sInfoFiltered": "(filtrado de _MAX_ bajadas en total)",
+                "emptyTable": 'No hay bajadas para este cliente',
+                "sLengthMenu": "Mostrar _MENU_ bajadas",
+            },
         });
     </script>
 
