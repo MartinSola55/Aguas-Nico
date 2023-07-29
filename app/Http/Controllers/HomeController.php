@@ -8,6 +8,10 @@ use App\Models\ProductsCart;
 use App\Models\Route;
 use App\Http\Controllers\RouteController;
 use App\Models\AbonoClient;
+use App\Models\BottleType;
+use App\Models\Product;
+use App\Models\ProductDispatched;
+use App\Models\StockLog;
 use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -56,7 +60,9 @@ class HomeController extends Controller
                 'completed_routes' => 0,
                 'pending_routes' => 0,
                 'in_deposit_routes' => 0,
-                'products_sold' => [],
+                'products' => [],
+                'bottles' => [],
+                'items' => [],
             ];
             foreach ($routes as $route) {
                 $counter = 0;
@@ -84,7 +90,7 @@ class HomeController extends Controller
             }
             $data->pending_routes = $routes->count() - $data->completed_routes - $data->in_deposit_routes;
 
-            $data->products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+            /*$data->products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
                 ->with('product:id,name,price')
                 ->whereHas('cart', function ($query) {
                     $query->whereHas('route', function ($query) {
@@ -93,8 +99,61 @@ class HomeController extends Controller
                 })
                 ->groupBy('product_id')
                 ->orderBy('total_quantity', 'desc')
-            ->get();
+            ->get();*/
             //dd($data->products_sold);
+
+            $cartsIDs = $routes->pluck('Carts')->flatten()->pluck('id');
+            $routesIDS = $routes->pluck('id');
+            $logs = StockLog::whereIn('cart_id', $cartsIDs)->get();
+            foreach ($logs as $log) {
+                $productsDispatched = ProductDispatched::whereIn('route_id', $routesIDS)->get();
+                if ($log->product_id !== null) { // Si es un producto
+                    $productId = $log->product_id;
+                    $productName = Product::find($productId)->name; // Obtener el nombre del producto desde el modelo "Product"
+                    $quantity = $log->quantity;
+
+                    $dispatch = $productsDispatched->where('product_id', $productId)->sum('quantity');
+                    
+                    if (!isset($data->products[$productId])) {
+                        $data->products[$productId] = [
+                                'id' => $productId,
+                                'dispatch' => $dispatch,
+                                'name' => $productName,
+                                'sold' => 0,
+                                'returned' => 0,
+                            ];
+                    }
+
+                    if ($log->l_r === 0) { // Sold
+                        $data->products[$productId]['sold'] += $quantity;
+                    } elseif ($log->l_r === 1) { // Returned
+                        $data->products[$productId]['returned'] += $quantity;
+                    }
+                } elseif ($log->bottle_types_id !== null) { // Si es una botella
+                    $bottleTypeId = $log->bottle_types_id;
+                    $bottleTypeName = BottleType::find($bottleTypeId)->name; // Obtener el nombre del tipo de botella desde el modelo "BottleType"
+                    $quantity = $log->quantity;
+
+                    $dispatch = $productsDispatched->where('bottle_types_id', $bottleTypeId)->sum('quantity');
+                    if (!isset($data->bottles[$bottleTypeId])) {
+                        $data->bottles[$bottleTypeId] = [
+                            'id' => $bottleTypeId,
+                            'dispatch' => $dispatch,
+                            'name' => $bottleTypeName,
+                            'sold' => 0,
+                            'returned' => 0,
+                        ];
+                    }
+
+                    if ($log->l_r === 0) { // Sold
+                        $data->bottles[$bottleTypeId]['sold'] += $quantity;
+                    } elseif ($log->l_r === 1) { // Returned
+                        $data->bottles[$bottleTypeId]['returned'] += $quantity;
+                    }
+                }
+            }
+            $data->items = array_merge($data->products, $data->bottles);
+            //dd($data);
 
             return view('home', compact('routes', 'data'));
         } // Repartidor
