@@ -118,17 +118,15 @@ class RouteController extends Controller
             $query->where('id', $route->id);
         })->get();
 
-        $dispatchs = ProductDispatched::where('route_id', $route->id)->get();
-
         foreach ($route_logs as $route_log) {
             if ($route_log->product_id !== null) { // Si es un producto
                 $productId = $route_log->product_id;
                 $productName = Product::find($productId)->name; // Obtener el nombre del producto desde el modelo "Product"
                 $quantity = $route_log->quantity;
 
-                $dispatch = $dispatchs->where('product_id', $productId)->first();
-                $quantity = $dispatch ? $dispatch->quantity : null;
-                $dispatch = $quantity ?? 'sin carga';
+                $dispatch = $productsDispatched->where('product_id', $productId)->first();
+                $quantity_dispatched = $dispatch ? $dispatch->quantity : null;
+                $dispatch = $quantity_dispatched ?? 'sin carga';
 
                 if (!isset($data->products[$productId])) {
                     $data->products[$productId] = [
@@ -150,19 +148,19 @@ class RouteController extends Controller
                 $bottleTypeName = BottleType::find($bottleTypeId)->name; // Obtener el nombre del tipo de botella desde el modelo "BottleType"
                 $quantity = $route_log->quantity;
 
-                $dispatch = $dispatchs->where('bottle_types_id', $bottleTypeId)->first();
-                $quantity = $dispatch ? $dispatch->quantity : null;
-                $dispatch = $quantity ?? 'sin carga';
-
+                $dispatch = $productsDispatched->where('bottle_types_id', $bottleTypeId)->first();
+                $quantity_dispatched = $dispatch ? $dispatch->quantity : null;
+                $dispatch = $quantity_dispatched ?? 'sin carga';
                 if (!isset($data->bottles[$bottleTypeId])) {
                     $data->bottles[$bottleTypeId] = [
                         'id' => $bottleTypeId,
+                        'dispatch' => $dispatch,
                         'name' => $bottleTypeName,
                         'sold' => 0,
                         'returned' => 0,
                     ];
                 }
-
+                
                 if ($route_log->l_r === 0) { // Sold
                     $data->bottles[$bottleTypeId]['sold'] += $quantity;
                 } elseif ($route_log->l_r === 1) { // Returned

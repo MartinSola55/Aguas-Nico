@@ -496,7 +496,7 @@
                             <div class="d-flex flex-row justify-content-end">
                                 <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar fuera de reparto</a>
                             </div>
-                        @else
+                        @elseif ($route->is_static === true)
                             <div class="d-flex flex-row justify-content-end">
                                 <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Editar planilla</a>
                             </div>

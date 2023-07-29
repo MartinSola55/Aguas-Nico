@@ -50,13 +50,6 @@ class AbonoClientController extends Controller
 
             DB::beginTransaction();
             if ($bottleType !== null) {
-                StockLog::create([
-                    'client_id' => $abonoClient->client_id,
-                    'cart_id' => $cart_id,
-                    'bottle_types_id' => $bottleType,
-                    'quantity' => $request->input('discount'),
-                    'l_r' => 0,          //si es 0=l, si es 1=r
-                ]);
                 BottleClient::firstOrCreate(['client_id' => $abonoClient->client_id,'bottle_types_id' => $bottleType])
                     ->increment('stock', $request->input('discount'));
             }
