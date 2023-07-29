@@ -543,31 +543,11 @@
 
                                             {{-- Mostrar las duedas de cada cliente --}}
                                             @if ($cart->Client->debt == 0)
-                                                @if ($cart->Client->debtMonth == 0)
-                                                    <p class="m-0"><small class="text-muted">Sin deuda</small></p>
-                                                @elseif($cart->Client->debtMonth > 0)
-                                                    <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
-                                                @else
-                                                    <p class="m-0"><small class="text-success">Entregó este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
-                                                @endif
+                                                <p class="m-0"><small class="text-muted">Sin deuda</small></p>
                                             @elseif ($cart->Client->debt > 0)
-                                                    <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt }}</small></p>
-                                                @if ($cart->Client->debtMonth == 0)
-                                                    <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
-                                                @elseif($cart->Client->debtMonth > 0)
-                                                    <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
-                                                @else
-                                                    <p class="m-0"><small class="text-success">Entregó este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
-                                                @endif
+                                                <p class="m-0"><small class="text-danger">Deuda: ${{ $cart->Client->debt }}</small></p>
                                             @else
-                                                    <p class="m-0"><small class="text-success">Saldo a favor: ${{ $cart->Client->debt * -1 }}</small></p>
-                                                @if ($cart->Client->debtMonth == 0)
-                                                    <p class="m-0"><small class="text-muted">Sin deuda contraída este mes</small></p>
-                                                @elseif($cart->Client->debtMonth > 0)
-                                                    <p class="m-0"><small class="text-danger">Deuda contraída este mes: ${{ $cart->Client->debtMonth }}</small></p>
-                                                @else
-                                                    <p class="m-0"><small class="text-success">Entregó este mes: ${{ $cart->Client->debtMonth * -1 }}</small></p>
-                                                @endif
+                                                <p class="m-0"><small class="text-success">A favor: ${{ $cart->Client->debt * -1 }}</small></p>
                                             @endif
 
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>

@@ -63,7 +63,7 @@ class RouteController extends Controller
                 $query->orderBy('priority', 'asc');
             }])->find($id);
 
-        $route = $this->getClientsDebt($route);
+        //$route = $this->getClientsDebt($route);
 
         // Agregar a cada cliente de cada carrito un atributo con la fecha y el estado del último carrito, que no sea el actual
         foreach ($route->Carts as $cart) {
@@ -91,10 +91,6 @@ class RouteController extends Controller
         // Agregar deuda del mes actual a cada cliente como un atributo nuevo, sacando esa deuda del modelo DebpaymentLog
         foreach ($route->Carts as $cart) {
             $cart->Client->debtMonth = $cart->Client->getDebtOfTheMonth();
-        }
-
-        foreach ($route->Carts as $cart) {
-            $cart->Client->debt -= $cart->Client->debtMonth;
         }
 
         return $route;
