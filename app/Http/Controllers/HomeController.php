@@ -90,18 +90,6 @@ class HomeController extends Controller
             }
             $data->pending_routes = $routes->count() - $data->completed_routes - $data->in_deposit_routes;
 
-            /*$data->products_sold = ProductsCart::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
-                ->with('product:id,name,price')
-                ->whereHas('cart', function ($query) {
-                    $query->whereHas('route', function ($query) {
-                        $query->whereDate('start_date', $this->getDate());
-                    });
-                })
-                ->groupBy('product_id')
-                ->orderBy('total_quantity', 'desc')
-            ->get();*/
-            //dd($data->products_sold);
-
             $cartsIDs = $routes->pluck('Carts')->flatten()->pluck('id');
             $routesIDS = $routes->pluck('id');
             $logs = StockLog::whereIn('cart_id', $cartsIDs)->get();
@@ -153,7 +141,6 @@ class HomeController extends Controller
                 }
             }
             $data->items = array_merge($data->products, $data->bottles);
-            //dd($data);
 
             return view('home', compact('routes', 'data'));
         } // Repartidor
@@ -233,6 +220,34 @@ class HomeController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al buscar las ventas',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function searchRoutes(Request $request) {
+        try {
+            $date = Carbon::createFromFormat('d/m/Y', $request->input('date'))->startOfDay();
+            $routes = Route::where('is_static', false)
+                ->whereDate('start_date', $date)
+                ->with('Carts')
+                ->with('Carts.ProductsCart')
+                ->with('Carts.ProductsCart.Product')
+                ->with('User')
+                ->get();
+            foreach ($routes as $route) {
+                $route->info = $route->Info();
+            }
+            return response()->json([
+                'success' => true,
+                'data' => $routes
+            ],
+            201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al buscar las rutas',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);

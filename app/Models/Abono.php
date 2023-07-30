@@ -13,4 +13,9 @@ class Abono extends Model
         'price',
         'updated_at',
     ];
+
+    public function Product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
 }

@@ -25,6 +25,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
     Route::get('/home/searchAllSales', [App\Http\Controllers\HomeController::class, 'searchAllSales']);
+    Route::get('/home/searchRoutes', [App\Http\Controllers\HomeController::class, 'searchRoutes']);
     Route::get('/stats', [App\Http\Controllers\DealerController::class, 'statistics'])->name('stats');
 
     // TRANSFER
