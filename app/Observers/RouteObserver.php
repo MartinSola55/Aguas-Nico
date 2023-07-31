@@ -2,8 +2,6 @@
 
 namespace App\Observers;
 
-use App\Models\Product;
-use App\Models\ProductDispatched;
 use App\Models\Route;
 
 class RouteObserver
@@ -13,13 +11,6 @@ class RouteObserver
      */
     public function created(Route $route): void
     {
-        $products = Product::pluck('id');
-        foreach ($products as $product) {
-            ProductDispatched::create([
-                'product_id' => $product,
-                'route_id' => $route->id
-            ]);
-        }
 
     }
 

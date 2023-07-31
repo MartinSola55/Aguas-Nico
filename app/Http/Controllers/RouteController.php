@@ -21,6 +21,7 @@ use App\Models\Route;
 use App\Models\StockLog;
 use App\Models\User;
 use Carbon\Carbon;
+use Database\Seeders\Products;
 use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,7 +63,7 @@ class RouteController extends Controller
                 $query->orderBy('priority', 'asc');
             }])->find($id);
 
-        $route = $this->getClientsDebt($route);
+        //$route = $this->getClientsDebt($route);
 
         // Agregar a cada cliente de cada carrito un atributo con la fecha y el estado del último carrito, que no sea el actual
         foreach ($route->Carts as $cart) {
@@ -92,10 +93,6 @@ class RouteController extends Controller
             $cart->Client->debtMonth = $cart->Client->getDebtOfTheMonth();
         }
 
-        foreach ($route->Carts as $cart) {
-            $cart->Client->debt -= $cart->Client->debtMonth;
-        }
-
         return $route;
     }
 
@@ -123,9 +120,14 @@ class RouteController extends Controller
                 $productName = Product::find($productId)->name; // Obtener el nombre del producto desde el modelo "Product"
                 $quantity = $route_log->quantity;
 
+                $dispatch = $productsDispatched->where('product_id', $productId)->first();
+                $quantity_dispatched = $dispatch ? $dispatch->quantity : null;
+                $dispatch = $quantity_dispatched ?? 'sin carga';
+
                 if (!isset($data->products[$productId])) {
                     $data->products[$productId] = [
                         'id' => $productId,
+                        'dispatch' => $dispatch,
                         'name' => $productName,
                         'sold' => 0,
                         'returned' => 0,
@@ -142,15 +144,19 @@ class RouteController extends Controller
                 $bottleTypeName = BottleType::find($bottleTypeId)->name; // Obtener el nombre del tipo de botella desde el modelo "BottleType"
                 $quantity = $route_log->quantity;
 
+                $dispatch = $productsDispatched->where('bottle_types_id', $bottleTypeId)->first();
+                $quantity_dispatched = $dispatch ? $dispatch->quantity : null;
+                $dispatch = $quantity_dispatched ?? 'sin carga';
                 if (!isset($data->bottles[$bottleTypeId])) {
                     $data->bottles[$bottleTypeId] = [
                         'id' => $bottleTypeId,
+                        'dispatch' => $dispatch,
                         'name' => $bottleTypeName,
                         'sold' => 0,
                         'returned' => 0,
                     ];
                 }
-
+                
                 if ($route_log->l_r === 0) { // Sold
                     $data->bottles[$bottleTypeId]['sold'] += $quantity;
                 } elseif ($route_log->l_r === 1) { // Returned
@@ -277,7 +283,7 @@ class RouteController extends Controller
     public function getDealerRoutes(int $day, int $id)
     {
         $route = Route::where('user_id', $id)
-            ->limit(10)
+            ->limit(1)
             ->orderBy('start_date', 'desc')
             ->where('is_static', false)
             ->where('day_of_week', $day)
@@ -547,30 +553,31 @@ class RouteController extends Controller
         }
     }
 
-    public function updateDispatched(ProductDispatchedUpdateRequest $request)
+    public function updateDispatched(Request $request)
     {
         try {
             $products_quantity = json_decode($request->input('products_quantity'), true);
             $route_id = $request->input('route_id');
-            $products = Product::all();
 
-            DB::beginTransaction();
+            foreach ($products_quantity as $product) {
 
-            $productUpdates = [];
-            foreach ($products as $product) {
-                $productUpdates[] = [
-                    'product_id' => $product->id,
-                    'route_id' => $route_id,
-                    'quantity' => collect($products_quantity)->where('product_id', $product->id)->first()['quantity'] ?? null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                if ($product['dispatch_id'] !== null) {
+                    ProductDispatched::find($product['dispatch_id'])
+                        ->update(['quantity' => $product['quantity']]);
+                }else {
+                    if ($product['bottle_types_id'] === 'null') {
+                        $product['bottle_types_id'] = null;
+                    }else if ($product['product_id'] === 'null') {
+                        $product['product_id'] = null;
+                    }
+                    ProductDispatched::create([
+                        'product_id' => $product['product_id'],
+                        'bottle_types_id' => $product['bottle_types_id'],
+                        'route_id' => $route_id,
+                        'quantity' => $product['quantity'],
+                    ]);
+                }
             }
-
-            ProductDispatched::where('route_id', $route_id)->delete();
-            DB::table('products_dispatched')->insert($productUpdates);
-
-            DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Productos despachados actualizados correctamente',
@@ -623,6 +630,75 @@ class RouteController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al devolver los productos',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function getProducts4dispatch($route)
+    {
+        try {
+            $productsDispatched = ProductDispatched::where('route_id', $route)->get();
+            $products = Product::all();
+            $products4dispatch = [];
+            $addedBottleTypeIds = [];
+
+            foreach ($products as $product) {
+                $productId = null;
+                $bottleTypeId = null;
+                $quantity = 0;
+
+                if ($product->bottle_type_id !== null) {
+                    $bottleTypeId = $product->bottle_type_id;
+
+                    // Verificar si ya se agregó un producto con el mismo bottle_type_id
+                    if (!in_array($bottleTypeId, $addedBottleTypeIds)) {
+                        $addedBottleTypeIds[] = $bottleTypeId;
+
+                        $dispatchedProduct = $productsDispatched->where('bottle_types_id', $bottleTypeId)->first();
+                        if ($dispatchedProduct) {
+                            $quantity = $dispatchedProduct->quantity;
+                        }
+
+                        $products4dispatch[] = [
+                            'id' => $dispatchedProduct ? $dispatchedProduct->id : null,
+                            'name' => $product->BottleType->name,
+                            'product_id' => $productId,
+                            'bottle_type_id' => $bottleTypeId,
+                            'quantity' => $quantity,
+                        ];
+                    }
+                } else {
+                    $productId = $product->id;
+
+                    // Verificar si ya se agregó un producto con el mismo product_id
+                    if (!in_array($productId, array_column($products4dispatch, 'product_id'))) {
+                        $dispatchedProduct = $productsDispatched->where('product_id', $productId)->first();
+                        if ($dispatchedProduct) {
+                            $quantity = $dispatchedProduct->quantity;
+                        }
+
+                        $products4dispatch[] = [
+                            'id' => $dispatchedProduct ? $dispatchedProduct->id : null,
+                            'name' => $product->name,
+                            'product_id' => $productId,
+                            'bottle_type_id' => $bottleTypeId,
+                            'quantity' => $quantity,
+                        ];
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Productos devueltos correctamente',
+                'data' => $products4dispatch
+            ], 201);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'title' => 'Error al devolver los productos',

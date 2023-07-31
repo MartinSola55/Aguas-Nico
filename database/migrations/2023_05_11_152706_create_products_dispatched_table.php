@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('products_dispatched', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products');
+            $table->foreignId('product_id')->constrained('products'); // ESTO DEBE SER NULLABLE (CAMBIO MANUAL)
             $table->foreignId('route_id')->constrained('routes');
             $table->integer('quantity')->nullable();
             $table->timestamps();

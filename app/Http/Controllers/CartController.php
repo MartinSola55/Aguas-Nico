@@ -61,25 +61,48 @@ class CartController extends Controller
                             'quantity' => $request->input('abono_log_quantity_new_edit')
                         ]);
                     }
+                }
 
-                    $stockLog = StockLog::firstOrCreate(
-                        [
-                            'product_id' => $abonoLog->product_id,
-                            'client_id' => $cart->client_id,
-                            'l_r' => 0,
-                            'cart_id' => $cart->id,
-                        ],
-                        [
-                            'product_id' => $abonoLog->product_id,
-                            'client_id' => $cart->client_id,
-                            'l_r' => 0,
-                            'cart_id' => $cart->id,
-                            'created_at' => Carbon::now(),
-                        ]
-                    );
-                    $stockLog->quantity = $request->input('abono_log_quantity_new_edit');
+                // Actualizar los StockLogs de los productos
+                foreach ($products_quantity as $pc) {
+                    $product = Product::find($pc["product_id"]);
+                    if ($product->bottle_type_id == null) {
+                        $stockLog = StockLog::firstOrCreate(
+                            [
+                                'product_id' => $product->id,
+                                'client_id' => $cart->client_id,
+                                'l_r' => 0,
+                                'cart_id' => $cart->id,
+                            ],
+                            [
+                                'product_id' => $product->id,
+                                'client_id' => $cart->client_id,
+                                'l_r' => 0,
+                                'cart_id' => $cart->id,
+                                'created_at' => Carbon::now(),
+                            ]
+                        );
+                    } else {
+                        $stockLog = StockLog::firstOrCreate(
+                            [
+                                'bottle_types_id' => $product->bottle_type_id,
+                                'client_id' => $cart->client_id,
+                                'l_r' => 0,
+                                'cart_id' => $cart->id,
+                            ],
+                            [
+                                'bottle_types_id' => $product->bottle_type_id,
+                                'client_id' => $cart->client_id,
+                                'l_r' => 0,
+                                'cart_id' => $cart->id,
+                                'created_at' => Carbon::now(),
+                            ]
+                        );
+                    }
+
+                    $stockLog->quantity = $pc["quantity"];
                     $stockLog->updated_at = Carbon::now();
-                    $stockLog->save();
+                    $stockLog->save();  
                 }
             }
 
@@ -109,6 +132,8 @@ class CartController extends Controller
             CartPaymentMethod::where('cart_id', $cart->id)->where('payment_method_id', 1)->update(['amount' => $cash]);
 
             $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
+            $client = $cart->Client;
+            $client->increment('debt', $total_cart - $cash);
             DB::commit();
             return response()->json([
                 'success' => true,

@@ -18,4 +18,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Client::class);
     }
+
+    public function bottleType()
+    {
+        return $this->belongsTo(BottleType::class, 'bottle_type_id');
+    }
 }

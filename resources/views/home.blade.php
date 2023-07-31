@@ -19,7 +19,12 @@
     <link href="{{ asset('plugins/c3-master/c3.min.css') }}" rel="stylesheet">
     <!-- Vector CSS -->
     <link href="{{ asset('plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet">
+    <!-- Datepicker -->
+    <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
 
+    <!-- Datepicker -->
+    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
+    <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!--c3 JavaScript -->
     <script src="{{ asset('plugins/d3/d3.min.js') }}"></script>
     <script src="{{ asset('plugins/c3-master/c3.min.js') }}"></script>
@@ -48,7 +53,7 @@
         <!-- ============================================================== -->
         <div class="row">
             <!-- Column -->
-            <div class="col-lg-3 col-md-6">
+            <div class="col-xl-3 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
@@ -63,7 +68,7 @@
             </div>
             <!-- Column -->
             <!-- Column -->
-            <div class="col-lg-3 col-md-6">
+            <div class="col-xl-3 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
@@ -78,7 +83,7 @@
             </div>
             <!-- Column -->
             <!-- Column -->
-            <div class="col-lg-3 col-md-6">
+            <div class="col-xl-3 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
@@ -93,7 +98,7 @@
             </div>
             <!-- Column -->
             <!-- Column -->
-            <div class="col-lg-3 col-md-6">
+            <div class="col-xl-3 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <div class="d-flex flex-row">
@@ -120,22 +125,31 @@
                             <table class="table stylish-table">
                                 <thead>
                                     <tr>
-                                        <th style="width:90px;">Producto</th>
-                                        <th>Descripción</th>
-                                        <th>Cantidad</th>
+                                        <th style="width:10%;"></th>
+                                        <th>Producto/Envase</th>
+                                        <th>Cargados</th>
+                                        <th>Vendidos</th>
+                                        <th>Devueltos</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($data->products_sold as $item)
-                                    <tr>
-                                        <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
-                                        <td>
-                                            <h6>{{ $item->Product->name }}</h6><small class="text-muted">Precio: ${{ $item->Product->price }}</small>
-                                        </td>
-                                        <td>
-                                            <h5>{{ $item->total_quantity }}</h5>
-                                        </td>
-                                    </tr>
+                                    @foreach ($data->items as $item)
+                                        <tr>
+                                            <td><span class="round"><i class="ti-shopping-cart"></i></span></td>
+                                            <td>
+                                                <h6>{{ $item['name'] }}</h6>
+                                            </td>
+                                            <td>
+                                                <h6>{{ $item['dispatch'] }}</h6>
+                                            </td>
+                                            <td>
+                                                <h5>{{ $item['sold'] }}</h5>
+                                            </td>
+                                            <td>
+                                                <h5>{{ $item['returned'] }}</h5>
+                                            </td>
+                                            </td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                             </table>
@@ -184,9 +198,17 @@
             <div class="col-lg-12">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Repartos de hoy</h4>
+                        <h3 class="card-title">Repartos del día</h3>
+                        <div class="d-flex no-block">
+                            <div class="mr-auto">
+                                <form method="GET" action="{{ url('/home/searchRoutes') }}" id="formSearchRoutes" novalidate>
+                                    <label for="DatePicker" class="mb-0">Día</label>
+                                    <input type="text" class="form-control" id="DatePicker" name="date" value="{{ $today->format('d/m/Y') }}" />
+                                </form>
+                            </div>
+                        </div>
                         <div class="table-responsive m-t-20">
-                            <table class="table stylish-table">
+                            <table id="routesTable" class="table stylish-table">
                                 <thead>
                                     <tr>
                                         <th colspan="2">Nombre</th>
@@ -196,13 +218,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php
-                                    $i = -1;
-                                    ?>
                                     @foreach ($routes as $route)
                                         <tr class="clickable" data-url="/route/details" data-id="{{ $route->id }}">
                                             @php
-                                            $i++;
                                             $names = explode(" ", $route->User->name);
                                             $initials = '';
                                             foreach ($names as $name) {
@@ -240,12 +258,73 @@
     </style>
 
     <script>
+        const diasSemana = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+    </script>
+
+    <script>
+        moment.locale('es');
         $(document).ready(function() {
-            $('.clickable').click(function() {
+            $(document).on("click", ".clickable", function () {
                 let url = $(this).data('url');
                 let id = $(this).data('id');
                 window.location.href = url + "/" + id;
             });
+
+            $('#DatePicker').bootstrapMaterialDatePicker({
+                maxDate: new Date(),
+                time: false,
+                format: 'DD/MM/YYYY',
+                cancelText: "Cancelar",
+                weekStart: 1,
+                lang: 'es',
+            });
         });
+
+        $("#DatePicker").on("change", function() {
+            $.ajax({
+                url: $("#formSearchRoutes").attr('action'), // Utiliza la ruta del formulario
+                method: $("#formSearchRoutes").attr('method'), // Utiliza el método del formulario
+                data: $("#formSearchRoutes").serialize(), // Utiliza los datos del formulario
+                success: function(response) {
+                    fillTable(response.data);
+                },
+                error: function(errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.title,
+                        text: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        });
+
+        function fillTable(routes) {
+            let content = "";
+            routes.forEach(route => {
+                let initials = "";
+                let names = route.user.name.split(" ");
+                names.forEach(name => {
+                    initials += name.substr(0, 1).toUpperCase();
+                });
+                let state = "";
+                if (route.info.state === "En depósito") state = `<span class="label label-danger">${route.info.state}</span>`;
+                else if (route.info.state === "En reparto") state = `<span class="label label-warning">${route.info.state}</span>`;
+                else state = `<span class="label label-success">${route.info.state}</span>`;
+
+                content += `
+                    <tr class="clickable" data-url="/route/details" data-id="${route.id}">
+                        <td style="width:50px;"><span class="round">${initials}</span></td>
+                        <td>
+                            <h6>${route.user.name}</h6><small class="text-muted">Planilla ${diasSemana[route.day_of_week]}</small>
+                        </td>
+                        <td>${route.info.completed_carts}/${route.info.total_carts}</td>
+                        <td>${state}</td>
+                        <td>$${route.info.total_collected}</td>
+                    </tr>
+                `;
+            });
+            $("#routesTable tbody").html(content);
+        }
     </script>
 @endsection

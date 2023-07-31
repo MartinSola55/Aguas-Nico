@@ -199,7 +199,7 @@
                 success: function(response) {
                     let content = "";
                     response.data.clients.forEach((client) => {
-                        content += "<h1 class='text-start mt-3 mb-0'>" + client.name + "</h1>";
+                        content += `<h1 class='text-start mt-3 mb-0'>${client.name}</h1>`;
                         content += `
                         <table class="table table-hover mb-3">
                             <thead>
@@ -211,29 +211,41 @@
                                     <th class="text-right">Total</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                        `;
+                            <tbody>`;
                         let sum = 0;
                         client.products.forEach((item) => {
                             sum += item.quantity * item.price;
-                            content += "<tr>";
-                                content += "<td>" + item.name + "</td>";
-                                content += "<td class='text-right'>" + item.quantity + "</td>";
-                                content += "<td class='text-right'>$" + formattedNumber(parseInt(item.price)) + "</td>";
-                                content += "<td class='text-right'>" + item.date + "</td>";
-                                content += "<td class='text-right productTotal'>$" + formattedNumber(item.quantity * item.price) + "</td>";
-                                content += "</tr>";
+                            content += 
+                            `<tr>
+                                <td>${item.name}</td>
+                                <td class='text-right'>${item.quantity}</td>
+                                <td class='text-right'>$${formattedNumber(parseInt(item.price))}</td>
+                                <td class='text-right'>${item.date}</td>
+                                <td class='text-right productTotal'>$${formattedNumber(item.quantity * item.price)}</td>
+                            </tr>`;
                         });
-                        content += "<tr>";
-                        content += "<td></td>";
-                        content += "<td></td>";
-                        content += "<td></td>";
-                        content += "<td></td>";
-                        content += "<td class='text-right'><b style='font-weight: bold'>Total: $" + formattedNumber(sum) + "</b></td>";
-                        content += "</tr>";
-                        content += "</tbody>";
-                        content += "</table>";
-                        content += "<hr class='mb-5'>";
+                        client.abonos.forEach((item) => {
+                            sum += 1 * item.price;
+                            content += 
+                            `<tr>
+                                <td>${item.name}</td>
+                                <td class='text-right'>1</td>
+                                <td class='text-right'>$${formattedNumber(parseInt(item.price))}</td>
+                                <td class='text-right'>${item.date}</td>
+                                <td class='text-right productTotal'>$${formattedNumber(1 * item.price)}</td>
+                            </tr>`;
+                        });
+                        content += 
+                        `<tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class='text-right'><b style='font-weight: bold'>Total: $${formattedNumber(sum)}</b></td>
+                        </tr>
+                        </tbody>
+                        </table>
+                        <hr class='mb-5'>`;
                     });
                     $("#tables_container").html(content);
                     calculateTotal();

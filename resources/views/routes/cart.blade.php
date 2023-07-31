@@ -120,7 +120,7 @@
                                                     <button type="button" class="btn btn-info" onclick="addClient({{ json_encode($client) }})"><i class="bi bi-arrow-left"></i></button>
                                                 </td>
                                                 <td>{{ $client->name }}</td>
-                                                <td>{{ $client->address }}</td>
+                                                <td>{{ $client->adress }}</td>
                                                 <td>{{ $client->dni }}</td>
                                             </tr>
                                         @endforeach

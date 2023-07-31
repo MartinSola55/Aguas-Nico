@@ -25,6 +25,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
     Route::get('/home/searchAllSales', [App\Http\Controllers\HomeController::class, 'searchAllSales']);
+    Route::get('/home/searchRoutes', [App\Http\Controllers\HomeController::class, 'searchRoutes']);
     Route::get('/stats', [App\Http\Controllers\DealerController::class, 'statistics'])->name('stats');
 
     // TRANSFER
@@ -69,6 +70,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/route/createManualCart', [App\Http\Controllers\RouteController::class, 'createManualCart']);
     //ProductDispatchedController
     Route::post('/route/updateDispatched', [App\Http\Controllers\RouteController::class, 'updateDispatched']);
+    Route::get('/route/getProductsDispatched/{route}', [App\Http\Controllers\RouteController::class, 'getProducts4dispatch']);
     //Agregar/actualizar clientes en reparto
     Route::post('/route/updateClients', [App\Http\Controllers\RouteController::class, 'updateClients']);
     Route::post('/route/delete', [App\Http\Controllers\RouteController::class, 'delete']);
@@ -88,6 +90,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/abono/index', [App\Http\Controllers\AbonoController::class, 'index']);
     Route::get('/abono/clientes', [App\Http\Controllers\AbonoController::class, 'abonoClients'])->name('abono.clientes');
     Route::post('/abono/edit', [App\Http\Controllers\AbonoController::class, 'update']);
+    Route::post('/abono/updatePrice', [App\Http\Controllers\AbonoController::class, 'updatePrice']);
 });
 
 // EMPLOYEE

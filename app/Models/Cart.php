@@ -46,6 +46,11 @@ class Cart extends Model
         return $this->hasOne(AbonoClient::class, 'cart_id');
     }
 
+    public function AbonoLog()
+    {
+        return $this->hasOne(AbonoLog::class, 'cart_id');
+    }
+
     public function StockLogs()
     {
         return $this->hasMany(StockLog::class, 'cart_id');
