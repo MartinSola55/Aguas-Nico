@@ -195,6 +195,144 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="col-12">
+                    <div class="card shadow" style="background-color: #ebebeb73">
+                        <div class="card-header bg-white border-0">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h3 class="mb-0">Cliente</h3>
+                                </div>
+                                <div class="col-4 text-right">
+                                    <button id="btnEditInputs"
+                                        class="btn btn-sm btn-outline-info btn-rounded px-3">Editar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form role="form" class="needs-validation" method="POST" action="{{ url('/client/edit') }}"
+                                id="form-edit" autocomplete="off" novalidate>
+                                <h6 class="heading-small text-muted mb-4">Datos personales</h6>
+                                <div class="pl-lg-4">
+                                    <input type="hidden" required value="{{ $client->id }}" name="id">
+                                    @csrf
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="clientName">Nombre</label>
+                                                <input disabled required type="text" id="clientName" name="name" class="form-control form-control-alternative" value="{{ $client->name }}">
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese un nombre
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="clientDNI">DNI</label>
+                                                <input disabled type="number" id="clientDNI" name="dni" class="form-control form-control-alternative" value="{{ $client->dni }}">
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese un DNI
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="clientAdress">Dirección</label>
+                                                <input disabled required type="text" id="clientAdress" name="adress" class="form-control form-control-alternative" value="{{ $client->adress }}">
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese una dirección
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="my-4">
+                                <!-- Address -->
+                                <h6 class="heading-small text-muted mb-4">Información de contacto</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="clientPhone">Teléfono</label>
+                                                <input disabled type="tel" id="clientPhone" name="phone" class="form-control form-control-alternative" value="{{ $client->phone }}">
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese un teléfono
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="clientEmail">Email</label>
+                                                <input disabled type="email" id="clientEmail" name="email" class="form-control form-control-alternative" value="{{ $client->email }}">
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese un email
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="my-4">
+                                <!-- Description -->
+                                <h6 class="heading-small text-muted mb-4">Otros</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="clientDebt">Deuda</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input disabled required type="number" step="0.01" max="1000000" class="form-control form-control-alternative" id="clientDebt" name="debt" value="{{ $client->debt }}">
+                                                    <div class="invalid-feedback">
+                                                        Por favor, ingrese un monto
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 d-flex flex-column justify-content-center">
+                                            <div>
+                                                <input disabled type="checkbox" id="clientInvoice" name="invoice" value="1" {{ $client->invoice ? 'checked' : '' }} />
+                                                <label class="m-0" for="clientInvoice">¿Quiere factura?</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="clientDebt">Observación</label>
+                                                <div class="input-group">
+                                                    <textarea disabled type="text" class="form-control form-control-alternative" id="clientObservation"
+                                                        name="observation">{{ $client->observation }}</textarea>
+                                                    <div class="invalid-feedback">
+                                                        Por favor, ingrese una descripción
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="divSaveClient" style="display: none">
+                                        <div class="col-md-12 d-flex justify-content-between">
+                                            @if ($client->is_active)
+                                                <button type="button" id="btnDeleteClient"
+                                                    class="btn btn-sm btn-outline-danger btn-rounded px-3">Dar de baja</button>
+                                            @else
+                                                <button type="button" id="btnDeleteClient"
+                                                    class="btn btn-sm btn-outline-warning btn-rounded px-3">Dar de
+                                                    alta</button>
+                                            @endif
+                                            <button type="submit"
+                                                class="btn btn-sm btn-success btn-rounded px-3">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
                     {{-- Invoice data --}}
                     @if ($client->invoice == 'checked')
@@ -289,142 +427,6 @@
                             </div>
                         </div>
                     @endif
-                </div>
-                <div class="card shadow" style="background-color: #ebebeb73">
-                    <div class="card-header bg-white border-0">
-                        <div class="row align-items-center">
-                            <div class="col-8">
-                                <h3 class="mb-0">Cliente</h3>
-                            </div>
-                            <div class="col-4 text-right">
-                                <button id="btnEditInputs"
-                                    class="btn btn-sm btn-outline-info btn-rounded px-3">Editar</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <form role="form" class="needs-validation" method="POST" action="{{ url('/client/edit') }}"
-                            id="form-edit" autocomplete="off" novalidate>
-                            <h6 class="heading-small text-muted mb-4">Datos personales</h6>
-                            <div class="pl-lg-4">
-                                <input type="hidden" required value="{{ $client->id }}" name="id">
-                                @csrf
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="form-group focused">
-                                            <label class="form-control-label" for="clientName">Nombre</label>
-                                            <input disabled required type="text" id="clientName" name="name" class="form-control form-control-alternative" value="{{ $client->name }}">
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese un nombre
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="form-group focused">
-                                            <label class="form-control-label" for="clientDNI">DNI</label>
-                                            <input disabled type="number" id="clientDNI" name="dni" class="form-control form-control-alternative" value="{{ $client->dni }}">
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese un DNI
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="form-group">
-                                            <label class="form-control-label" for="clientAdress">Dirección</label>
-                                            <input disabled required type="text" id="clientAdress" name="adress" class="form-control form-control-alternative" value="{{ $client->adress }}">
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese una dirección
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr class="my-4">
-                            <!-- Address -->
-                            <h6 class="heading-small text-muted mb-4">Información de contacto</h6>
-                            <div class="pl-lg-4">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group focused">
-                                            <label class="form-control-label" for="clientPhone">Teléfono</label>
-                                            <input disabled type="tel" id="clientPhone" name="phone" class="form-control form-control-alternative" value="{{ $client->phone }}">
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese un teléfono
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group focused">
-                                            <label class="form-control-label" for="clientEmail">Email</label>
-                                            <input disabled type="email" id="clientEmail" name="email" class="form-control form-control-alternative" value="{{ $client->email }}">
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese un email
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr class="my-4">
-                            <!-- Description -->
-                            <h6 class="heading-small text-muted mb-4">Otros</h6>
-                            <div class="pl-lg-4">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group focused">
-                                            <label class="form-control-label" for="clientDebt">Deuda</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">$</span>
-                                                </div>
-                                                <input disabled required type="number" step="0.01" max="1000000" class="form-control form-control-alternative" id="clientDebt" name="debt" value="{{ $client->debt }}">
-                                                <div class="invalid-feedback">
-                                                    Por favor, ingrese un monto
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 d-flex flex-column justify-content-center">
-                                        <div>
-                                            <input disabled type="checkbox" id="clientInvoice" name="invoice" value="1" {{ $client->invoice ? 'checked' : '' }} />
-                                            <label class="m-0" for="clientInvoice">¿Quiere factura?</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group focused">
-                                            <label class="form-control-label" for="clientDebt">Observación</label>
-                                            <div class="input-group">
-                                                <textarea disabled type="text" class="form-control form-control-alternative" id="clientObservation"
-                                                    name="observation">{{ $client->observation }}</textarea>
-                                                <div class="invalid-feedback">
-                                                    Por favor, ingrese una descripción
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row" id="divSaveClient" style="display: none">
-                                    <div class="col-md-12 d-flex justify-content-between">
-                                        @if ($client->is_active)
-                                            <button type="button" id="btnDeleteClient"
-                                                class="btn btn-sm btn-outline-danger btn-rounded px-3">Dar de baja</button>
-                                        @else
-                                            <button type="button" id="btnDeleteClient"
-                                                class="btn btn-sm btn-outline-warning btn-rounded px-3">Dar de
-                                                alta</button>
-                                        @endif
-                                        <button type="submit"
-                                            class="btn btn-sm btn-success btn-rounded px-3">Guardar</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
                 </div>
             </div>
         </div>

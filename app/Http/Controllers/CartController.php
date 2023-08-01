@@ -132,6 +132,8 @@ class CartController extends Controller
             CartPaymentMethod::where('cart_id', $cart->id)->where('payment_method_id', 1)->update(['amount' => $cash]);
 
             $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
+            $client = $cart->Client;
+            $client->increment('debt', $total_cart - $cash);
             DB::commit();
             return response()->json([
                 'success' => true,
