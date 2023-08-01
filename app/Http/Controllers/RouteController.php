@@ -19,6 +19,7 @@ use App\Models\ProductsCart;
 use App\Models\ProductsClient;
 use App\Models\Route;
 use App\Models\StockLog;
+use App\Models\Transfer;
 use App\Models\User;
 use Carbon\Carbon;
 use Database\Seeders\Products;
@@ -156,7 +157,7 @@ class RouteController extends Controller
                         'returned' => 0,
                     ];
                 }
-                
+
                 if ($route_log->l_r === 0) { // Sold
                     $data->bottles[$bottleTypeId]['sold'] += $quantity;
                 } elseif ($route_log->l_r === 1) { // Returned
@@ -204,6 +205,15 @@ class RouteController extends Controller
                 $data->day_collected += $pm->amount;
             }
         }
+
+        $totTransfers = Transfer::where('user_id', $route->user_id)
+            ->whereDate('created_at', $route->start_date)
+            ->get()
+            ->sum('amount');
+
+        $data->payment_used[] = ['name' => 'Transferencias', 'total' => $totTransfers];
+
+        $data->day_collected += $totTransfers;
 
         if ($route->Carts()->count() === 0) {
             $data->in_deposit_routes++;
