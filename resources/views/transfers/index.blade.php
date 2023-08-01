@@ -249,6 +249,9 @@
         });
 
         $('#ClientsTable').DataTable({
+            "scrollY": '30vh',
+            "scrollCollapse": true,
+            "paging": false,
             "ordering": false,
             "language": {
                 "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
