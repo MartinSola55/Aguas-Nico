@@ -1,3 +1,12 @@
+@php
+    $diasSemana = [
+        1 => 'Lunes',
+        2 => 'Martes',
+        3 => 'Miércoles',
+        4 => 'Jueves',
+        5 => 'Viernes',
+    ];
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -6,7 +15,7 @@
 
     <!-- This is data table -->
     <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
-    
+
     <script src="{{ asset('plugins/flot/excanvas.js') }}"></script>
     <script src="{{ asset('plugins/flot/jquery.flot.js') }}"></script>
     <script src="{{ asset('plugins/flot/jquery.flot.pie.js') }}"></script>
@@ -192,6 +201,27 @@
                                     <div class="ribbon ribbon-default">Saldo a favor</div>
                                     <p class="ribbon-content" id="clientDebtText">${{ $client->debt * -1 }}</p>
                                 @endif
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="ribbon-wrapper card shadow">
+                                <div class="ribbon ribbon-default">Planillas</div>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Día</th>
+                                            <th>Repartidor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($client->staticRoutesWithUserAndDayOfWeek() as $planilla)
+                                        <tr>
+                                            <td>{{ $diasSemana[$planilla->day_of_week] }}</td>
+                                            <td>{{ $planilla->user_name }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

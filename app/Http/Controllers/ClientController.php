@@ -75,7 +75,7 @@ class ClientController extends Controller
     public function show($id)
     {
         $client = Client::find($id);
-        
+
         $carts = Cart::where('client_id', $id)
             ->where('is_static', false)
             ->where('state', '!=', 0)
@@ -83,13 +83,14 @@ class ClientController extends Controller
             ->limit(10)
             ->with('ProductsCart', 'ProductsCart.Product', 'AbonoClient', 'AbonoClient.Abono', 'CartPaymentMethod', 'AbonoLog', 'AbonoLog.AbonoClient', 'AbonoLog.AbonoClient.Abono')
             ->get();
-        
+
         $client_products = $this->getProducts($client);
 
         $abonos = Abono::all();
 
         return view('clients.details', compact('client', 'client_products', 'abonos', 'carts'));
     }
+
 
     public function searchSales(SearchSalesRequest $request){
         try {
@@ -332,6 +333,30 @@ class ClientController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al actualizar el estado del cliente',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function getHistory($id)
+    {
+        try {
+            $carts = Cart::where('client_id', $id)
+                ->where('is_static', false)
+                ->where('state', '!=', 0)
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->with('ProductsCart', 'ProductsCart.Product', 'AbonoClient', 'AbonoClient.Abono', 'CartPaymentMethod', 'AbonoLog', 'AbonoLog.AbonoClient', 'AbonoLog.AbonoClient.Abono')
+                ->get();
+            return response()->json([
+                'success' => true,
+                'message' => $carts,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al buscar historial de carritos',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);

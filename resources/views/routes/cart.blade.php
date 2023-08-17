@@ -68,7 +68,6 @@
                                                 <th>Quitar</th>
                                                 <th>Nombre</th>
                                                 <th>Dirección</th>
-                                                <th>DNI</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -86,7 +85,6 @@
                                                     </td>
                                                     <td>{{ $client->name }}</td>
                                                     <td>{{ $client->adress }}</td>
-                                                    <td>{{ $client->dni }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -110,7 +108,6 @@
                                             <th>Seleccionar</th>
                                             <th>Nombre</th>
                                             <th>Dirección</th>
-                                            <th>DNI</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -121,7 +118,6 @@
                                                 </td>
                                                 <td>{{ $client->name }}</td>
                                                 <td>{{ $client->adress }}</td>
-                                                <td>{{ $client->dni }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -226,6 +222,7 @@
                             "sPrevious": "Anterior",
                         },
                     },
+                    scrollX: true,
                 });
             }
         });
@@ -459,7 +456,7 @@
             });
         });
 
-        
+
     </script>
 
 @endsection
