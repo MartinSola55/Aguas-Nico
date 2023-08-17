@@ -56,4 +56,23 @@ class Client extends Model
     {
         return Cart::where('client_id', $this->id)->where('route_id', '!=', $route_id)->where('is_static', false)->orderBy('created_at', 'desc')->first();
     }
+
+    public function staticRoutesWithUserAndDayOfWeek()
+    {
+        $cartIds = $this->carts->pluck('id');
+        $staticRoutes = Route::whereIn('id', function ($query) use ($cartIds) {
+            $query->select('route_id')
+                ->from('carts')
+                ->whereIn('id', $cartIds)
+                ->groupBy('route_id');
+        })
+        ->where('is_static', true)
+        ->get(['user_id', 'day_of_week']);
+
+        foreach ($staticRoutes as $route) {
+            $route->user_name = User::find($route->user_id)->name;
+        }
+
+        return $staticRoutes;
+    }
 }

@@ -52,6 +52,19 @@ class CartController extends Controller
                             'message' => 'La cantidad de abono a utilizar es mayor a la disponible',
                         ], 400);
                     }
+
+                    // Restablecer y actualizar stock del cliente
+                    if ($abonoLog->AbonoClient->Abono->Product->bottle_type_id != null) {
+                        $bottleClient = BottleClient::where('client_id', $cart->client_id)->where('bottle_types_id', $abonoLog->AbonoClient->Abono->Product->bottle_type_id)->first();
+                        $bottleClient->decrement('stock', $abonoLog->quantity);
+                        $bottleClient->increment('stock', $request->input('abono_log_quantity_new_edit'));
+                    } else {
+                        $productClient = ProductsClient::where('client_id', $cart->client_id)->where('product_id', $abonoLog->AbonoClient->Abono->Product->id)->first();
+                        $productClient->decrement('stock', $abonoLog->quantity);
+                        $productClient->increment('stock', $request->input('abono_log_quantity_new_edit'));
+                    }
+
+                    // Actualizar abono disponible
                     if ($edit_available) {
                         $edit_available->update([
                             'available' => $request->input('abono_log_quantity_available_edit') - $request->input('abono_log_quantity_new_edit')
@@ -109,12 +122,30 @@ class CartController extends Controller
 
             $total_cart = 0;
             foreach ($cart->ProductsCart as $pc) {
+                // Restablecer stock del cliente
+                if ($pc->Product->bottle_type_id != null) {
+                    $bottleClient = BottleClient::where('client_id', $cart->client_id)->where('bottle_type_id', $pc->Product->bottle_type_id)->first();
+                    $bottleClient->decrement('stock', $pc->quantity);
+                } else {
+                    $productClient = ProductsClient::where('client_id', $cart->client_id)->where('product_id', $pc->product_id)->first();
+                    $productClient->decrement('stock', $pc->quantity);
+                }
+
                 foreach ($products_quantity as $product) {
                     if ($pc->product_id == $product['product_id']) {
                         $pc->quantity = $product['quantity'];
                         $pc->save();
 
                         $total_cart += $product['quantity'] * $pc->setted_price;
+
+                        // Actualizar stock del cliente con la nueva cantidad
+                        if ($pc->Product->bottle_type_id != null) {
+                            $bottleClient = BottleClient::where('client_id', $cart->client_id)->where('bottle_type_id', $pc->Product->bottle_type_id)->first();
+                            $bottleClient->increment('stock', $product['quantity']);
+                        } else {
+                            $productClient = ProductsClient::where('client_id', $cart->client_id)->where('product_id', $pc->product_id)->first();
+                            $productClient->increment('stock', $product['quantity']);
+                        }
                     }
                 }
             }
@@ -219,6 +250,8 @@ class CartController extends Controller
                     'quantity' => $product['quantity'],
                     'l_r' => 0,          //si es 0=l, si es 1=r
                 ]);
+
+                // Actualizar stock de los productos del cliente
                 if ($bottleType !== null) {
                     BottleClient::firstOrCreate(['client_id' => $client->id, 'bottle_types_id' => $bottleType])
                         ->increment('stock', $product['quantity']);
@@ -271,6 +304,7 @@ class CartController extends Controller
             $cart_id = $request->input('cart_id');
             $client_id = Cart::find($cart_id)->Client->id;
             $type_id = $request->input('type_id');
+            $client = Client::find($client_id);
 
             DB::beginTransaction();
             if ($request->input('product') === 'false') {
@@ -288,6 +322,8 @@ class CartController extends Controller
                         'l_r' => 1,
                     ]
                 );
+                
+                $client->BottleClient()->where('bottle_types_id', $type_id)->decrement('stock', $request->input('quantity'));
             } else {
                 $log = StockLog::firstOrCreate(
                     [
@@ -303,10 +339,13 @@ class CartController extends Controller
                         'product_id' => $type_id,
                     ]
                 );
+
+                $client->ProductsClient()->where('product_id', $type_id)->decrement('stock', $request->input('quantity'));
             }
             $log->quantity = $request->input('quantity');
             $log->updated_at = Carbon::now();
             $log->save();
+            $client->save();
 
             DB::commit();
 

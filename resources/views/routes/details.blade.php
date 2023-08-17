@@ -23,7 +23,6 @@
 @section('content')
 
     @if (auth()->user()->rol_id == '2')
-
         <!-- Modal confirm cart -->
         <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
@@ -167,8 +166,36 @@
                 </form>
             </div>
         </div>
-        <!-- End Modal -->
+        <!-- Modal get history client -->
+        <div id="modalGetHistory" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGetHistory" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Historial <strong id="clientName"> </strong></h4>
+                        <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive m-t-10">
+                            <table class="table table-bordered table-striped" id="table_products_sold">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha bajada</th>
+                                        <th>Productos/Abono</th>
+                                        <th>Pago</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyContent">
 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @if (auth()->user()->rol_id == '1')
         <!-- Modal route products -->
         <div id="modalProducts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
@@ -483,15 +510,14 @@
         @endif
 
         <div class="row">
-            <div class="col-12">
+            <div class="col-12 px-0">
                 <div class="card shadow">
-                    <div class="card-header d-flex flex-row justify-content-between">
-                        <h3 class="m-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h3>
-                        @if (auth()->user()->rol_id == '1')
-                        <button type="button" id="btnDeleteRoute" class="btn btn-sm btn-danger btn-rounded px-3">Eliminar planilla</button>
-                        @endif
+                    <div class="card-header mx-0 d-flex row justify-content-between">
+                        <div class="col-sm-12">
+                            <h4 class="mb-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h4>
+                        </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body pl-0 pr-1">
                         @if (auth()->user()->rol_id == '2')
                             <div class="d-flex flex-row justify-content-end">
                                 <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar fuera de reparto</a>
@@ -501,11 +527,30 @@
                                 <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Editar planilla</a>
                             </div>
                         @endif
-                        @if ($route->is_static === false && auth()->user()->rol_id == '1')
-                            <div class="d-flex flex-row justify-content-end">
-                                <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newManualCart') }}">Agregar venta manual</a>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="mb-3 px-3 justify-content-end">
+                                    <input type="text" class="form-control" id="searchInput" placeholder="Buscar">
+                                </div>
+                                <div class="form-group mb-4 px-3">
+                                    <select class="form-control" id="estadoSelect">
+                                        <option value="">Filtrar por estado</option>
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="Completado">Completado</option>
+                                        <option value="No estaba">No estaba</option>
+                                        <option value="No necesitaba">No necesitaba</option>
+                                        <option value="De vacaciones">De vacaciones</option>
+                                    </select>
+                                </div>
                             </div>
-                        @endif
+                            <div class="col-md-6 col-sm-12">
+                                @if ($route->is_static === false && auth()->user()->rol_id == '1')
+                                    <div class="d-flex flex-row justify-content-end mx-3">
+                                        <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newManualCart') }}">Agregar venta manual</a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                         <ul class="timeline">
                             <?php
                                 $contador = 0;
@@ -526,15 +571,20 @@
                                     @endif
                                     <div class="timeline-panel">
                                         <div class="timeline-heading">
-                                            @if ($cart->state === 1)
-                                                <h4 class="timeline-title" style="color: #30d577">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
-                                            @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
-                                                <h4 class="timeline-title" style="color: #ffc107">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
-                                            @elseif ($cart->state === 0)
-                                                <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
-                                            @else
-                                                <h4 class="timeline-title" style="color: #6c757d">{{ $cart->Client->name }}</h4>
-                                            @endif
+                                            <div class="row">
+                                                @if ($cart->state === 1)
+                                                    <h4 class="timeline-title name-element col-9" style="color: #30d577">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                                @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
+                                                    <h4 class="timeline-title name-element col-9" style="color: #ffc107">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                                @elseif ($cart->state === 0)
+                                                    <h4 class="timeline-title name-element col-9" style="color: #6c757d">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                                @else
+                                                    <h4 class="timeline-title name-element col-9" style="color: #6c757d">{{ $cart->Client->name }}</h4>
+                                                @endif
+                                                    <div class="col-3 d-flex align-items-center justify-content-end">
+                                                        <button class="btn btn-info rounded-circle" onclick="getHistory({{ $cart->Client->id }},'{{ $cart->Client->name }}')"><i class="bi bi-clipboard"></i></button>
+                                                    </div>
+                                            </div>
 
                                             {{-- Datos del último reparto --}}
                                             @if ($cart->Client->lastCart != null && $cart->Client->lastCart->created_at != null)
@@ -550,7 +600,7 @@
                                                 <p class="m-0"><small class="text-success">A favor: ${{ $cart->Client->debt * -1 }}</small></p>
                                             @endif
 
-                                            <p class="mb-0"><small class="text-muted"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
+                                            <p class="mb-0"><small class="text-muted address-element"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                             @if ($cart->state && auth()->user()->rol_id == '1')
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-calendar-check"></i> {{ $cart->updated_at->format('d-m-Y H:i') }}&nbsp;hs. </small></p>
                                             @endif
@@ -607,7 +657,6 @@
                                                     </p>
                                                 </div>
                                             @endif
-
                                             @if ($cart->state === 0)
                                                 <div class="d-flex flex-row justify-content-end">
 
@@ -659,6 +708,11 @@
                             @endforeach
                         </ul>
                     </div>
+                    @if (auth()->user()->rol_id == '1')
+                        <div class="col-sm-12">
+                            <button type="button" id="btnDeleteRoute" class="btn btn-danger btn-rounded mb-2">Eliminar planilla</button>
+                        </div>
+                    @endif
                 </div>
                 {{-- Delete Route --}}
                 <form id="formDeleteRoute" action="{{ url('/route/delete') }}" method="POST">
@@ -1470,7 +1524,6 @@
                     }
                 },
             })
-
         }
 
         $("#btnEditCart").on("click", function() {
@@ -1579,4 +1632,94 @@
         }
     </script>
 
+    <script>
+        $("#searchInput").on("input", function() {
+            var searchText = $(this).val().toLowerCase();
+            $(".timeline > li").each(function() {
+                var nameElement = $(this).find(".name-element");
+                var addressElement = $(this).find(".address-element");
+
+                if (nameElement.text().toLowerCase().includes(searchText) ||
+                    addressElement.text().toLowerCase().includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        $("#estadoSelect").on("change", function() {
+            var searchText = $(this).val().toLowerCase();
+            $(".timeline > li").each(function() {
+                var nameAndStateElement = $(this).find(".name-element");
+
+                if (nameAndStateElement.text().toLowerCase().includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function getHistory(idClient, name) {
+            let url = "{{ url('/client/getHistory/') }}" + '/' + idClient;
+            $.ajax({
+                url: url,
+                type: "GET",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+
+                success: function(response) {
+                    console.log(response);
+                    if (response.data !== null) {
+                        let cont = "";
+                        response.message.forEach(function(cart) {
+                            cont += '<tr><td>' + new Date(cart.created_at).toLocaleDateString() + '</td><td>';
+
+                            if (cart.products_cart.length > 0) {
+                                cart.products_cart.forEach(function(pc) {
+                                    cont += '<p class="m-0">' + pc.product.name + ' x ' + pc.quantity + ' - $' + (pc.quantity * pc.setted_price) + '</p><br>';
+                                });
+                            }
+
+                            if (cart.abono_client) {
+                                cont += '<p class="m-0">' + cart.abono_client.abono.name + ' - $' + cart.abono_client.setted_price + '</p><br>';
+                            }
+
+                            if (cart.abono_log && cart.abono_log.quantity > 0) {
+                                cont += '<p class="m-0">' + cart.abono_log.abono_client.abono.name + ' - Bajó: ' + cart.abono_log.quantity + '</p><br>';
+                            }
+
+                            cont += '</td><td>$' + cart.cart_payment_method.reduce(function(total, pm) {
+                                return total + parseFloat(pm.amount);
+                            }, 0) + '</td></tr>';
+                        });
+
+                        $("#clientName").html(name);
+                        $("#historyContent").html(cont);
+                        $("#modalGetHistory").modal('show');
+                    }
+                },
+            })
+        }
+        // $('#table_products_sold').DataTable({
+        //     columnDefs: [{ orderable: false }],
+        //     scrollY: '50vh',
+        //     scrollCollapse: true,
+        //     paging: false,
+        //     searching: false,
+        //     info: false,
+        //     ordering: false,
+        //     "language": {
+        //         "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ bajadas",
+        //         "sInfoEmpty": "Mostrando 0 a 0 de 0 bajadas",
+        //         "sInfoFiltered": "(filtrado de _MAX_ bajadas en total)",
+        //         "emptyTable": 'No hay bajadas para este cliente',
+        //         "sLengthMenu": "Mostrar _MENU_ bajadas",
+        //     },
+        // });
+    </script>
 @endsection
