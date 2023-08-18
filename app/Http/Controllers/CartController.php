@@ -124,7 +124,7 @@ class CartController extends Controller
             foreach ($cart->ProductsCart as $pc) {
                 // Restablecer stock del cliente
                 if ($pc->Product->bottle_type_id != null) {
-                    $bottleClient = BottleClient::where('client_id', $cart->client_id)->where('bottle_type_id', $pc->Product->bottle_type_id)->first();
+                    $bottleClient = BottleClient::where('client_id', $cart->client_id)->where('bottle_types_id', $pc->Product->bottle_type_id)->first();
                     $bottleClient->decrement('stock', $pc->quantity);
                 } else {
                     $productClient = ProductsClient::where('client_id', $cart->client_id)->where('product_id', $pc->product_id)->first();
@@ -140,7 +140,7 @@ class CartController extends Controller
 
                         // Actualizar stock del cliente con la nueva cantidad
                         if ($pc->Product->bottle_type_id != null) {
-                            $bottleClient = BottleClient::where('client_id', $cart->client_id)->where('bottle_type_id', $pc->Product->bottle_type_id)->first();
+                            $bottleClient = BottleClient::where('client_id', $cart->client_id)->where('bottle_types_id', $pc->Product->bottle_type_id)->first();
                             $bottleClient->increment('stock', $product['quantity']);
                         } else {
                             $productClient = ProductsClient::where('client_id', $cart->client_id)->where('product_id', $pc->product_id)->first();
