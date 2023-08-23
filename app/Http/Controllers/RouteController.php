@@ -549,6 +549,8 @@ class RouteController extends Controller
                     'priority' => $i,
                     'state' => null,
                     'is_static' => true,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ];
             }
 
@@ -587,6 +589,8 @@ class RouteController extends Controller
                     'priority' => $lastPriority,
                     'state' => 0,
                     'is_static' => false,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ];
             }
 
