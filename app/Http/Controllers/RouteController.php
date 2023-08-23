@@ -8,6 +8,7 @@ use App\Http\Requests\Route\RouteCreateRequest;
 use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Abono;
 use App\Models\AbonoClient;
+use App\Models\AbonoLog;
 use App\Models\BottleType;
 use App\Models\Cart;
 use App\Models\Client;
@@ -115,6 +116,52 @@ class RouteController extends Controller
             $query->where('id', $route->id);
         })->get();
 
+        $abono_logs = AbonoLog::whereHas('cart.route', function ($query) use ($route) {
+            $query->where('id', $route->id);
+        })->get();
+
+        // Sumar los productos de los abonos
+        foreach ($abono_logs as $abono_log) {
+            $product = $abono_log->AbonoClient->Abono->Product;
+            if ($product->bottle_type_id == null) {
+                $productId = $product->id;
+                $quantity = $abono_log->quantity;
+
+                $dispatch = $productsDispatched->where('product_id', $productId)->first();
+                $quantity_dispatched = $dispatch ? $dispatch->quantity : null;
+                $dispatch = $quantity_dispatched ?? 'sin carga';
+
+                if (!isset($data->products[$productId])) {
+                    $data->products[$productId] = [
+                        'id' => $productId,
+                        'dispatch' => $dispatch,
+                        'name' => $product->name,
+                        'sold' => 0,
+                        'returned' => 0,
+                    ];
+                }
+                $data->products[$productId]['sold'] += $quantity;
+            } else {
+                $bottleTypeId = $product->bottle_type_id;
+                $quantity = $abono_log->quantity;
+
+                $dispatch = $productsDispatched->where('bottle_types_id', $bottleTypeId)->first();
+                $quantity_dispatched = $dispatch ? $dispatch->quantity : null;
+                $dispatch = $quantity_dispatched ?? 'sin carga';
+                if (!isset($data->bottles[$bottleTypeId])) {
+                    $data->bottles[$bottleTypeId] = [
+                        'id' => $bottleTypeId,
+                        'dispatch' => $dispatch,
+                        'name' => $product->bottleType->name,
+                        'sold' => 0,
+                        'returned' => 0,
+                    ];
+                }
+                $data->bottles[$bottleTypeId]['sold'] += $quantity;
+            }
+        }
+
+        // Sumar los productos del carrito
         foreach ($route_logs as $route_log) {
             if ($route_log->product_id !== null) { // Si es un producto
                 $productId = $route_log->product_id;
