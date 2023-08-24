@@ -121,7 +121,7 @@ class HomeController extends Controller
                     $bottleTypeId = $product->bottle_type_id;
                     $quantity = $abono_log->quantity;
 
-                    $dispatch = $productsDispatched->where('bottle_types_id', $bottleTypeId)->sum('quantity');
+                    $dispatch = $productsDispatched->where('bottle_types_id', $bottleTypeId)->sum('quantity'); 
                     if (!isset($data->bottles[$bottleTypeId])) {
                         $data->bottles[$bottleTypeId] = [
                             'id' => $bottleTypeId,
