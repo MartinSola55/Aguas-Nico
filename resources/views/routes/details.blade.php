@@ -613,6 +613,7 @@
                                                 <div class="row">
                                                     <div class="col-lg-12">
                                                     @if ($cart->ProductsCart->count() > 0)
+                                                        <h3 class="text-center text-muted mb-0">Bajada</h3>
                                                         <div class="table-responsive">
                                                             <table class="table">
                                                                 <thead>
@@ -630,6 +631,28 @@
                                                                             <td>${{ $pc->product->price }}</td>
                                                                         </tr>
                                                                     @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    @endif
+                                                    @if ($cart->AbonoLog != null)
+                                                        <hr class="my-2">
+                                                        <h3 class="text-center text-muted mb-0">Abono</h3>
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Cantidad</th>
+                                                                        <th>Producto</th>
+                                                                        <th>Precio abono</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>{{ $cart->AbonoLog->quantity}}</td>
+                                                                        <td>{{ $cart->AbonoLog->AbonoClient->Abono->Product->name }}</td>
+                                                                        <td>${{ $cart->AbonoLog->AbonoClient->setted_price }}</td>
+                                                                    </tr>
                                                                 </tbody>
                                                             </table>
                                                         </div>
