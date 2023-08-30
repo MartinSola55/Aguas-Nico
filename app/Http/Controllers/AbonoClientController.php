@@ -48,6 +48,14 @@ class AbonoClientController extends Controller
             $cart_id = $request->input('cart_id');
             $bottleType = $productModel->bottle_type_id;
 
+            if ($abonoClient->available < $request->input('discount')) {
+                return response()->json([
+                    'success' => false,
+                    'title' => 'Error al actualizar el descuento del abono',
+                    'message' => 'La cantidad de productos restantes es menor a la cantidad a descontar',
+                ], 400);
+            }
+
             DB::beginTransaction();
             if ($bottleType !== null) {
                 BottleClient::firstOrCreate(['client_id' => $abonoClient->client_id,'bottle_types_id' => $bottleType])
