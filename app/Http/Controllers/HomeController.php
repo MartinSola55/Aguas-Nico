@@ -12,7 +12,6 @@ use App\Models\AbonoLog;
 use App\Models\BottleType;
 use App\Models\Product;
 use App\Models\ProductDispatched;
-use App\Models\ProductsClient;
 use App\Models\StockLog;
 use Carbon\Carbon;
 use DateTimeZone;
@@ -112,7 +111,7 @@ class HomeController extends Controller
                         $data->products[$productId] = [
                             'id' => $productId,
                             'dispatch' => $dispatch,
-                            'name' => $product->name . " - $" . $product->price,
+                            'name' => $product->name,
                             'sold' => 0,
                             'returned' => 0,
                         ];
@@ -127,7 +126,7 @@ class HomeController extends Controller
                         $data->bottles[$bottleTypeId] = [
                             'id' => $bottleTypeId,
                             'dispatch' => $dispatch,
-                            'name' => $product->bottleType->name . " - $" . $product->price,
+                            'name' => $product->bottleType->name,
                             'sold' => 0,
                             'returned' => 0,
                         ];
@@ -140,19 +139,19 @@ class HomeController extends Controller
             foreach ($stock_logs as $log) {
                 if ($log->product_id !== null) { // Si es un producto
                     $productId = $log->product_id;
-                    $product = Product::find($productId); // Obtener el nombre del producto desde el modelo "Product"
+                    $productName = Product::find($productId)->name; // Obtener el nombre del producto desde el modelo "Product"
                     $quantity = $log->quantity;
 
                     $dispatch = $productsDispatched->where('product_id', $productId)->sum('quantity');
                     
                     if (!isset($data->products[$productId])) {
                         $data->products[$productId] = [
-                            'id' => $productId,
-                            'dispatch' => $dispatch,
-                            'name' => $product->name . " - $" . $product->price,
-                            'sold' => 0,
-                            'returned' => 0,
-                        ];
+                                'id' => $productId,
+                                'dispatch' => $dispatch,
+                                'name' => $productName,
+                                'sold' => 0,
+                                'returned' => 0,
+                            ];
                     }
 
                     if ($log->l_r === 0) { // Sold
@@ -162,11 +161,7 @@ class HomeController extends Controller
                     }
                 } elseif ($log->bottle_types_id !== null) { // Si es una botella
                     $bottleTypeId = $log->bottle_types_id;
-                    //$bottleType = BottleType::find($bottleTypeId)->Products->first(); // Obtener el nombre del tipo de botella desde el modelo "BottleType"
-                    $product = ProductsClient::with('Product')->whereHas('product', function ($query) use ($bottleTypeId)  {
-                        $query->where('bottle_type_id', $bottleTypeId);
-                    })->where('client_id', $log->client_id)->first();
-
+                    $bottleTypeName = BottleType::find($bottleTypeId)->name; // Obtener el nombre del tipo de botella desde el modelo "BottleType"
                     $quantity = $log->quantity;
 
                     $dispatch = $productsDispatched->where('bottle_types_id', $bottleTypeId)->sum('quantity');
@@ -174,7 +169,7 @@ class HomeController extends Controller
                         $data->bottles[$bottleTypeId] = [
                             'id' => $bottleTypeId,
                             'dispatch' => $dispatch,
-                            'name' => $product->name . " - $" . $product->price,
+                            'name' => $bottleTypeName,
                             'sold' => 0,
                             'returned' => 0,
                         ];
