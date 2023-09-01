@@ -1565,8 +1565,7 @@
             let abono_log_id_edit = $("#modalEditCart #abono_log_id_edit").val();
             let abono_log_quantity_available_edit = $("#abono_log_quantity_available_edit").val();
             let abono_log_quantity_new_edit = $("#abono_log_quantity_new_edit").val();
-
-            if (abono_log_quantity_new_edit > abono_log_quantity_available_edit) {
+            if (parseInt(abono_log_quantity_new_edit) > parseInt(abono_log_quantity_available_edit)) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'No puedes bajar más de lo que disponía',
