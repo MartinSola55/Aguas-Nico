@@ -628,7 +628,7 @@
                                                                         <tr>
                                                                             <td>{{ $pc->quantity}}</td>
                                                                             <td>{{ $pc->product->name }}</td>
-                                                                            <td>${{ $pc->product->price }}</td>
+                                                                            <td>${{ $pc->setted_price }}</td>
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
