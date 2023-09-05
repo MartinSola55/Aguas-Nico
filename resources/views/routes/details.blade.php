@@ -585,7 +585,7 @@
                                                         <button class="btn btn-info rounded-circle" onclick="getHistory({{ $cart->Client->id }},'{{ $cart->Client->name }}')"><i class="bi bi-clipboard"></i></button>
                                                     </div>
                                             </div>
-
+                                            <p class="m-0"><small class="text-muted">#{{$cart->id}}</small></p>
                                             {{-- Datos del último reparto --}}
                                             @if ($cart->Client->lastCart != null && $cart->Client->lastCart->created_at != null)
                                             <p class="m-0">Último reparto: {{ $cart->Client->lastCart->created_at->format('d/m/Y') }} - {{ $states[$cart->Client->lastCart->state] }}</p>

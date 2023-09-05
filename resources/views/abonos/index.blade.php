@@ -82,7 +82,7 @@
                         <div class="col-lg-3 col-sm-6 col-12">
                             <div class="ribbon-wrapper card shadow">
                                 <div class="ribbon ribbon-default ribbon-bookmark" id="abonoName{{ $abono->id }}">{{ $abono->name }}</div>
-                                <div class="my-4">
+                                <div class="my-2">
                                     <p class="ribbon-content" id="abonoPrice{{ $abono->id }}">Precio: ${{ $abono->price }}</p>
                                 </div>
                                 <button type="button" class="btn btn-outline-info btn-rounded mr-4 waves-effect waves-light" onclick="openModal({{ json_encode($abono) }})" data-toggle="modal" data-target="#modalConfirmation">
@@ -117,7 +117,7 @@
                 var forms = $('.needs-validation');
                 forms.on('submit', function(event) {
                     event.preventDefault();
-                    
+
                     var form = $(this);
                     if (form[0].checkValidity() === false) {
                         event.stopPropagation();

@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Data table -->
+    <link href="{{ asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
+
+    <!-- This is data table -->
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
     <!-- Modal -->
     <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
         style="display: none;">
@@ -72,7 +77,7 @@
                                 <div class="form-column">
                                     {{-- TOKEN --}}
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                                    
+
                                     <div class="col-12 mb-3">
                                         <label for="productName" class="mb-0">Nombre</label>
                                         <input type="text" class="form-control" id="productName" name="name" required>
@@ -143,7 +148,7 @@
                         <div class="col-lg-4 col-md-8 col-xlg-3 col-xs-12">
                             <div class="ribbon-wrapper card shadow">
                                 <div class="ribbon ribbon-default ribbon-bookmark" id="productName{{ $product->id }}">{{ $product->name }}</div>
-                                <div class="my-4">
+                                <div class="my-2">
                                     <p class="ribbon-content" id="productPrice{{ $product->id }}">Precio: ${{ $product->price }}</p>
                                 </div>
                                 <div class="d-flex flex-direction-row justify-content-between">
@@ -159,16 +164,118 @@
                     @endforeach
                 </div>
             </div>
-        </div>
+            <div class="col-12">
+                <div class="ribbon-wrapper card shadow">
+                    <div class="ribbon ribbon-default">Productos asociados a clientes</div>
+                    <div class="row px-4">
+                        <div class="form-group m-0 col-12 col-lg-6">
+                            <select id="selectProduct" class="form-control">
+                                <option value="" selected>Seleccione un Producto</option>
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row px-4" id="">
 
-        <form id="formDeleteProduct" action="{{ url('/product/delete') }}" method="POST">
-            @csrf
-            <input type="hidden" id="product-id" name="id" value="">
-        </form>
+                        <div class="table-responsive m-t-10">
+
+                            <table id="clientsTable" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Dirección</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contentTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- ============================================================== -->
     <!-- End Container fluid  -->
     <!-- ============================================================= -->
+
+    <script>
+        let clientsTable = null;
+        $(document).ready(function() {
+            clientsTable = $('#clientsTable').DataTable({
+                                    "language": {
+                                        "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                                        "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                                        "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                                        "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                                        "sLengthMenu": "Mostrar _MENU_ clientes",
+                                        "sSearch": "Buscar:",
+                                        "oPaginate": {
+                                            "sFirst": "Primero",
+                                            "sLast": "Último",
+                                            "sNext": "Siguiente",
+                                            "sPrevious": "Anterior",
+                                        },
+                                    },
+                                });
+
+            $('#selectProduct').on('change', function() {
+                let selectedValue = $(this).val();
+                if (selectedValue !== '') {
+                    $.ajax({
+                        url: '/product/clients/' + selectedValue,
+                        type: 'GET',
+                        headers: {
+                            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(data) {
+                            let content = '';
+                            data.data.forEach(client => {
+                                content += '<tr>';
+                                content +=  '<td data-field="name">';
+                                content +=      '<a href="/client/details/'+client.id+'">'+client.name+'</a>';
+                                content +=  '</td>';
+                                content +=  '<td data-field="price">';
+                                content +=         '<span>'+client.address+'</span>';
+                                content +=  '</td>';
+                                content += '</tr>';
+                            });
+
+                            if (clientsTable) {
+                                clientsTable.destroy();
+                            }
+
+                            $("#contentTable").html(content);
+                            clientsTable = $('#clientsTable').DataTable({
+                                    "language": {
+                                        "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                                        "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                                        "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                                        "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                                        "sLengthMenu": "Mostrar _MENU_ clientes",
+                                        "sSearch": "Buscar:",
+                                        "oPaginate": {
+                                            "sFirst": "Primero",
+                                            "sLast": "Último",
+                                            "sNext": "Siguiente",
+                                            "sPrevious": "Anterior",
+                                        },
+                                    },
+                                });
+                        },
+                        error: function(error) {
+                            console.error('Error en la solicitud AJAX', error);
+                        }
+                    });
+                } else {
+                    // Si no se selecciona un valor en el select, vacía la tabla
+                    $('#contentTable').empty();
+                }
+            });
+        });
+    </script>
 
     <script>
         function openModal(id, name, price) {
@@ -192,7 +299,7 @@
                 var forms = $('.needs-validation');
                 forms.on('submit', function(event) {
                     event.preventDefault();
-                    
+
                     var form = $(this);
                     if (form[0].checkValidity() === false) {
                         event.stopPropagation();
@@ -227,7 +334,7 @@
                 }
             });
         };
-        
+
         function createProduct() {
             // Enviar solicitud AJAX
             $.ajax({
