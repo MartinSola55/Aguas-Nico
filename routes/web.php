@@ -45,6 +45,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/product/create', [App\Http\Controllers\ProductController::class, 'store']);
     Route::post('/product/edit', [App\Http\Controllers\ProductController::class, 'update']);
     Route::get('/product/stats/{id}', [App\Http\Controllers\ProductController::class, 'stats'])->name('product.stats');
+    Route::get('/product/clients/{id}', [App\Http\Controllers\ProductController::class, 'getClients']);
 
     // CLIENT
     Route::get('/client/index', [App\Http\Controllers\ClientController::class, 'index']);

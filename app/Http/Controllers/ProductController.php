@@ -18,7 +18,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
+        $products = Product::orderBy('name')->get();
+
         return view('products.index', compact('products'));
     }
 
@@ -120,6 +121,24 @@ class ProductController extends Controller
                 'error' => $e->getMessage()
             ], 400);
         }
+    }
+
+    public function getClients($id)
+    {
+        $clients = ProductsClient::where('product_id', $id)->with('Client')->get();
+
+        $responseData = $clients->map(function ($client) {
+            return [
+                'id' => $client->Client->id,
+                'name' => $client->Client->name,
+                'address' => $client->Client->adress,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $responseData
+        ], 201);
     }
 
     /**

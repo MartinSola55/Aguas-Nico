@@ -217,6 +217,15 @@ class CartController extends Controller
             $client = Cart::find($request->input('cart_id'))->Client;
             $cart = Cart::find($request->input('cart_id'))->load('Client');
 
+            if ($cart->state != 0) {
+                return response()->json([
+                    'success' => false,
+                    'title' => 'Error al confirmar el reparto',
+                    'message' => 'El reparto ya fue confirmado',
+                    'text' => 'Probablemente presionó el botón de confirmar dos veces. Intente recargar la página'
+                ], 400);
+            }
+
             if ($renew_abono > 0) {
                 $total_cart = $renew_abono;
             } else {
