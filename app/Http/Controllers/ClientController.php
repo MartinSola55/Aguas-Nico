@@ -362,4 +362,10 @@ class ClientController extends Controller
             ], 400);
         }
     }
+
+    public function showInvoice($id) {
+        $client = Client::find($id);
+
+        return view('clients.invoice', compact('client'));
+    }
 }
