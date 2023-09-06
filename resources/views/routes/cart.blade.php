@@ -84,7 +84,7 @@
                                                         <button type="button" name="remove_client" {{ auth()->user()->rol_id != '1' ? "disabled" : "" }} class="btn btn-danger btn-sm" onclick="removeClient({{ json_encode($client) }})"><i class="bi bi-x-lg"></i></button>
                                                     </td>
                                                     <td>{{ $client->name }}</td>
-                                                    <td>{{ $client->adress }}</td>
+                                                    <td>{{ $client->address }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -117,7 +117,7 @@
                                                     <button type="button" class="btn btn-info" onclick="addClient({{ json_encode($client) }})"><i class="bi bi-arrow-left"></i></button>
                                                 </td>
                                                 <td>{{ $client->name }}</td>
-                                                <td>{{ $client->adress }}</td>
+                                                <td>{{ $client->address }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -238,7 +238,6 @@
         }
 
         function fillTable(client, table_id, action, btn_color, btn_icon, btn_size = "") {
-            console.log(client);
             let totalClients = $(`#${table_id}`).DataTable().rows().count() + 1;
             let dni = "<td></td>";
             let index = "";
@@ -256,7 +255,6 @@
                     </td>
                     <td>${client.name}</td>
                     <td>${client.address}</td>
-                    ${dni}
                 </tr>`;
             $(`#${table_id}`).DataTable().row.add($(content)).draw();
             if (table_id == 'listTable') {
@@ -278,7 +276,7 @@
     {{-- Send form --}}
     <script>
         function createClientsArray() {
-            var clients = []; // arreglo para almacenar los clientes
+            let clients = []; // arreglo para almacenar los clientes
 
             // Validar que hay filas en la tabla
             if ($("#clientsTable").DataTable().rows().count() == 0) {
@@ -291,11 +289,12 @@
             }
 
             // para cada fila de la tabla
-            $('#clientsTable tbody tr').each(function(index) {
-                var client = {}; // objeto para almacenar un cliente
-                if (!$(this).find('button[name="remove_client"]').is(':disabled')) {
-                    client.id = parseInt($(this).attr('data-id')); // obtener el id del cliente
-                    clients.push(client); // agregar el cliente al arreglo de clientes
+            $("#clientsTable").DataTable().rows().every(function() {
+                let removeButton = $(this.node()).find('button[name="remove_client"]');
+                let client = {};
+                if (!removeButton.is(':disabled')) {
+                    client.id = parseInt($(this.node()).data('id'));
+                    clients.push(client);
                 }
             });
 
