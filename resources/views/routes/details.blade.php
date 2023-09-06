@@ -771,10 +771,11 @@
             });
             return false;
         };
-        const SwalError = (text) => {
+        const SwalError = (title, text = "") => {
             Swal.fire({
                 icon: 'error',
-                title: text,
+                title: title,
+                text: text,
                 confirmButtonColor: '#1e88e5',
             });
         };
@@ -1022,7 +1023,8 @@
                         });
                     },
                     error: function(errorThrown) {
-                       SwalError(errorThrown.responseJSON.message);
+                        let text = errorThrown.responseJSON.text ?? "";
+                        SwalError(errorThrown.responseJSON.message, text);
                     }
                 });
             })
@@ -1727,21 +1729,5 @@
                 },
             })
         }
-        // $('#table_products_sold').DataTable({
-        //     columnDefs: [{ orderable: false }],
-        //     scrollY: '50vh',
-        //     scrollCollapse: true,
-        //     paging: false,
-        //     searching: false,
-        //     info: false,
-        //     ordering: false,
-        //     "language": {
-        //         "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ bajadas",
-        //         "sInfoEmpty": "Mostrando 0 a 0 de 0 bajadas",
-        //         "sInfoFiltered": "(filtrado de _MAX_ bajadas en total)",
-        //         "emptyTable": 'No hay bajadas para este cliente',
-        //         "sLengthMenu": "Mostrar _MENU_ bajadas",
-        //     },
-        // });
     </script>
 @endsection
