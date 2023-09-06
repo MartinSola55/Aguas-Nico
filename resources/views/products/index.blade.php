@@ -165,32 +165,34 @@
                 </div>
             </div>
             <div class="col-12">
-                <div class="ribbon-wrapper card shadow">
-                    <div class="ribbon ribbon-default">Productos asociados a clientes</div>
-                    <div class="row px-4">
-                        <div class="form-group m-0 col-12 col-lg-6">
-                            <select id="selectProduct" class="form-control">
-                                <option value="" selected>Seleccione un Producto</option>
-                                @foreach ($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
-                                @endforeach
-                            </select>
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h2 class="card-title">Productos asociados a clientes</h2>
+                        <div class="row">
+                            <div class="form-group m-0 col-12 col-lg-6">
+                                <select id="selectProduct" class="form-control">
+                                    <option value="" selected>Seleccione un Producto</option>
+                                    @foreach ($products as $product)
+                                        <option value="{{ $product->id }}">{{ $product->name }} - ${{ $product->price }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row px-4" id="">
+                        <div class="row px-4" id="">
 
-                        <div class="table-responsive m-t-10">
+                            <div class="table-responsive m-t-10">
 
-                            <table id="clientsTable" class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Cliente</th>
-                                        <th>Dirección</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="contentTable">
-                                </tbody>
-                            </table>
+                                <table id="clientsTable" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Cliente</th>
+                                            <th>Dirección</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="contentTable">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

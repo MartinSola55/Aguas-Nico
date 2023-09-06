@@ -166,7 +166,7 @@
                     <div class="card shadow">
                         <div class="card-body">
                             <div class="d-flex flex-row justify-content-between">
-                                <h2 class="card-title">Listado de clientes</h4>
+                                <h2 class="card-title">Listado de clientes</h2>
                                 <button id="btnAddClient" type="button" class="btn btn-info btn-rounded waves-effect waves-light m-t-10 float-right" data-toggle="modal" data-target="#modalConfirmation">Agregar nuevo cliente</button>
                             </div>
                             <div class="table-responsive m-t-10">
