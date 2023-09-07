@@ -35,6 +35,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/transfer/delete', [App\Http\Controllers\TransferController::class, 'delete']);
     Route::post('/transfer/create', [App\Http\Controllers\TransferController::class, 'store']);
     Route::post('/transfer/edit', [App\Http\Controllers\TransferController::class, 'update']);
+    Route::get('/transfer/route/{id}', [App\Http\Controllers\TransferController::class, 'getTransfersRoute']);
 
     // DEALER
     Route::get('/dealer/index', [App\Http\Controllers\DealerController::class, 'index']);
@@ -93,6 +94,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/abono/clientes', [App\Http\Controllers\AbonoController::class, 'abonoClients'])->name('abono.clientes');
     Route::post('/abono/edit', [App\Http\Controllers\AbonoController::class, 'update']);
     Route::post('/abono/updatePrice', [App\Http\Controllers\AbonoController::class, 'updatePrice']);
+    Route::get('/abono/clients/{id}', [App\Http\Controllers\ProductController::class, 'getClients']);
 });
 
 // EMPLOYEE
