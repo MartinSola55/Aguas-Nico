@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Transfer\TransferRequest;
 use App\Models\Client;
+use App\Models\Route;
 use App\Models\Transfer;
 use App\Models\User;
 use Carbon\Carbon;
@@ -189,6 +190,32 @@ class TransferController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al buscar los clientes',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function getTransfersRoute($id)
+    {
+        try {
+            $route = Route::find($id);
+            $transfers = Transfer::whereDate('created_at', '=', $route->start_date)
+                ->where('user_id', $route->user_id)
+                ->with(['Client' => function ($query) {
+                    $query->select('id', 'name');
+                }])
+                ->select('id', 'amount', 'client_id')
+                ->get();
+            $day = Carbon::parse($route->start_date)->format('d/m/Y');
+            return response()->json([
+                'success' => true,
+                'message' => $transfers, $day,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al buscar transferencias',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);

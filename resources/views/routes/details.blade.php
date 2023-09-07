@@ -238,6 +238,35 @@
             </div>
         </div>
         <!-- End Modal -->
+        <!-- Modal get tranfer clients -->
+        <div id="modalGetTransfers" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGetTransfers" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Transferencias <strong id="transfersDay"> </strong></h4>
+                        <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive m-t-10">
+                            <table class="table table-bordered table-striped" id="table_products_sold">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transfersContent">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endif
 
     @if (auth()->user()->rol_id == '2')
@@ -425,7 +454,7 @@
                         <div class="col-md-6 col-sm-12">
                             <div class="card shadow">
                                 <div class="card-body">
-                                    <div class="d-flex flex-row">
+                                    <div class="d-flex flex-row justify-content-between">
                                         <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-currency-usd"></i></div>
                                         <div class="m-l-10 align-self-center">
                                             <h3 class="m-b-0 font-light">${{ $data->day_collected }}</h3>
@@ -451,6 +480,11 @@
                                                     </span>
                                                 </a>
                                             </h5>
+                                        </div>
+                                        <div class="col-2 d-flex align-items-center justify-content-center">
+                                            <button class="btn btn-info rounded-circle" onclick="getTransfers('{{ $route->id }}')">
+                                                <i class="bi bi-bank"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -529,18 +563,54 @@
                         @endif
                         <div class="row">
                             <div class="col-md-6 col-sm-12">
-                                <div class="mb-3 px-3 justify-content-end">
+                                <div class="mb-2 px-3 justify-content-end">
                                     <input type="text" class="form-control" id="searchInput" placeholder="Buscar">
                                 </div>
-                                <div class="form-group mb-4 px-3">
-                                    <select class="form-control" id="estadoSelect">
-                                        <option value="">Filtrar por estado</option>
-                                        <option value="Pendiente">Pendiente</option>
-                                        <option value="Completado">Completado</option>
-                                        <option value="No estaba">No estaba</option>
-                                        <option value="No necesitaba">No necesitaba</option>
-                                        <option value="De vacaciones">De vacaciones</option>
-                                    </select>
+                                {{-- acordion --}}
+                                <div class="container mb-2">
+                                    <!-- Crea un grupo de acordeón -->
+                                    <div class="accordion" id="myAccordion">
+                                        <!-- Primer elemento del acordeón -->
+                                        <div class="card shadow rounded">
+                                            <div class="card-header p-2" id="headingOne">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-info collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                        Filtros
+                                                    </button>
+                                                </h5>
+                                            </div>
+
+                                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#myAccordion">
+                                                <div class="card-body">
+                                                    <div class="form-group mb-2 px-3">
+                                                        <select class="form-control" id="estadoSelect">
+                                                            <option value="">Por estado</option>
+                                                            <option value="Pendiente">Pendiente</option>
+                                                            <option value="Completado">Completado</option>
+                                                            <option value="No estaba">No estaba</option>
+                                                            <option value="No necesitaba">No necesitaba</option>
+                                                            <option value="De vacaciones">De vacaciones</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group mb-2 px-3">
+                                                        <select class="form-control" id="productSelect">
+                                                            <option value="">Por producto</option>
+                                                            @foreach ($products as $product)
+                                                                <option value="{{ $product }}">{{ $product }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group mb-2 px-3">
+                                                        <select class="form-control" id="typeSelect">
+                                                            <option value="">Por tipo de servicio</option>
+                                                            <option value="Abono">Abono</option>
+                                                            <option value="Bajada">Bajada</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-12">
@@ -613,7 +683,7 @@
                                                 <div class="row">
                                                     <div class="col-lg-12">
                                                     @if ($cart->ProductsCart->count() > 0)
-                                                        <h3 class="text-center text-muted mb-0">Bajada</h3>
+                                                        <h3 class="text-center type-element text-muted mb-0">Bajada</h3>
                                                         <div class="table-responsive">
                                                             <table class="table">
                                                                 <thead>
@@ -627,7 +697,7 @@
                                                                     @foreach ($cart->ProductsCart as $pc)
                                                                         <tr>
                                                                             <td>{{ $pc->quantity}}</td>
-                                                                            <td>{{ $pc->product->name }}</td>
+                                                                            <td class="product-element">{{ $pc->product->name }}</td>
                                                                             <td>${{ $pc->setted_price }}</td>
                                                                         </tr>
                                                                     @endforeach
@@ -637,7 +707,7 @@
                                                     @endif
                                                     @if ($cart->AbonoLog != null)
                                                         <hr class="my-2">
-                                                        <h3 class="text-center text-muted mb-0">Abono</h3>
+                                                        <h3 class="text-center type-element text-muted mb-0">Abono</h3>
                                                         <div class="table-responsive">
                                                             <table class="table">
                                                                 <thead>
@@ -650,7 +720,7 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td>{{ $cart->AbonoLog->quantity}}</td>
-                                                                        <td>{{ $cart->AbonoLog->AbonoClient->Abono->Product->name }}</td>
+                                                                        <td class="product-element">{{ $cart->AbonoLog->AbonoClient->Abono->Product->name }}</td>
                                                                         <td>${{ $cart->AbonoLog->AbonoClient->setted_price }}</td>
                                                                     </tr>
                                                                 </tbody>
@@ -1684,6 +1754,47 @@
                 }
             });
         });
+
+        function applyFilters() {
+            var productText = $("#productSelect").val().toLowerCase();
+            var typeText = $("#typeSelect").val().toLowerCase();
+
+            $(".timeline > li").each(function() {
+                var productElement = $(this).find(".product-element");
+                var typeElement = $(this).find(".type-element");
+
+                var productMatch = productText === "" || productElement.text().toLowerCase().includes(productText);
+                var typeMatch = typeText === "" || typeElement.text().toLowerCase().includes(typeText);
+
+                if (productMatch && typeMatch) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        function resetProductAndTypeSelect() {
+            if ($("#productSelect").val() === "" && $("#typeSelect").val() === "") {
+                return; // No restablecer si los selectores de producto y tipo ya están vacíos
+            }
+
+            $("#productSelect, #typeSelect").val(""); // Establece el valor de los selectores en blanco
+            applyFilters(); // Aplica los filtros después de restablecer los selectores
+        }
+
+        $("#estadoSelect, #searchInput").on("input", function() {
+            resetProductAndTypeSelect(); // Restablece los selectores de producto y tipo
+        });
+
+        // Restablece los selectores de producto y tipo al cambiar estadoSelect
+        $("#estadoSelect").on("change", function() {
+            resetProductAndTypeSelect(); // Restablece los selectores de producto y tipo
+        });
+
+        $("#productSelect, #typeSelect").on("change", applyFilters);
+
+        applyFilters();
     </script>
 
     <script>
@@ -1697,7 +1808,6 @@
                 },
 
                 success: function(response) {
-                    console.log(response);
                     if (response.data !== null) {
                         let cont = "";
                         response.message.forEach(function(cart) {
@@ -1725,6 +1835,32 @@
                         $("#clientName").html(name);
                         $("#historyContent").html(cont);
                         $("#modalGetHistory").modal('show');
+                    }
+                },
+            })
+        }
+    </script>
+
+    <script>
+        function getTransfers(idRoute) {
+            $.ajax({
+                url: "{{ url('/transfer/route/') }}" + '/' + idRoute,
+                type: "GET",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+
+                success: function(response) {
+                    if (response.data !== null) {
+                        let cont = "";
+                        response.message.forEach(function(transfer) {
+                            cont += '<tr><td><a href="/client/details/'+transfer.client.id+'">'+transfer.client.name+'</a></td>';
+                            cont += '<td>$' + transfer.amount + '</td></tr>';
+                        });
+
+                        $("#transfersDay").html(response[0]);
+                        $("#transfersContent").html(cont);
+                        $("#modalGetTransfers").modal('show');
                     }
                 },
             })

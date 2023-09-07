@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Data table -->
+    <link href="{{ asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
+
+    <!-- This is data table -->
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
     <!-- Modal -->
     <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
         style="display: none;">
@@ -93,11 +98,121 @@
                     @endforeach
                 </div>
             </div>
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h2 class="card-title">Abonos asociados a clientes</h2>
+                        <div class="row">
+                            <div class="form-group m-0 col-12 col-lg-6">
+                                <select id="selectAbono" class="form-control">
+                                    <option value="" selected>Seleccione un Abono</option>
+                                    @foreach ($abonos as $abono)
+                                        <option value="{{ $abono->id }}">{{ $abono->name }} - ${{ $abono->price }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row px-4" id="">
+
+                            <div class="table-responsive m-t-10">
+
+                                <table id="clientsTable" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Cliente</th>
+                                            <th>Dirección</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="contentTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <!-- ============================================================== -->
     <!-- End Container fluid  -->
     <!-- ============================================================= -->
+
+    <script>
+        let clientsTable = null;
+        $(document).ready(function() {
+            clientsTable = $('#clientsTable').DataTable({
+                "language": {
+                    "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                    "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                    "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                    "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                    "sLengthMenu": "Mostrar _MENU_ clientes",
+                    "sSearch": "Buscar:",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior",
+                    },
+                },
+            });
+
+            $('#selectAbono').on('change', function() {
+                let selectedValue = $(this).val();
+                if (selectedValue !== '') {
+                    $.ajax({
+                        url: '/abono/clients/' + selectedValue,
+                        type: 'GET',
+                        headers: {
+                            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(data) {
+                            let content = '';
+                            data.data.forEach(client => {
+                                content += `
+                                <tr>
+                                    <td data-field="name">
+                                        <a href="/client/details/${client.id}" >${client.name}</a>
+                                    </td>
+                                    <td data-field="price">
+                                        <span>${client.address}</span>
+                                    </td>
+                                </tr>`;
+                            });
+
+                            if (clientsTable) {
+                                clientsTable.destroy();
+                            }
+
+                            $("#contentTable").html(content);
+                            clientsTable = $('#clientsTable').DataTable({
+                                "language": {
+                                    "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                                    "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                                    "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                                    "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                                    "sLengthMenu": "Mostrar _MENU_ clientes",
+                                    "sSearch": "Buscar:",
+                                    "oPaginate": {
+                                        "sFirst": "Primero",
+                                        "sLast": "Último",
+                                        "sNext": "Siguiente",
+                                        "sPrevious": "Anterior",
+                                    },
+                                },
+                            });
+                        },
+                        error: function(error) {
+                            console.error('Error en la solicitud AJAX', error);
+                        }
+                    });
+                } else {
+                    // Si no se selecciona un valor en el select, vacía la tabla
+                    $('#contentTable').empty();
+                }
+            });
+        });
+    </script>
 
     <script>
         function openModal(item) {

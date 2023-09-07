@@ -92,4 +92,22 @@ class AbonoController extends Controller
             ], 400);
         }
     }
+
+    public function getClients($id)
+    {
+        $clients = AbonoClient::where('abono_id', $id)->with('Client')->get();
+
+        $responseData = $clients->map(function ($client) {
+            return [
+                'id' => $client->Client->id,
+                'name' => $client->Client->name,
+                'address' => $client->Client->adress,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $responseData
+        ], 201);
+    }
 }
