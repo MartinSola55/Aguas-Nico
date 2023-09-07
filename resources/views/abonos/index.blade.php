@@ -141,21 +141,21 @@
         let clientsTable = null;
         $(document).ready(function() {
             clientsTable = $('#clientsTable').DataTable({
-                                    "language": {
-                                        "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
-                                        "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
-                                        "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
-                                        "emptyTable": 'No hay clientes que coincidan con la búsqueda',
-                                        "sLengthMenu": "Mostrar _MENU_ clientes",
-                                        "sSearch": "Buscar:",
-                                        "oPaginate": {
-                                            "sFirst": "Primero",
-                                            "sLast": "Último",
-                                            "sNext": "Siguiente",
-                                            "sPrevious": "Anterior",
-                                        },
-                                    },
-                                });
+                "language": {
+                    "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                    "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                    "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                    "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                    "sLengthMenu": "Mostrar _MENU_ clientes",
+                    "sSearch": "Buscar:",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior",
+                    },
+                },
+            });
 
             $('#selectAbono').on('change', function() {
                 let selectedValue = $(this).val();
@@ -169,14 +169,15 @@
                         success: function(data) {
                             let content = '';
                             data.data.forEach(client => {
-                                content += '<tr>';
-                                content +=  '<td data-field="name">';
-                                content +=      '<a href="/client/details/'+client.id+'">'+client.name+'</a>';
-                                content +=  '</td>';
-                                content +=  '<td data-field="price">';
-                                content +=         '<span>'+client.address+'</span>';
-                                content +=  '</td>';
-                                content += '</tr>';
+                                content += `
+                                <tr>
+                                    <td data-field="name">
+                                        <a href="/client/details/${client.id}" >${client.name}</a>
+                                    </td>
+                                    <td data-field="price">
+                                        <span>${client.address}</span>
+                                    </td>
+                                </tr>`;
                             });
 
                             if (clientsTable) {
@@ -185,21 +186,21 @@
 
                             $("#contentTable").html(content);
                             clientsTable = $('#clientsTable').DataTable({
-                                    "language": {
-                                        "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
-                                        "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
-                                        "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
-                                        "emptyTable": 'No hay clientes que coincidan con la búsqueda',
-                                        "sLengthMenu": "Mostrar _MENU_ clientes",
-                                        "sSearch": "Buscar:",
-                                        "oPaginate": {
-                                            "sFirst": "Primero",
-                                            "sLast": "Último",
-                                            "sNext": "Siguiente",
-                                            "sPrevious": "Anterior",
-                                        },
+                                "language": {
+                                    "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                                    "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                                    "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                                    "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                                    "sLengthMenu": "Mostrar _MENU_ clientes",
+                                    "sSearch": "Buscar:",
+                                    "oPaginate": {
+                                        "sFirst": "Primero",
+                                        "sLast": "Último",
+                                        "sNext": "Siguiente",
+                                        "sPrevious": "Anterior",
                                     },
-                                });
+                                },
+                            });
                         },
                         error: function(error) {
                             console.error('Error en la solicitud AJAX', error);

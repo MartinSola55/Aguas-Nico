@@ -23,7 +23,6 @@ use App\Models\StockLog;
 use App\Models\Transfer;
 use App\Models\User;
 use Carbon\Carbon;
-use Database\Seeders\Products;
 use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,7 +45,7 @@ class RouteController extends Controller
                     $query->orderBy('priority');
                 }])
                 ->get();
-            return view('routes.adminIndex', compact('routes','products'));
+            return view('routes.adminIndex', compact('routes'));
         } else {
             $routes = Route::where('user_id', $user->id)
                 ->where('is_static', true)
