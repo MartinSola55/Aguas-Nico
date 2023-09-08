@@ -329,6 +329,8 @@ class CartController extends Controller
                         'cart_id' => $cart_id,
                         'bottle_types_id' => $type_id,
                         'l_r' => 1,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
                     ]
                 );
                 
@@ -346,9 +348,14 @@ class CartController extends Controller
                         'client_id' => $client_id,
                         'cart_id' => $cart_id,
                         'product_id' => $type_id,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
                     ]
                 );
-
+                if ($log->quantity !== null) {
+                    $client->ProductsClient()->where('product_id', $type_id)->increment('stock', $log->quantity);
+                }
+                
                 $client->ProductsClient()->where('product_id', $type_id)->decrement('stock', $request->input('quantity'));
             }
             $log->quantity = $request->input('quantity');
