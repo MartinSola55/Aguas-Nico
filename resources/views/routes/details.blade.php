@@ -22,8 +22,8 @@
 
 @section('content')
 
+    <!-- Modal confirm cart -->
     @if (auth()->user()->rol_id == '2')
-        <!-- Modal confirm cart -->
         <div id="modalConfirmation" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
             <div class="modal-dialog">
@@ -96,108 +96,109 @@
         <!-- End Modal -->
     @endif
 
-        <!-- Modal edit cart -->
-        <div id="modalEditCart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
-            style="display: none;">
-            <div class="modal-dialog">
-                <form role="form" class="needs-validation" id="form-edit-bajada" autocomplete="off" novalidate>
-                    <input type="hidden" name="cart_id" value="">
-                    <input type="hidden" name="products_quantity" value="">
-                    <input type="hidden" name="cash" value="">
-                    <input type="hidden" name="renew_abono" value="0">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Editar Bajada</h4>
-                            <button id="btnCloseModalEdit" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-lg-12" id="colAbonoEdit">
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="table-responsive">
-                                        <table class="table" id="modalTableEditCart">
-                                            <thead>
-                                                <tr>
-                                                    <th>Producto</th>
-                                                    <th>Precio</th>
-                                                    <th>Cantidad</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tableEditCart" class="cart-items">
-                                            </tbody>
-                                        </table>
-                                        <hr>
-                                        <div class="d-flex row justify-content-between">
-                                            <p id="totalAmountEditCart" class="col-12 align-items-center justify-content-end mb-0"></p>
-                                        </div>
-                                        <hr>
-                                        <div class="d-flex flex-column">
-                                            <div class="d-flex flex-row justify-content-between mb-3">
-                                                <div class="col-3 d-flex flex-row align-items-center">
-                                                    <div class="demo-switch-title">Entrega:</div>
-                                                </div>
-                                                <div id="cash_input_container" class="col-9 input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text">$</span>
-                                                    </div>
-                                                    <input id="cash_input_edit_cart" type="number" min="0" class="form-control mr-1">
-                                                </div>
+    <!-- Modal edit cart -->
+    <div id="modalEditCart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+        style="display: none;">
+        <div class="modal-dialog">
+            <form role="form" class="needs-validation" id="form-edit-bajada" autocomplete="off" novalidate>
+                <input type="hidden" name="cart_id" value="">
+                <input type="hidden" name="products_quantity" value="">
+                <input type="hidden" name="cash" value="">
+                <input type="hidden" name="renew_abono" value="0">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Editar Bajada</h4>
+                        <button id="btnCloseModalEdit" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12" id="colAbonoEdit">
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="table-responsive">
+                                    <table class="table" id="modalTableEditCart">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                <th>Precio</th>
+                                                <th>Cantidad</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableEditCart" class="cart-items">
+                                        </tbody>
+                                    </table>
+                                    <hr>
+                                    <div class="d-flex row justify-content-between">
+                                        <p id="totalAmountEditCart" class="col-12 align-items-center justify-content-end mb-0"></p>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex flex-row justify-content-between mb-3">
+                                            <div class="col-3 d-flex flex-row align-items-center">
+                                                <div class="demo-switch-title">Entrega:</div>
                                             </div>
-                                            <div class="d-flex justify-content-end">
-                                                <div id="amount_input_container" class="input-group w-50 mb-1" style="display: none">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text">$</span>
-                                                    </div>
-                                                    <input type="number" min="0" class="form-control mr-1" disabled>
+                                            <div id="cash_input_container" class="col-9 input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
                                                 </div>
+                                                <input id="cash_input_edit_cart" type="number" min="0" class="form-control mr-1">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <div id="amount_input_container" class="input-group w-50 mb-1" style="display: none">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="number" min="0" class="form-control mr-1" disabled>
                                             </div>
                                         </div>
                                     </div>
-                                    <hr/>
                                 </div>
+                                <hr/>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                            <button type="button" id="btnEditCart" class="btn btn-success waves-effect waves-light">Editar</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Modal get history client -->
-        <div id="modalGetHistory" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGetHistory" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Historial <strong id="clientName"> </strong></h4>
-                        <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="table-responsive m-t-10">
-                            <table class="table table-bordered table-striped" id="table_products_sold">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha bajada</th>
-                                        <th>Productos/Abono</th>
-                                        <th>Pago</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="historyContent">
-
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                        <button type="button" id="btnEditCart" class="btn btn-success waves-effect waves-light">Editar</button>
                     </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal get history client -->
+    <div id="modalGetHistory" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGetHistory" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Historial <strong id="clientName"> </strong></h4>
+                    <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive m-t-10">
+                        <table class="table table-bordered table-striped" id="table_products_sold">
+                            <thead>
+                                <tr>
+                                    <th>Fecha bajada</th>
+                                    <th>Productos/Abono</th>
+                                    <th>Pago</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyContent">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Modal route products -->
     @if (auth()->user()->rol_id == '1')
-        <!-- Modal route products -->
         <div id="modalProducts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
             <div class="modal-dialog">
@@ -238,6 +239,7 @@
             </div>
         </div>
         <!-- End Modal -->
+
         <!-- Modal get tranfer clients -->
         <div id="modalGetTransfers" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGetTransfers" aria-hidden="true">
             <div class="modal-dialog">
@@ -269,8 +271,8 @@
         </div>
     @endif
 
+    <!-- Modal route products returned general -->
     @if (auth()->user()->rol_id == '2')
-        <!-- Modal route products returned general -->
         <div id="modalProductsReturned" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
             style="display: none;">
             <div class="modal-dialog">
@@ -402,6 +404,8 @@
         <!-- ============================================================== -->
         <!-- Start Page Content -->
         <!-- ============================================================== -->
+
+        <!-- Datos del admin -->
         @if ($route->is_static === false && auth()->user()->rol_id == '1')
             <div class="row">
                 <div class="col-xlg-6 col-lg-12">
@@ -566,7 +570,8 @@
                                 <div class="mb-2 px-3 justify-content-end">
                                     <input type="text" class="form-control" id="searchInput" placeholder="Buscar">
                                 </div>
-                                {{-- acordion --}}
+
+                                <!-- FILTRO DE BÚSQUEDA -->
                                 <div class="container mb-2">
                                     <!-- Crea un grupo de acordeón -->
                                     <div class="accordion" id="myAccordion">
@@ -621,6 +626,8 @@
                                 @endif
                             </div>
                         </div>
+
+                        <!-- TIMELINE DE CLIENTES -->
                         <ul class="timeline">
                             <?php
                                 $contador = 0;
@@ -807,27 +814,34 @@
                         </div>
                     @endif
                 </div>
-                {{-- Delete Route --}}
-                <form id="formDeleteRoute" action="{{ url('/route/delete') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="id" value="{{ $route->id }}">
-                </form>
-                {{-- Fill modal --}}
-                <form id="form_search_products" action="{{ url('/route/getProductsClient') }}" method="GET">
-                    @csrf
-                    <input type="hidden" id="client_id" name="client_id" value="">
-                </form>
 
-                {{-- Actions --}}
-                <form id="form_no_confirmation" action="{{ url('/cart/changeState') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="id" value="">
-                    <input type="hidden" name="state" value="">
-                </form>
+                <!-- FORMULARIOS -->
+                <div style="display: none">
+
+                    <!-- Eliminar planilla -->
+                    <form id="formDeleteRoute" action="{{ url('/route/delete') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $route->id }}">
+                    </form>
+
+                    <!-- Productos de un cliente -->
+                    <form id="form_search_products" action="{{ url('/route/getProductsClient') }}" method="GET">
+                        @csrf
+                        <input type="hidden" id="client_id" name="client_id" value="">
+                    </form>
+    
+                    <!-- Cambiar estado de un carrito -->
+                    <form id="form_no_confirmation" action="{{ url('/cart/changeState') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="id" value="">
+                        <input type="hidden" name="state" value="">
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Swal constantes -->
     <script>
         const SwalAlert = (text) => {
             Swal.fire({
@@ -851,7 +865,312 @@
         };
     </script>
 
-    {{-- Productos en el camión de un repartidor --}}
+    <!-- Funciones success de las pegadas AJAX -->
+    <script>
+        function successProducts4dispatch(response) {
+            let cont = "";
+            response.data.forEach(function(product) {
+                let quantity = product.quantity ? product.quantity : 0;
+                cont += `
+                <tr data-id="${product.id} data-product_id="${product.product_id}" data-bottle_types_id="${product.bottle_type_id}">
+                    <td>${product.name}</td>
+                    <td><input type="number" name="quantity_dispatched" class="form-control" min="0" max="10000" value="${quantity}"></td>
+                    <td>
+                        <div class="input-group"><
+                            input type="number" class="form-control additional-quantity" min="0" max="10000" value="0">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary btn-add-quantity"><i class="bi bi-plus-lg"></i></button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            $("#modalProductsDispatchTable").html(cont);
+        }
+
+        function successSearchProductsClient(response) {
+            $("#table_products_client").css('display', 'block');
+            let content = "";
+            response.products.forEach(product => {
+                content += `
+                    <tr data-id="${product.product_id}">
+                        <td>${product.product.name}</td>
+                        <td><input type="number" class="form-control" min="0" max="10000"></td>
+                    </tr>
+                `;
+            });
+            $("#table_products_client table tbody").html(content);
+        }
+
+        function successClientProducts(response) {
+            let cont = "";
+            if (response.data.bottle) {
+                response.data.bottle.forEach(function(bottle) {
+                    cont += `
+                    <tr>
+                        <td><input type="hidden" class="form-control" id="bottle_id_${bottle.id}" value="${bottle.log_id}">${bottle.name}</td>
+                        <td><input type="number" class="form-control" id="bottle-${bottle.id}" value="${bottle.stock}" min="0" max="10000"></td>
+                        <td><button type="button" onclick="returnProduct($('#bottle_id_${bottle.id}').val(), false, ${bottle.id}, ${response.data.cart_id}, $('#bottle-${bottle.id}').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
+                    </tr>`;
+                });
+            }
+            if (response.data.products){
+                response.data.products.forEach(function(product) {
+                    cont += `
+                    <tr>
+                        <td><input type="hidden" class="form-control" id="product_id_${product.id}" value="${product.log_id}">${product.name}</td>
+                        <td><input type="number" class="form-control" id="product-${product.id}" value="${product.stock}" min="0" max="10000"></td>
+                        <td><button type="button" onclick="returnProduct($('#product_id_${product.id}').val(), true, ${product.id}, ${response.data.cart_id}, $('#product-${product.id}').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
+                    </tr>`;
+                });
+            }
+            $("#tableBodyReturnedByClient").html(cont);
+        }
+
+        function successCartConfirm(response) {
+            $("#btnCloseModal").click();
+            Swal.fire({
+                title: response.message,
+                icon: 'success',
+                showCancelButton: false,
+                confirmButtonColor: '#1e88e5',
+                confirmButtonText: 'OK',
+            }).then((result) => {
+                Swal.fire({
+                    title: '¿Devuelve envases?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Si',
+                    cancelButtonText : 'No',
+                    confirmButtonColor: '#1e88e5',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        getReturnStock(response.data.client_id, response.data.client.name, response.data.id);
+                    } else {
+                        location.reload();
+                    }
+                });
+            });
+        }
+
+        function successSearchProducts(response) {
+            $("#colAbono").empty();
+            let content = "";
+            response.products.forEach(p => {
+                content += `
+                <tr>
+                    <td>${p.product.name}</td>
+                    <td class="precioProducto">$${p.product.price}</td>
+                    <td><input type="number" min="0" max="1000" class="form-control quantity-input" data-id="${p.product.id}" ></td>
+                </tr>`;
+            });
+            $("#tableBody").html(content);
+            if (response.abonoClient !== null) {
+                let disponia = "";
+                if (response.abonoClient.available === 0) {
+                    disponia = '<td>No disponible</td>';
+                } else {
+                    disponia = `
+                    <td>${response.abonoClient.available}</td>
+                    <td><input type="number" class="form-control" min="0" max="${response.abonoClient.available}" id="dump_truck" value="0"></td>`;
+                }
+
+                //Abono corriente disponible para descontar
+                let cont = `
+                <input type="hidden" name="abono_id" value="${response.abonoClient.id}">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Abono</th>
+                                <th>Disponible</th>
+                                <th>Baja</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${response.abonoType.name} - $${response.abonoType.price}</td>
+                                ${disponia}
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                </div>`;
+                $("#colAbono").html(cont);
+            } else if (response.client_abono_id !== null) {
+                //Renovacion de Abono
+                let cont = `
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Abono</th>
+                                <th>Disponible</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${response.abonoType.name} - $${response.abonoType.price}</td>
+                                <td>-</td>
+                                <td><button type="button" class="btn btn-success waves-effect waves-light" onclick="renewAbono(${response.abonoType.id}, ${response.abonoType.price}, ${response.abonoType.client_id})">Renovar Abono</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                </div>`;
+                $("#colAbono").html(cont);
+            }
+
+            $(".quantity-input").on("input", function() {
+                total = 0 + totalRenewAbono; // Reiniciar el valor total a cero en cada iteración
+
+                $("#modalTable tbody tr").each(function() {
+                    let precioUnit = $(this).find(".precioProducto").text().replace('$', '');
+                    let cantidad = $(this).find(".quantity-input").val();
+                    let resultado = precioUnit * cantidad;
+                    total += resultado;
+                });
+
+                $("#totalAmount").html("Total pedido: $" + total);
+            });
+        };
+
+        function successAbonoRenew(response) {
+            let disponia = "-";
+            if (response.data.abonoClient.available === 0) {
+                disponia = '<td>No disponible</td>';
+            } else if (response.client_abono_id !== null){
+                disponia = `
+                <td>${response.data.abonoClient.available}</td>
+                <td><input class="form-control" type="number" min="0" max="${response.data.abonoClient.available}" id="dump_truck" value="0"></td>`;
+            }
+            let cont = `
+            <input type="hidden" name="abono_id" value="${response.data.abonoClient.id}">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Abono</th>
+                            <th>Disponible</th>
+                            <th>Baja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${response.data.abonoType.name} - $${response.data.abonoType.price}</td>
+                            ${disponia}
+                        </tr>
+                    </tbody>
+                </table>
+                <hr>
+            </div>`;
+            $("#colAbono").html(cont);
+        }
+
+        function successAbonoGetLog(response) {
+            if (response.data !== null) {
+                let cont = `
+                <input type="hidden" id="abono_log_id_edit" value="${response.data.id}">
+                <input type="hidden" id="abono_log_quantity_available_edit" value="${response.data.available}">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Abono</th>
+                                <th>Disponía</th>
+                                <th>Bajo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${response.data.name} - $${response.data.abonoclient.setted_price}</td>
+                                <td>${response.data.available}</td>
+                                <td><input class="form-control" type="number" min="0" max="${response.data.available}" id="abono_log_quantity_new_edit" value="${response.data.quantity}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                </div>`;
+                $("#colAbonoEdit").html(cont);
+            }
+        }
+
+        function successCartReturn(response, product, type_id) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+            Toast.fire({
+                icon: 'success',
+                title: response.message
+            });
+            if (response.data !== null) {
+                if (product === true) {
+                    $(`#product_id_${type_id}`).val(response.data.id);
+                } else{
+                    $(`#bottle_id_${type_id}`).val(response.data.id);
+                }
+            }
+        }
+
+        function successTransferRoute(response) {
+            if (response.data !== null) {
+                let cont = "";
+                response.message.forEach(function(transfer) {
+                    cont += 
+                    `<tr>
+                        <td><a href="/client/details/${transfer.client.id}">${transfer.client.name}</a></td>
+                        <td>$${transfer.amount}</td>
+                    </tr>`;
+                });
+
+                $("#transfersDay").html(response[0]);
+                $("#transfersContent").html(cont);
+                $("#modalGetTransfers").modal('show');
+            }
+        }
+
+        function successClientGetHistory(response) {
+            if (response.data !== null) {
+                let cont = "";
+                response.message.forEach(function(cart) {
+                    cont += `<tr><td>${new Date(cart.created_at).toLocaleDateString()}</td><td>`;
+
+                    if (cart.products_cart.length > 0) {
+                        cart.products_cart.forEach(function(pc) {
+                            cont += `<p class="m-0">${pc.product.name} x ${pc.quantity} - $${(pc.quantity * pc.setted_price)}</p><br>`;
+                        });
+                    }
+
+                    if (cart.abono_client) {
+                        cont += `<p class="m-0">${cart.abono_client.abono.name} - $${cart.abono_client.setted_price}</p><br>`;
+                    }
+
+                    if (cart.abono_log && cart.abono_log.quantity > 0) {
+                        cont += `<p class="m-0">${cart.abono_log.abono_client.abono.name} - Bajó: ${cart.abono_log.quantity}</p><br>`;
+                    }
+
+                    cont += '</td><td>$' + cart.cart_payment_method.reduce(function(total, pm) {
+                        return total + parseFloat(pm.amount);
+                    }, 0) + '</td></tr>';
+                });
+
+                $("#clientName").html(name);
+                $("#historyContent").html(cont);
+                $("#modalGetHistory").modal('show');
+            }
+        }
+    </script>
+
+    <!-- Productos en el camión de un repartidor -->
     <script>
         $("#modalProducts input[type='number']").on("input", function() {
             if ($(this).val() < 0) {
@@ -893,11 +1212,6 @@
                         confirmButtonText: 'OK',
                         allowOutsideClick: false,
                     })
-                    // .then((result) => {
-                    //     if (result.isConfirmed) {
-                    //         window.location.reload();
-                    //     }
-                    // })
                 },
                 error: function(errorThrown) {
                     SwalError(errorThrown.responseJSON.message);
@@ -913,19 +1227,7 @@
                     'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    console.log(response);
-                    let cont = "";
-                    response.data.forEach(function(product) {
-                        cont += '<tr data-id="' + product.id + '" data-product_id="'+ product.product_id +'" data-bottle_types_id="'+ product.bottle_type_id +'">';
-                        cont += '<td>'+ product.name +'</td>';
-                        cont += '<td><input type="number" name="quantity_dispatched" class="form-control" min="0" max="10000" value="'+ (product.quantity ? product.quantity : 0) +'"></td>';
-                        cont += '<td><div class="input-group"><input type="number" class="form-control additional-quantity" min="0" max="10000" value="0"><div class="input-group-append">';
-                        cont += '<button type="button" class="btn btn-primary btn-add-quantity"><i class="bi bi-plus-lg"></i></button>';
-                        cont += '</div></div></td>';
-                        cont += '</tr>';
-                    });
-
-                    $("#modalProductsDispatchTable").html(cont);
+                    successProducts4dispatch(response);
                 },
                 error: function(errorThrown) {
                     SwalError(errorThrown.responseJSON.message);
@@ -934,7 +1236,7 @@
         }
     </script>
 
-    {{-- Productos que devuelve un cliente --}}
+    <!-- Productos que devuelve un cliente -->
     <script>
         function searchProductsClient() {
             $("#client_id").val($("#selectClientToReturn").val());
@@ -944,17 +1246,7 @@
                 method: $("#form_search_products").attr('method'), // Utiliza el método del formulario
                 data: $("#form_search_products").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
-                    $("#table_products_client").css('display', 'block');
-                    let content = "";
-                    response.products.forEach(product => {
-                        content += `
-                            <tr data-id="${product.product_id}">
-                                <td>${product.product.name}</td>
-                                <td><input type="number" class="form-control" min="0" max="10000"></td>
-                            </tr>
-                        `;
-                    });
-                    $("#table_products_client table tbody").html(content);
+                    successSearchProductsClient(response);
                 },
                 error: function(errorThrown) {
                     SwalError(errorThrown.responseJSON.message);
@@ -987,7 +1279,14 @@
                 data: $("#formProductsReturned").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
                     $("#btnCloseModalProductsReturned").click();
-
+                    Swal.fire({
+                        title: response.message,
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#1e88e5',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                    });
                 },
                 error: function(errorThrown) {
                     SwalError(errorThrown.responseJSON.message);
@@ -1009,26 +1308,7 @@
                 success: function(response) {
                     $("#modalProductsReturnedByClient").modal("show");
                     $("#modalProductsReturnedByClient .modal-title").text("Cargar devolución " + client_name);
-                    let cont = "";
-                    if (response.data.bottle) {
-                    response.data.bottle.forEach(function(bottle) {
-                        cont += '<tr>';
-                        cont += '<td><input type="hidden" class="form-control" id="bottle_id_' + bottle.id + '" value="' + bottle.log_id + '">' + bottle.name + '</td>';
-                        cont += '<td><input type="number" class="form-control" id="bottle-' + bottle.id + '" value="' + bottle.stock + '" min="0" max="10000"></td>';
-                        cont += '<td><button type="button" onclick="returnProduct($(\'#bottle_id_' + bottle.id + '\').val(), false ,'+ bottle.id +','+ response.data.cart_id + ', $(\'#bottle-' + bottle.id + '\').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
-                        cont += '</tr>';
-                    });
-                    }
-                    if (response.data.products){
-                    response.data.products.forEach(function(product) {
-                        cont += '<tr>';
-                        cont += '<td><input type="hidden" class="form-control" id="product_id_' + product.id + '" value="' + product.log_id + '">' + product.name + '</td>';
-                        cont += '<td><input type="number" class="form-control" id="product-' + product.id + '" value="' + product.stock + '" min="0" max="10000"></td>';
-                        cont += '<td><button type="button" onclick="returnProduct($(\'#product_id_' + product.id + '\').val(), true,'+ product.id +','+ response.data.cart_id + ', $(\'#product-' + product.id + '\').val())" class="btn btn-success waves-effect waves-light"><i class="bi bi-arrow-repeat"></i></button></td>'
-                        cont += '</tr>';
-                    });
-                    }
-                    $("#tableBodyReturnedByClient").html(cont);
+                    successClientProducts(response);
                 },
                 error: function(errorThrown) {
                     SwalError(errorThrown.responseJSON.message);
@@ -1037,7 +1317,7 @@
         }
     </script>
 
-    {{-- Pagar un carrito --}}
+    <!-- Pagar un carrito -->
     <script>
         $("#btnPayCart").on("click", function() {
             // Productos
@@ -1057,8 +1337,7 @@
             // Métodos de pago
             $("#form-confirm input[name='cash']").val($("#cash_input").val());
 
-            discountAbono()
-            .then(() => {
+            discountAbono().then(() => {
                 $.ajax({
                     url: "{{ url('/cart/confirm') }}",
                     type: "POST",
@@ -1067,30 +1346,7 @@
                     },
                     data: $("#form-confirm").serialize(),
                     success: function(response) {
-                        $("#btnCloseModal").click();
-                        Swal.fire({
-                            title: response.message,
-                            icon: 'success',
-                            showCancelButton: false,
-                            confirmButtonColor: '#1e88e5',
-                            confirmButtonText: 'OK',
-                        }).then((result) => {
-                            Swal.fire({
-                                title: '¿Devuelve envases?',
-                                icon: 'question',
-                                showCancelButton: true,
-                                confirmButtonText: 'Si',
-                                cancelButtonText : 'No',
-                                confirmButtonColor: '#1e88e5',
-                            })
-                            .then((result) => {
-                                if (result.isConfirmed) {
-                                    getReturnStock(response.data.client_id, response.data.client.name, response.data.id);
-                                } else {
-                                    location.reload();
-                                }
-                            });
-                        });
+                        successCartConfirm(response);
                     },
                     error: function(errorThrown) {
                         let text = errorThrown.responseJSON.text ?? "";
@@ -1108,7 +1364,7 @@
         });
     </script>
 
-    {{-- Habilitar los medios de pago --}}
+    <!-- Habilitar los medios de pago (NO SE USA MÁS) -->
     <script>
         $(document).ready(function() {
             // Agregamos evento change a los checkboxes
@@ -1156,74 +1412,14 @@
         });
     </script>
 
+    <!-- Modal bajar productos -->
     <script>
         function esNumero(valor) {
             return /^\d+$/.test(valor);
         }
         let totalRenewAbono = 0;
-        // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
-        function fillModal(data) {
-            $("#colAbono").empty();
-            let content = "";
-            data.products.forEach(p => {
-                content += '<tr>';
-                content += '<td>' + p.product.name + '</td>';
-                content += '<td class="precioProducto">$ ' + p.product.price + '</td>';
-                content += '<td><input type="number" min="0" max="1000" class="form-control quantity-input" data-id="' + p.product.id + '" ></td>';
-                content += "</tr>";
-            });
-            $("#tableBody").html(content);
-            if (data.abonoClient !== null) {
-                //Abono corriente disponible para descontar
-                let cont = "";
-                cont += '<input type="hidden" name="abono_id" value="'+ data.abonoClient.id +'">';
-                cont += '<div class="table-responsive"><table class="table"><thead><tr>';
-                cont += '<th>Abono</th>';
-                cont += '<th>Disponible</th>';
-                cont += '<th>Baja</th></tr>';
-                cont += '</thead><tr>';
-                cont += '<td>' + data.abonoType.name + ' $' + data.abonoType.price + '</td>';
-                if (data.abonoClient.available === 0) {
-                cont += '<td>no disponible</td>';
-                } else {
-                cont += '<td>' + data.abonoClient.available + '</td>';
-                cont += '<td><input type="number" class="form-control" min="0" max="' + data.abonoClient.available + '" id="dump_truck" value="0"></td>';
-                }
-                cont += '</tr>';
-                cont += '</tbody></table><hr></div>';
-                $("#colAbono").html(cont);
-            }else if (data.client_abono_id !== null){
-                //Renovacion de Abono
-                let cont = "";
-                cont += '<div class="table-responsive"><table class="table"><thead><tr>';
-                cont += '<th>Abono</th>';
-                cont += '<th>Disponible</th>';
-                cont += '<th></th></tr>';
-                cont += '</thead><tr>';
-                cont += '<td>' + data.abonoType.name + ' $' + data.abonoType.price + '</td>';
-                cont += '<td></td>';
-                cont += '<td><button type="button" class="btn btn-success waves-effect waves-light" onclick="renewAbono('+ data.abonoType.id +','+ data.abonoType.price +','+ data.abonoType.client_id +')">Renovar Abono</button></td>';
-                cont += "</tr>";
-                cont += '</tbody></table><hr></div>';
-                $("#colAbono").html(cont);
-            }
-
-            $(".quantity-input").on("input", function() {
-                total = 0 + totalRenewAbono; // Reiniciar el valor total a cero en cada iteración
-
-                $("#modalTable tbody tr").each(function() {
-                    let precioUnit = $(this).find(".precioProducto").text().replace('$', '');
-                    let cantidad = $(this).find(".quantity-input").val();
-                    let resultado = precioUnit * cantidad;
-                    total += resultado;
-                });
-
-                $("#totalAmount").html("Total pedido: $" + total);
-            });
-        };
-
+        
         function openModal(cart_id, client_id, debt) {
-            // Para el modal
             $("#form-confirm input[name='cart_id']").val(cart_id);
             $("#tableBody").html("");
             $("#client_id").val(client_id);
@@ -1231,20 +1427,20 @@
             $("#cash_input_container").css("display", "flex");
             $("#cash_input_container input").prop("disabled", false);
             $("#cash_input_container input").val("");
-
+            
             $("#method_checkbox").prop("checked", false);
             $("#methods_input_container").css("display", "none");
-
+            
             $("#amount_input_container").css("display", "none");
             $("#amount_input").prop("disabled", true);
-
-            // Enviar solicitud AJAX para rellenar el modal
+            
+            // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
             $.ajax({
                 url: $("#form_search_products").attr('action'), // Utiliza la ruta del formulario
                 method: $("#form_search_products").attr('method'), // Utiliza el método del formulario
                 data: $("#form_search_products").serialize(), // Utiliza los datos del formulario
                 success: function(response) {
-                    fillModal(response);
+                    successSearchProducts(response);
                 },
                 error: function(errorThrown) {
                     Swal.fire({
@@ -1256,11 +1452,14 @@
                 }
             });
         }
+    </script>
 
+    <!-- Eliminar una planilla o un carrito -->
+    <script>
         $("#btnDeleteRoute").on("click", function() {
             Swal.fire({
                 title: "Esta acción no se puede revertir",
-                text: '¿Seguro deseas eliminar este reparto?',
+                text: '¿Seguro deseas eliminar esta planilla?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Eliminar',
@@ -1269,8 +1468,7 @@
                     confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
                     cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
                 }
-            })
-            .then((result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
                         url: $("#formDeleteRoute").attr('action'), // Utiliza la ruta del formulario
@@ -1297,7 +1495,6 @@
             })
         });
 
-
         $("button[name='btnDeleteCart']").on("click", function() {
             let id = $(this).val();
             Swal.fire({
@@ -1311,8 +1508,7 @@
                     confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
                     cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
                 }
-            })
-            .then((result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
                         url: $("#formDeleteCart_" + id).attr('action'), // Utiliza la ruta del formulario
@@ -1340,14 +1536,14 @@
         });
     </script>
 
-    {{-- Acciones carrito --}}
+    <!-- Acciones del carrito -->
     <script>
         function sendStateChange(state, cart_id, action) {
             $("#form_no_confirmation input[name='id']").val(cart_id);
             $("#form_no_confirmation input[name='state']").val(state);
 
             Swal.fire({
-                title: "¿Está seguro que el cliente " + action + "?",
+                title: `¿Está seguro que el cliente ${action}?`,
                 icon: 'question',
                 showCancelButton: true,
                 cancelButtonText: "Cancelar",
@@ -1357,9 +1553,7 @@
                     confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
                     cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
                 }
-            })
-            // Si confirma la acción, envía el formulario
-            .then((result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
                         url: $("#form_no_confirmation").attr('action'),
@@ -1373,8 +1567,7 @@
                                 confirmButtonColor: '#1e88e5',
                                 confirmButtonText: 'OK',
                                 allowOutsideClick: false,
-                            })
-                            .then((result) => {
+                            }).then((result) => {
                                 if (result.isConfirmed) {
                                     window.location.reload();
                                 }
@@ -1401,8 +1594,7 @@
                     confirmButton: 'btn btn-danger waves-effect waves-light px-3 py-2',
                     cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
                 }
-            })
-            .then((result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
                         url: $("#formResetCartState_" + id).attr('action'), // Utiliza la ruta del formulario
@@ -1430,7 +1622,7 @@
         });
     </script>
 
-    {{-- Añadir cantidad de productos cargados --}}
+    <!-- Añadir cantidad de productos cargados -->
     <script>
         $(document).ready(function() {
             // Evento click para el botón "Añadir"
@@ -1456,7 +1648,7 @@
         });
     </script>
 
-    {{-- Abonos --}}
+    <!-- Rennovar y descontar abonos -->
     <script>
         function renewAbono(abono_id,abono_price,client_id) {
             Swal.fire({
@@ -1471,7 +1663,7 @@
                 if (result.isConfirmed) {
                     totalRenewAbono += abono_price;
                     $('input[name="renew_abono"]').val(abono_price);
-                    $("#totalAmount").html("Total pedido: $" + totalRenewAbono);
+                    $("#totalAmount").html(`Total pedido: $${totalRenewAbono}`);
                     $.ajax({
                         url: "{{ url('/abono/renew') }}",
                         type: "POST",
@@ -1484,23 +1676,7 @@
                             cart_id: $("input[name='cart_id']").val(),
                         },
                         success: function(response) {
-                            let cont = "";
-                            cont += '<input type="hidden" name="abono_id" value="'+ response.data.abonoClient.id +'">';
-                            cont += '<div class="table-responsive"><table class="table"><thead><tr>';
-                            cont += '<th>Abono</th>';
-                            cont += '<th>Disponible</th>';
-                            cont += '<th>Baja</th></tr>';
-                            cont += '</thead><tr>';
-                            cont += '<td>' + response.data.abonoType.name + ' $' + response.data.abonoType.price + '</td>';
-                            if (response.data.abonoClient.available === 0) {
-                            cont += '<td>no disponible</td>';
-                            } else if (response.client_abono_id !== null){
-                            cont += '<td>' + response.data.abonoClient.available + '</td>';
-                            cont += '<td><input class="form-control" type="number" min="0" max="' + response.data.abonoClient.available + '" id="dump_truck" value="0"></td>';
-                            }
-                            cont += '</tr>';
-                            cont += '</tbody></table><hr></div>';
-                            $("#colAbono").html(cont);
+                            successAbonoRenew(response);
                         },
                         error: function(errorThrown) {
                             SwalError(errorThrown.responseJSON.message);
@@ -1543,12 +1719,13 @@
         }
     </script>
 
+    <!-- Editar un carrito -->
     <script>
         // Calcular el total del carrito
         function calculateTotal() {
             let total = 0;
             $(".cart-items tr").each(function() {
-                let precioUnit = parseFloat($(this).find(".precioProducto").text().replace("$ ", ""));
+                let precioUnit = parseFloat($(this).find(".precioProducto").text().replace("$", ""));
                 let cantidad = parseInt($(this).find(".quantityedit-input").val());
                 let subtotal = precioUnit * cantidad;
                 total += subtotal;
@@ -1563,11 +1740,12 @@
             $("#modalEditCart").modal("show");
             let content = '';
             cart.products_cart.forEach(p => {
-                content += '<tr>';
-                content += '<td>' + p.product.name + '</td>';
-                content += '<td class="precioProducto">$ ' + p.product.price + '</td>';
-                content += '<td><input type="number" min="0" max="1000" class="form-control quantityedit-input" value="' + p.quantity + '" data-id="' + p.product.id + '" ></td>';
-                content += "</tr>";
+                content += `
+                <tr>
+                    <td>${p.product.name}</td>
+                    <td class="precioProducto">$${p.product.price}</td>
+                    <td><input type="number" min="0" max="1000" class="form-control quantityedit-input" value="${p.quantity}" data-id="${p.product.id}" ></td>
+                </tr>`;
             });
 
             // Actualizar el total al modificar la cantidad
@@ -1600,23 +1778,7 @@
                 },
 
                 success: function(response) {
-                    if (response.data !== null) {
-                        let cont = "";
-                        cont += '<input type="hidden" id="abono_log_id_edit" value="'+ response.data.id +'">';
-                        cont += '<input type="hidden" id="abono_log_quantity_available_edit" value="'+ response.data.available +'">';
-                        cont += '<div class="table-responsive"><table class="table"><thead><tr>';
-                        cont += '<th>Abono</th>';
-                        cont += '<th>Disponia</th>';
-                        cont += '<th>Bajo</th></tr>';
-                        cont += '</thead><tr>';
-                        cont += '<td>' + response.data.name + ' $' + response.data.abonoclient.setted_price + '</td>';
-                        cont += '<td>' + response.data.available + '</td>';
-                        cont += '<td><input class="form-control" type="number" min="0" max="' + response.data.available + '" id="abono_log_quantity_new_edit" value="' + response.data.quantity + '"></td>';
-                        cont += '</tr>';
-                        cont += '</tbody></table><hr></div>';
-
-                        $("#colAbonoEdit").html(cont);
-                    }
+                    successAbonoGetLog(response);
                 },
             })
         }
@@ -1680,6 +1842,7 @@
         });
     </script>
 
+    <!-- Devolver productos -->
     <script>
         function returnProduct(id, product, type_id, cart_id, quantity) {
             // acá el type_id puede ser
@@ -1696,28 +1859,7 @@
                     cart_id: cart_id,
                 },
                 success: function(response) {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'bottom-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.addEventListener('mouseenter', Swal.stopTimer);
-                            toast.addEventListener('mouseleave', Swal.resumeTimer);
-                        }
-                    });
-                    Toast.fire({
-                        icon: 'success',
-                        title: response.message
-                    });
-                    if (response.data !== null) {
-                        if (product === true) {
-                            $(`#product_id_${type_id}`).val(response.data.id);
-                        } else{
-                            $(`#bottle_id_${type_id}`).val(response.data.id);
-                        }
-                    }
+                    successCartReturn(response, product, type_id);
                 },
                 error: function(errorThrown) {
                     SwalError(errorThrown.responseJSON.message);
@@ -1726,12 +1868,13 @@
         }
     </script>
 
+    <!-- Filtrar carritos -->
     <script>
         $("#searchInput").on("input", function() {
-            var searchText = $(this).val().toLowerCase();
+            let searchText = $(this).val().toLowerCase();
             $(".timeline > li").each(function() {
-                var nameElement = $(this).find(".name-element");
-                var addressElement = $(this).find(".address-element");
+                let nameElement = $(this).find(".name-element");
+                let addressElement = $(this).find(".address-element");
 
                 if (nameElement.text().toLowerCase().includes(searchText) ||
                     addressElement.text().toLowerCase().includes(searchText)) {
@@ -1743,9 +1886,9 @@
         });
 
         $("#estadoSelect").on("change", function() {
-            var searchText = $(this).val().toLowerCase();
+            let searchText = $(this).val().toLowerCase();
             $(".timeline > li").each(function() {
-                var nameAndStateElement = $(this).find(".name-element");
+                let nameAndStateElement = $(this).find(".name-element");
 
                 if (nameAndStateElement.text().toLowerCase().includes(searchText)) {
                     $(this).show();
@@ -1756,15 +1899,15 @@
         });
 
         function applyFilters() {
-            var productText = $("#productSelect").val().toLowerCase();
-            var typeText = $("#typeSelect").val().toLowerCase();
+            let productText = $("#productSelect").val().toLowerCase();
+            let typeText = $("#typeSelect").val().toLowerCase();
 
             $(".timeline > li").each(function() {
-                var productElement = $(this).find(".product-element");
-                var typeElement = $(this).find(".type-element");
+                let productElement = $(this).find(".product-element");
+                let typeElement = $(this).find(".type-element");
 
-                var productMatch = productText === "" || productElement.text().toLowerCase().includes(productText);
-                var typeMatch = typeText === "" || typeElement.text().toLowerCase().includes(typeText);
+                let productMatch = productText === "" || productElement.text().toLowerCase().includes(productText);
+                let typeMatch = typeText === "" || typeElement.text().toLowerCase().includes(typeText);
 
                 if (productMatch && typeMatch) {
                     $(this).show();
@@ -1797,6 +1940,7 @@
         applyFilters();
     </script>
 
+    <!-- Historial de bajadas del cliente -->
     <script>
         function getHistory(idClient, name) {
             let url = "{{ url('/client/getHistory/') }}" + '/' + idClient;
@@ -1806,41 +1950,14 @@
                 headers: {
                     'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
                 },
-
                 success: function(response) {
-                    if (response.data !== null) {
-                        let cont = "";
-                        response.message.forEach(function(cart) {
-                            cont += '<tr><td>' + new Date(cart.created_at).toLocaleDateString() + '</td><td>';
-
-                            if (cart.products_cart.length > 0) {
-                                cart.products_cart.forEach(function(pc) {
-                                    cont += '<p class="m-0">' + pc.product.name + ' x ' + pc.quantity + ' - $' + (pc.quantity * pc.setted_price) + '</p><br>';
-                                });
-                            }
-
-                            if (cart.abono_client) {
-                                cont += '<p class="m-0">' + cart.abono_client.abono.name + ' - $' + cart.abono_client.setted_price + '</p><br>';
-                            }
-
-                            if (cart.abono_log && cart.abono_log.quantity > 0) {
-                                cont += '<p class="m-0">' + cart.abono_log.abono_client.abono.name + ' - Bajó: ' + cart.abono_log.quantity + '</p><br>';
-                            }
-
-                            cont += '</td><td>$' + cart.cart_payment_method.reduce(function(total, pm) {
-                                return total + parseFloat(pm.amount);
-                            }, 0) + '</td></tr>';
-                        });
-
-                        $("#clientName").html(name);
-                        $("#historyContent").html(cont);
-                        $("#modalGetHistory").modal('show');
-                    }
+                    successClientGetHistory(response);
                 },
             })
         }
     </script>
 
+    <!-- Transferencias de la planilla -->
     <script>
         function getTransfers(idRoute) {
             $.ajax({
@@ -1849,21 +1966,11 @@
                 headers: {
                     'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
                 },
-
                 success: function(response) {
-                    if (response.data !== null) {
-                        let cont = "";
-                        response.message.forEach(function(transfer) {
-                            cont += '<tr><td><a href="/client/details/'+transfer.client.id+'">'+transfer.client.name+'</a></td>';
-                            cont += '<td>$' + transfer.amount + '</td></tr>';
-                        });
-
-                        $("#transfersDay").html(response[0]);
-                        $("#transfersContent").html(cont);
-                        $("#modalGetTransfers").modal('show');
-                    }
+                    successTransferRoute(response);
                 },
             })
         }
     </script>
+    
 @endsection
