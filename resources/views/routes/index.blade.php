@@ -50,10 +50,10 @@
         <!-- ============================================================== -->
         <div class="row page-titles">
             <div class="col-md-5 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Planillass</h3>
+                <h3 class="text-themecolor m-b-0 m-t-0">Planillas</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('home') }}">Inicio</a></li>
-                    <li class="breadcrumb-item active">Planillass</li>
+                    <li class="breadcrumb-item active">Planillas</li>
                 </ol>
             </div>
             @if (auth()->user()->rol_id == '1')

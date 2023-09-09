@@ -28,10 +28,10 @@
             style="display: none;">
             <div class="modal-dialog">
                 <form role="form" class="needs-validation" id="form-confirm" autocomplete="off" novalidate>
+                    <input type="hidden" name="discount">
                     <input type="hidden" name="cart_id" value="">
                     <input type="hidden" name="products_quantity" value="">
                     <input type="hidden" name="cash" value="">
-                    <input type="hidden" name="renew_abono" value="0">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Confirmar pedido</h4>
@@ -104,7 +104,6 @@
                 <input type="hidden" name="cart_id" value="">
                 <input type="hidden" name="products_quantity" value="">
                 <input type="hidden" name="cash" value="">
-                <input type="hidden" name="renew_abono" value="0">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Editar Bajada</h4>
@@ -1074,7 +1073,7 @@
                 <input type="hidden" id="abono_log_id_edit" value="${response.data.id}">
                 <input type="hidden" id="abono_log_quantity_available_edit" value="${response.data.available}">
                 <div class="table-responsive">
-                    <table class="table">
+                    <table id="table_cantidad_abono" class="table" data-price="${response.data.sumPrice}" >
                         <thead>
                             <tr>
                                 <th>Abono</th>
@@ -1336,26 +1335,22 @@
 
             // Métodos de pago
             $("#form-confirm input[name='cash']").val($("#cash_input").val());
+            $("#form-confirm input[name='discount']").val($("#dump_truck").val());
 
-            discountAbono().then(() => {
-                $.ajax({
-                    url: "{{ url('/cart/confirm') }}",
-                    type: "POST",
-                    headers: {
-                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: $("#form-confirm").serialize(),
-                    success: function(response) {
-                        successCartConfirm(response);
-                    },
-                    error: function(errorThrown) {
-                        let text = errorThrown.responseJSON.text ?? "";
-                        SwalError(errorThrown.responseJSON.message, text);
-                    }
-                });
-            })
-            .catch((error) => {
-                SwalError(errorThrown.responseJSON.message);
+            $.ajax({
+                url: "{{ url('/cart/confirm') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: $("#form-confirm").serialize(),
+                success: function(response) {
+                    successCartConfirm(response);
+                },
+                error: function(errorThrown) {
+                    let text = errorThrown.responseJSON.text ?? "";
+                    SwalError(errorThrown.responseJSON.message, text);
+                }
             });
         });
 
@@ -1648,7 +1643,7 @@
         });
     </script>
 
-    <!-- Rennovar y descontar abonos -->
+    <!-- Renovar y descontar abonos -->
     <script>
         function renewAbono(abono_id,abono_price,client_id) {
             Swal.fire({
@@ -1662,7 +1657,6 @@
             .then((result) => {
                 if (result.isConfirmed) {
                     totalRenewAbono += abono_price;
-                    $('input[name="renew_abono"]').val(abono_price);
                     $("#totalAmount").html(`Total pedido: $${totalRenewAbono}`);
                     $.ajax({
                         url: "{{ url('/abono/renew') }}",
@@ -1685,38 +1679,6 @@
                 }
             });
         }
-
-        function discountAbono() {
-            return new Promise((resolve, reject) => {
-                let abono_id = $("input[name='abono_id']").val();
-                let discount = $("#dump_truck").val();
-                let cart_id = $("#form-confirm input[name='cart_id']").val();
-                resolve();
-                if (abono_id !== undefined && discount !== undefined) {
-                    $.ajax({
-                        url: "{{ url('/abono/discount') }}",
-                        type: "POST",
-                        headers: {
-                            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        data: {
-                            abono_id: abono_id,
-                            discount: discount,
-                            cart_id: cart_id,
-                        },
-                        success: function(response) {
-                            resolve();
-                        },
-                        error: function(errorThrown) {
-                            SwalError(errorThrown.responseJSON.message);
-                            reject(errorThrown);
-                        }
-                    });
-                } else {
-                    resolve();
-                }
-            });
-        }
     </script>
 
     <!-- Editar un carrito -->
@@ -1730,13 +1692,16 @@
                 let subtotal = precioUnit * cantidad;
                 total += subtotal;
             });
+            let abonoPrice = $("#table_cantidad_abono").data("price");
+            if (abonoPrice) {
+                total += abonoPrice;
+            }
             return total;
         }
         // METODO EDITAR CARRITO
         function editCart(cart) {
             $("#colAbonoEdit").html("");
             $("#form-edit-bajada input[name='cart_id']").val(cart.id);
-            calculateTotal();
             $("#modalEditCart").modal("show");
             let content = '';
             cart.products_cart.forEach(p => {
@@ -1754,7 +1719,7 @@
                     let total = calculateTotal();
                     $("#totalAmountEditCart").text("Total carrito: $" + total);
                 }
-                updateTotal();
+                // updateTotal();
                 $(".quantityedit-input").on("input", updateTotal);
             });
 
@@ -1779,8 +1744,10 @@
 
                 success: function(response) {
                     successAbonoGetLog(response);
+                    let total = calculateTotal();
+                    $("#totalAmountEditCart").text("Total carrito: $" + total);
                 },
-            })
+            });
         }
 
         $("#btnEditCart").on("click", function() {
@@ -1823,13 +1790,17 @@
                     abono_log_quantity_new_edit: abono_log_quantity_new_edit ? abono_log_quantity_new_edit : null,
                 },
                 success: function(response) {
+                    $('#btnCloseModalEdit').click();
                     Swal.fire({
                         icon: 'success',
                         title: response.message,
                         confirmButtonColor: '#1e88e5',
                         allowOutsideClick: false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
                     });
-                    $('#btnCloseModalEdit').click();
                 },
                 error: function(errorThrown) {
                     Swal.fire({

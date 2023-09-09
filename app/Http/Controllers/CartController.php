@@ -119,7 +119,6 @@ class CartController extends Controller
                 }
             }
 
-
             $total_cart = 0;
             foreach ($cart->ProductsCart as $pc) {
                 // Restablecer stock del cliente
@@ -130,6 +129,8 @@ class CartController extends Controller
                     $productClient = ProductsClient::where('client_id', $cart->client_id)->where('product_id', $pc->product_id)->first();
                     $productClient->decrement('stock', $pc->quantity);
                 }
+                // Acá se resta de la deuda el precio de los productos que se sacan
+                $cart->Client->decrement('debt', $pc->quantity * $pc->setted_price);
 
                 foreach ($products_quantity as $product) {
                     if ($pc->product_id == $product['product_id']) {
@@ -158,13 +159,24 @@ class CartController extends Controller
                     }
                 }
             }
+            $client = $cart->Client;
 
             // Actualizar metodo de pago en efectivo
+            $cartPM = CartPaymentMethod::where('cart_id', $cart->id)->where('payment_method_id', 1)->first();
+            $client->increment('debt', $cartPM->amount);
             CartPaymentMethod::where('cart_id', $cart->id)->where('payment_method_id', 1)->update(['amount' => $cash]);
+            $client->decrement('debt', $cash);
+            
+            // Acá se suma a la deuda el precio de las nuevas cantidades de productos, y más arriba se restan las anteriores
+            $client->increment('debt', $total_cart);
 
-            $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
-            $client = $cart->Client;
-            $client->increment('debt', $total_cart - $cash);
+            $abonoPrice = AbonoClient::where('cart_id', $cart->id)->first();
+            if ($abonoPrice) {
+                $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash + $abonoPrice->setted_price]);
+            } else {
+                $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
+            }
+
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -209,7 +221,6 @@ class CartController extends Controller
         try {
             $products_quantity = json_decode($request->input('products_quantity'), true);
             $cash = $request->input('cash') ?? 0;
-            $renew_abono = json_decode($request->input('renew_abono'), true);
 
             $productIds = collect($products_quantity)->pluck('product_id')->unique()->toArray();
             $prices = Product::whereIn('id', $productIds)->pluck('price', 'id');
@@ -225,14 +236,18 @@ class CartController extends Controller
                     'text' => 'Probablemente presionó el botón de confirmar dos veces. Intente recargar la página'
                 ], 400);
             }
-
-            if ($renew_abono > 0) {
-                $total_cart = $renew_abono;
-            } else {
-                $total_cart = 0;
-            }
-
+            
+            $total_cart = 0;
             DB::beginTransaction();
+
+            if ($request->input('abono_id')) {
+                $abonoController = new AbonoClientController();
+                // Llama al método update() en la instancia del controlador
+                $resultado = $abonoController->update($request->input('discount'), $request->input('cart_id'), $request->input('abono_id'));
+                if ($resultado->getStatusCode() != 201) {
+                    return $resultado;
+                }
+            }
 
             $products_cart = [];
             foreach ($products_quantity as $product) {
@@ -278,17 +293,15 @@ class CartController extends Controller
             ]);
 
             $client->increment('debt', $total_cart - $cash);
-
-            // DebtPaymentLog::create([
-            //     'client_id' => $client->id,
-            //     'cart_id' => $cart->id,
-            //     'debt' => $cart->ProductsCart()->sum('quantity', '*', 'setted_price')
-            // ]);
-
+            $abonoPrice = AbonoClient::find($request->input('abono_id'));
+            
             // Tiene que ir SI O SI primero la creacion de productos y despues la actualizacion del carrito
             DB::table('products_cart')->insert($products_cart);
-            $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
-
+            if ($abonoPrice) {
+                $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash + $abonoPrice->setted_price]);
+            } else {
+                $cart->update(['state' => 1, 'take_debt' => $total_cart - $cash]);
+            }
             DB::commit();
 
             return response()->json([

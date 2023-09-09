@@ -6,6 +6,7 @@ use App\Models\Abono;
 use App\Models\AbonoClient;
 use App\Models\AbonoLog;
 use App\Models\BottleClient;
+use App\Models\Client;
 use App\Models\Product;
 use App\Models\StockLog;
 use Carbon\Carbon;
@@ -18,19 +19,26 @@ class AbonoClientController extends Controller
     {
         try {
             $abonoType = Abono::find($request->input('abono_id'));
+
+            DB::beginTransaction();
             $abonoClient = AbonoClient::create([
-                    'client_id' => $request->input('client_id'),
-                    'abono_id' => $request->input('abono_id'),
-                    'cart_id' => $request->input('cart_id'),
-                    'setted_price' => $abonoType->price,
-                    'available' => $abonoType->quantity,
+                'client_id' => $request->input('client_id'),
+                'abono_id' => $request->input('abono_id'),
+                'cart_id' => $request->input('cart_id'),
+                'setted_price' => $abonoType->price,
+                'available' => $abonoType->quantity,
             ]);
+
+            $client = Client::find($request->input('client_id'));
+            $client->increment('debt', $abonoType->price);
+            DB::commit();
 
             return response()->json([
                 'success' => true,
                 'data' => ['abonoType' => $abonoType,'abonoClient' => $abonoClient]
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'title' => 'Error al renovar el abono',
@@ -40,15 +48,14 @@ class AbonoClientController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(int $discount, int $cart_id, int $abono_id)
     {
         try {
-            $abonoClient = AbonoClient::find($request->input('abono_id'));
+            $abonoClient = AbonoClient::find($abono_id);
             $productModel = Product::find($abonoClient->abono->product_id);
-            $cart_id = $request->input('cart_id');
             $bottleType = $productModel->bottle_type_id;
 
-            if ($abonoClient->available < $request->input('discount')) {
+            if ($abonoClient->available < $discount) {
                 return response()->json([
                     'success' => false,
                     'title' => 'Error al actualizar el descuento del abono',
@@ -56,12 +63,11 @@ class AbonoClientController extends Controller
                 ], 400);
             }
 
-            DB::beginTransaction();
             if ($bottleType !== null) {
                 BottleClient::firstOrCreate(['client_id' => $abonoClient->client_id,'bottle_types_id' => $bottleType])
-                    ->increment('stock', $request->input('discount'));
+                    ->increment('stock', $discount);
             }
-            $abonoClient->available -= $request->input('discount');
+            $abonoClient->available -= $discount;
             $abonoClient->save();
 
             // Crear log de abono
@@ -78,16 +84,14 @@ class AbonoClientController extends Controller
                 ]
             );
 
-            $abonoLog->quantity += $request->input('discount');
+            $abonoLog->quantity += $discount;
             $abonoLog->updated_at = Carbon::now();
             $abonoLog->save();
 
-            DB::commit();
             return response()->json([
                 'success' => true,
             ], 201);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'title' => 'Error al actualizar el descuento del abono',
@@ -106,6 +110,10 @@ class AbonoClientController extends Controller
                 $abonoType = AbonoClient::find($log->abono_clients_id);
                 $log->name = $abonoType->Abono->name;
                 $log->available = $log->Abonoclient->available + $log->quantity;
+                $log->sumPrice = 0;
+                if ($abonoType->cart_id == $request->input('cart_id')) {
+                    $log->sumPrice = $abonoType->setted_price;
+                }
 
                 return response()->json([
                     'success' => true,
