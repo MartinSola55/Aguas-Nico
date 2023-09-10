@@ -52,6 +52,7 @@ class CartObserver
      */
     public function deleted(Cart $cart): void
     {
+        $client = Client::find($cart->Client->id);
         // Restablecer stock del cliente
         // Abono
         $abonoLog = AbonoLog::where('cart_id', $cart->id)->first();
@@ -77,15 +78,26 @@ class CartObserver
                 $productClient = ProductsClient::where('client_id', $cart->client_id)->where('product_id', $pc->product_id)->first();
                 $productClient->decrement('stock', $pc->quantity);
             }
+            // Deuda del cliente
+            $client->debt -= $pc->quantity * $pc->setted_price;
         }
+
+        // Deuda del cliente
+        foreach ($cart->CartPaymentMethod()->get() as $cpm) {
+            $client->debt += $cpm->amount;
+        }
+        $abonoClient = $cart->AbonoClient()->first();
+        if ($abonoClient) {
+            $client->debt -= $abonoClient->setted_price;
+            $abonoLog->delete();
+            $abonoClient->delete();
+        }
+        $client->save();
 
 
         $cart->ProductsCart()->delete();
         $cart->CartPaymentMethod()->delete();
 
-        $client = Client::find($cart->Client->id);
-        $client->debt -= $cart->take_debt;
-        $client->save();
     }
 
     /**

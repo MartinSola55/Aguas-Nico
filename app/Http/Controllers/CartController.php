@@ -400,13 +400,15 @@ class CartController extends Controller
     public function delete(Request $request)
     {
         try {
+            DB::beginTransaction();
             Cart::find($request->input('id'))->delete();
-
+            DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Reparto eliminado correctamente',
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'title' => 'Error al eliminar el reparto',
