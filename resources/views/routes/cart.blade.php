@@ -221,8 +221,7 @@
                             "sNext": "Siguiente",
                             "sPrevious": "Anterior",
                         },
-                    },
-                    scrollX: true,
+                    }
                 });
             }
         });
@@ -239,11 +238,7 @@
 
         function fillTable(client, table_id, action, btn_color, btn_icon, btn_size = "") {
             let totalClients = $(`#${table_id}`).DataTable().rows().count() + 1;
-            let dni = "<td></td>";
             let index = "";
-            if (userRol == '1' && client.dni !== null) {
-                dni = `<td>${client.dni}</td>`;
-            }
             if (table_id == 'clientsTable') {
                 index = `<td style='cursor: pointer'>${totalClients}</td>`;
             }
