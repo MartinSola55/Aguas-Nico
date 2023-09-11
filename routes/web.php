@@ -89,7 +89,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     //ABONOS
     Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
-    Route::post('/abono/discount', [App\Http\Controllers\AbonoClientController::class, 'update']);
     Route::get('/abono/index', [App\Http\Controllers\AbonoController::class, 'index']);
     Route::get('/abono/clientes', [App\Http\Controllers\AbonoController::class, 'abonoClients'])->name('abono.clientes');
     Route::post('/abono/edit', [App\Http\Controllers\AbonoController::class, 'update']);
@@ -141,7 +140,6 @@ Route::middleware(['auth'])->group(function () {
 
     //ABONOS
     Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
-    Route::post('/abono/discount', [App\Http\Controllers\AbonoClientController::class, 'update']);
     Route::get('/abono/getlog', [App\Http\Controllers\AbonoClientController::class, 'getLog']);
     Route::get('/client/getHistory/{id}', [App\Http\Controllers\ClientController::class, 'getHistory']);
 });
