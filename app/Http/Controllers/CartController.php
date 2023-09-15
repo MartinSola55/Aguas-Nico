@@ -240,7 +240,7 @@ class CartController extends Controller
             $total_cart = 0;
             DB::beginTransaction();
 
-            if ($request->input('abono_id')) {
+            if ($request->input('abono_id') && $request->input('discount')) {
                 $abonoController = new AbonoClientController();
                 // Llama al método update() en la instancia del controlador
                 $resultado = $abonoController->update($request->input('discount'), $request->input('cart_id'), $request->input('abono_id'));
