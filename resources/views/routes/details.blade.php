@@ -1,7 +1,4 @@
 @php
-    use Carbon\Carbon;
-    $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
-
     $diasSemana = [
         1 => 'Lunes',
         2 => 'Martes',
@@ -413,7 +410,7 @@
                             <div class="d-flex no-block">
                                 <h4 class="card-title">Productos vendidos</h4>
                             </div>
-                            <h6 class="card-subtitle">{{ $today->format('d/m/Y') }}</h6>
+                            <h6 class="card-subtitle">{{ $route->start_date != null ? $route->start_date->format('d/m/Y') : "" }}</h6>
                             <div class="table-responsive">
                                 <table class="table stylish-table">
                                     <thead>
