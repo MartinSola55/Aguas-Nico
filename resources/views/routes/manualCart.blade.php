@@ -355,7 +355,7 @@
         function validateForm() {
             products = createProductsJSON();
             payment_methods = createPaymentMethodsJSON();
-            if (products.length > 0 && payment_methods.length >= 0) {
+            if (payment_methods.length >= 0) {
                 if (payment_methods.length === 0) {
                     Swal.fire({
                         icon: 'warning',
@@ -369,8 +369,7 @@
                             confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
                             cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
                         }
-                    })
-                    .then((result) => {
+                    }).then((result) => {
                         if (result.isConfirmed) {
                             sendProductsForm();
                         }
@@ -382,7 +381,7 @@
                 Swal.fire({
                     icon: 'warning',
                     title: "ERROR",
-                    text: "Debes ingresar al menos un producto",
+                    text: "Debes ingresar al menos un método de pago.",
                     confirmButtonColor: '#1e88e5',
                 });
             }
