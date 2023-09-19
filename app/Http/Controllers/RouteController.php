@@ -9,6 +9,7 @@ use App\Http\Requests\Route\RouteUpdateRequest;
 use App\Models\Abono;
 use App\Models\AbonoClient;
 use App\Models\AbonoLog;
+use App\Models\BottleClient;
 use App\Models\BottleType;
 use App\Models\Cart;
 use App\Models\Client;
@@ -388,14 +389,13 @@ class RouteController extends Controller
             $products_quantity = json_decode($request->input('products_quantity'), true);
             $payment_methods = json_decode($request->input('payment_methods'), true);
             $route_id = $request->input('route_id');
-            $client_id = $request->input('client_id');
-            $products_client = ProductsClient::where('client_id', $client_id)->get();
-            $products = Product::all();
+            $client = Client::findOrFail($request->input('client_id'));
+            $products_client = ProductsClient::where('client_id', $client->id)->get();
 
             DB::beginTransaction();
             $cart = Cart::create([
                 'route_id' => $route_id,
-                'client_id' => $client_id,
+                'client_id' => $client->id,
                 'priority' => null,
                 'state' => 1,
                 'is_static' => false,
@@ -404,21 +404,43 @@ class RouteController extends Controller
             ]);
 
             $products_cart = [];
-            foreach ($products_quantity as $product) {
+            foreach ($products_quantity as $product_cart) {
+                $product = Product::findOrFail($product_cart["product_id"]);
                 $products_cart[] = [
-                    'product_id' => $product["product_id"],
+                    'product_id' => $product_cart["product_id"],
                     'cart_id' => $cart->id,
-                    'quantity' => collect($products_quantity)->where('product_id', $product["product_id"])->first()['quantity'],
-                    'setted_price' => $products->where('id', $product["product_id"])->value('price'),
+                    'quantity' => $product_cart['quantity'],
+                    'setted_price' => $product->price,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
 
-                $client_stock = $products_client->where('product_id', $product['product_id'])->first()['stock'];
-                if ($product['quantity'] > $client_stock) {
-                    ProductsClient::where('client_id', $client_id)
-                        ->where('product_id', $product['product_id'])
-                        ->update(['stock' => ($product['quantity'])]);
+                $client_stock = $products_client->where('product_id', $product->id)->first()['stock'];
+                if ($client_stock < $product_cart['quantity']) {
+                    return response()->json([
+                        'success' => false,
+                        'title' => 'Error al crear la venta',
+                        'message' => 'El cliente no tiene asignado suficientes ' . $product->name,
+                    ], 400);
+                }
+
+                $bottleType = $product->bottle_type_id ?? null;
+                StockLog::create([
+                    'client_id' => $client->id,
+                    'cart_id' => $cart->id,
+                    'bottle_types_id' => $bottleType,
+                    'product_id' => $bottleType === null ? $product->id : null,
+                    'quantity' => $product_cart['quantity'],
+                    'l_r' => 0,          //si es 0=l, si es 1=r
+                ]);
+
+                // Actualizar stock de los productos del cliente
+                if ($bottleType !== null) {
+                    BottleClient::firstOrCreate(['client_id' => $client->id, 'bottle_types_id' => $bottleType])
+                        ->increment('stock', $product_cart['quantity']);
+                } else {
+                    ProductsClient::firstOrCreate(['client_id' => $client->id, 'product_id' => $product->id])
+                        ->increment('stock', $product_cart['quantity']);
                 }
             }
 
@@ -434,9 +456,12 @@ class RouteController extends Controller
             }
 
             $total_cart = 0;
-            foreach ($products_cart as $product) {
-                $total_cart += $product['quantity'] * $product['setted_price'];
+            foreach ($products_cart as $product_cart) {
+                $total_cart += $product_cart['quantity'] * $product_cart['setted_price'];
             }
+
+            $client->increment('debt', $total_cart - $total_paid);
+            $cart->update(['take_debt' => $total_cart - $total_paid]);
 
             DB::table('cart_payment_methods')->insert($cart_payment_methods);
             DB::table('products_cart')->insert($products_cart);
@@ -447,7 +472,7 @@ class RouteController extends Controller
                 'message' => 'Venta realizada correctamente',
                 'data' => route('route.details', ['id' => $route_id])
             ], 201);
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
