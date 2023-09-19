@@ -410,7 +410,7 @@
                             <div class="d-flex no-block">
                                 <h4 class="card-title">Productos vendidos</h4>
                             </div>
-                            {{-- <h6 class="card-subtitle">{{ $route->start_date != null ? Carbon::::parse($route->start_date)->format('d/m/Y') : "" }}</h6> --}}
+                            <h6 class="card-subtitle">{{ $route->start_date != null ? \Carbon\Carbon::parse($route->start_date)->format("d/m/Y") : "" }}</h6>
                             <div class="table-responsive">
                                 <table class="table stylish-table">
                                     <thead>
