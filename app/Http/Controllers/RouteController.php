@@ -89,8 +89,8 @@ class RouteController extends Controller
         }
     }
 
-    private function getClientsDebt($route) {
-
+    private function getClientsDebt($route)
+    {
         // Agregar deuda del mes actual a cada cliente como un atributo nuevo, sacando esa deuda del modelo DebpaymentLog
         foreach ($route->Carts as $cart) {
             $cart->Client->debtMonth = $cart->Client->getDebtOfTheMonth();
