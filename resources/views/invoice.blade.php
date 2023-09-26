@@ -1,6 +1,13 @@
 @php
     use Carbon\Carbon;
     $today = Carbon::now(new DateTimeZone('America/Argentina/Buenos_Aires'));
+    $diasSemana = [
+        1 => 'Lunes',
+        2 => 'Martes',
+        3 => 'Miércoles',
+        4 => 'Jueves',
+        5 => 'Viernes',
+    ];
 @endphp
 @extends('layouts.app')
 
@@ -35,7 +42,7 @@
         <!-- Start Page Content -->
         <!-- ============================================================== -->
         <div class="text-center">
-            <h1>Facturación general</h1>
+            <h1>Facturación de <b>{{ $route->User->name }}</b> para el día <b>{{ $diasSemana[$route->day_of_week] }}</b></h1>
             <hr>
         </div>
         <div class="row">
@@ -43,10 +50,11 @@
                 <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Intervalo de facturación</h4>
-                        <form method="GET" action="{{ url('/home/searchAllSales') }}" id="form-sales" class="form-material m-t-30">
+                        <form method="GET" action="{{ url('/invoice/searchAllSales') }}" id="form-sales" class="form-material m-t-30">
                             @csrf
                             <input type="hidden" name="dateFrom" id="dateFromFormatted" value="">
                             <input type="hidden" name="dateTo" id="dateToFormatted" value="">
+                            <input type="hidden" name="route_id" value="{{ $route->id }}">
                             <div class="row">
                                 <div class="form-group col-lg-6">
                                     <label for="dateFrom">Fecha inicio</label>
@@ -199,8 +207,9 @@
                 success: function(response) {
                     let content = "";
                     response.data.clients.forEach((client) => {
-                        content += `<h1 class='text-start mt-3 mb-0'>${client.name}</h1>`;
-                        content += `
+                        content += 
+                        `<h1 class='text-start mt-3 mb-0'>${client.name}</h1>
+                        <h3 class='text-start mt-1 mb-0'>Tipo de factura: ${client.invoice_type ?? "Sin cargar"} - CUIT: ${client.cuit ?? "Sin cargar"}</h3>
                         <table class="table table-hover mb-3">
                             <thead>
                                 <tr>
@@ -208,11 +217,22 @@
                                     <th class="text-right">Cantidad</th>
                                     <th class="text-right">Precio Unitario</th>
                                     <th class="text-right">Fecha</th>
-                                    <th class="text-right">Total</th>
+                                    <th class="text-right">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody>`;
                         let sum = 0;
+                        client.abonos.forEach((item) => {
+                            sum += 1 * item.price;
+                            content += 
+                            `<tr>
+                                <td>${item.name}</td>
+                                <td class='text-right'>1</td>
+                                <td class='text-right'>$${formattedNumber(parseInt(item.price))}</td>
+                                <td class='text-right'>${item.date}</td>
+                                <td class='text-right productTotal'>$${formattedNumber(parseInt(item.price))}</td>
+                            </tr>`;
+                        });
                         client.products.forEach((item) => {
                             sum += item.quantity * item.price;
                             content += 
@@ -222,17 +242,6 @@
                                 <td class='text-right'>$${formattedNumber(parseInt(item.price))}</td>
                                 <td class='text-right'>${item.date}</td>
                                 <td class='text-right productTotal'>$${formattedNumber(item.quantity * item.price)}</td>
-                            </tr>`;
-                        });
-                        client.abonos.forEach((item) => {
-                            sum += 1 * item.price;
-                            content += 
-                            `<tr>
-                                <td>${item.name}</td>
-                                <td class='text-right'>1</td>
-                                <td class='text-right'>$${formattedNumber(parseInt(item.price))}</td>
-                                <td class='text-right'>${item.date}</td>
-                                <td class='text-right productTotal'>$${formattedNumber(1 * item.price)}</td>
                             </tr>`;
                         });
                         content += 

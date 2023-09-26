@@ -23,8 +23,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // HOME
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
-    Route::get('/home/searchAllSales', [App\Http\Controllers\HomeController::class, 'searchAllSales']);
+    //Route::get('/invoice', [App\Http\Controllers\HomeController::class, 'invoice'])->name('invoice');
     Route::get('/home/searchRoutes', [App\Http\Controllers\HomeController::class, 'searchRoutes']);
     Route::get('/stats', [App\Http\Controllers\DealerController::class, 'statistics'])->name('stats');
 
@@ -51,7 +50,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // CLIENT
     Route::get('/client/index', [App\Http\Controllers\ClientController::class, 'index']);
     Route::get('/client/details/{id}', [App\Http\Controllers\ClientController::class, 'show'])->name('client.details');
-    Route::get('/client/showInvoice/{id}', [App\Http\Controllers\ClientController::class, 'showInvoice'])->name('client.invoice');
+    //Route::get('/client/showInvoice/{id}', [App\Http\Controllers\ClientController::class, 'showInvoice'])->name('client.invoice');
     Route::post('/client/create', [App\Http\Controllers\ClientController::class, 'store']);
     Route::get('/client/searchSales', [App\Http\Controllers\ClientController::class, 'searchSales']);
     Route::post('/client/edit', [App\Http\Controllers\ClientController::class, 'update']);
@@ -77,6 +76,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     //Agregar/actualizar clientes en reparto
     Route::post('/route/updateClients', [App\Http\Controllers\RouteController::class, 'updateClients']);
     Route::post('/route/delete', [App\Http\Controllers\RouteController::class, 'delete']);
+
+    // FACTURA
+    Route::get('/invoice/generateInvoice/{id}', [App\Http\Controllers\InvoiceController::class, 'generateInvoice']);
+    Route::get('/invoice/searchAllSales', [App\Http\Controllers\InvoiceController::class, 'searchAllSales']);
 
     // CART
     Route::get('/cart/index', [App\Http\Controllers\CartController::class, 'index']);

@@ -550,14 +550,18 @@
                         <div class="col-sm-12">
                             <h4 class="mb-0">Repartos de <b>{{ $route->User->name }}</b> para el <b>{{ $diasSemana[$route->day_of_week] }}</b></h4>
                         </div>
+                        @if ($route->is_static === true)
+                            <hr>
+                            <a class="btn btn-info btn-rounded float-right" href="{{ url('/invoice/generateInvoice/' . $route->id) }}">Ver facturación</a>
+                        @endif
                     </div>
                     <div class="card-body pl-0 pr-1">
                         @if (auth()->user()->rol_id == '2')
-                            <div class="d-flex flex-row justify-content-end">
+                            <div class="d-flex flex-row justify-content-end mr-2 mb-2">
                                 <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Agregar fuera de reparto</a>
                             </div>
                         @elseif ($route->is_static === true)
-                            <div class="d-flex flex-row justify-content-end">
+                            <div class="d-flex flex-row justify-content-end mr-2 mb-2">
                                 <a class="btn btn-info btn-rounded float-right" href="{{ url('/route/' . $route->id . '/newCart') }}">Editar planilla</a>
                             </div>
                         @endif
