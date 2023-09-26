@@ -23,15 +23,12 @@ class InvoiceController extends Controller
             $dateFrom = Carbon::createFromFormat('Y-m-d', $request->input('dateFrom'))->startOfDay();
             $dateTo = Carbon::createFromFormat('Y-m-d', $request->input('dateTo'))->endOfDay();
             $route = Route::findOrFail($request->input('route_id'));
-            $clients = Client::whereHas('Carts', function ($query) use ($dateFrom, $dateTo, $route) {
-                $query->whereBetween('created_at', [$dateFrom, $dateTo])
-                    ->where('state', 1)
-                    ->where('is_static', false)
+            $clients = Client::whereHas('Carts', function ($query) use ($route) {
+                $query->where('is_static', true)
                     ->whereHas('Route', function ($query) use ($route) {
                         $query->where('id', $route->id);
                     });
-            })
-            ->where('invoice', true)->orderBy('name', 'asc')->get();
+            })->where('invoice', true)->orderBy('name', 'asc')->get();
             $products = ProductsCart::whereBetween('created_at', [$dateFrom, $dateTo])->with('Cart', 'Product')->orderBy('created_at', 'asc')->get();
             $abonos = AbonoClient::whereBetween('created_at', [$dateFrom, $dateTo])->with('Client', 'Abono')->orderBy('created_at', 'asc')->get();
 
@@ -66,17 +63,28 @@ class InvoiceController extends Controller
                 }
 
                 foreach ($clientProducts as $product) {
-                    $productData = [
-                        'id' => $product->Product->id,
-                        'name' => $product->Product->name,
-                        'quantity' => $product->quantity,
-                        'price' => $product->setted_price,
-                        'date' => $product->created_at->format('d/m/Y')
-                    ];
+                    // Buscar dentro del arreglo clientData['products'] si ya existe el mismo producto con el nombre y el precio establecido
+                    $productoExistente = false;
+                    foreach ($clientData['products'] as &$existingProduct) {
+                        if ($existingProduct['name'] === $product->Product->name && $existingProduct['price'] === $product->setted_price) {
+                            $existingProduct['quantity'] += $product->quantity;
+                            $productoExistente = true;
+                            break;
+                        }
+                    }
 
-                    $clientData['products'][] = $productData;
+                    if (!$productoExistente) {
+                        // El producto no existe en el arreglo
+                        $productData = [
+                            'id' => $product->Product->id,
+                            'name' => $product->Product->name,
+                            'quantity' => $product->quantity,
+                            'price' => $product->setted_price,
+                        ];
+
+                        $clientData['products'][] = $productData;
+                    }                    
                 }
-
                 $data['clients'][] = $clientData;
             }
 
