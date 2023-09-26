@@ -103,7 +103,7 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <hr>
+                            <hr class="my-0">
                             <div id="tables_container" class="table-responsive m-t-40" style="clear: both;">
                             </div>
                         </div>
@@ -208,16 +208,15 @@
                     let content = "";
                     response.data.clients.forEach((client) => {
                         content += 
-                        `<h1 class='text-start mt-3 mb-0'>${client.name}</h1>
-                        <h3 class='text-start mt-1 mb-0'>Tipo de factura: ${client.invoice_type ?? "Sin cargar"} - CUIT: ${client.cuit ?? "Sin cargar"}</h3>
-                        <table class="table table-hover mb-3">
+                        `<h3 class='text-start my-0'>${client.name} / Tipo de factura: ${client.invoice_type ?? "Sin cargar"} - CUIT: ${client.cuit ?? "Sin cargar"}</h3>
+                        <table class="table table-hover mb-1" style="font-size: 0.75rem !important" >
                             <thead>
                                 <tr>
-                                    <th>Descripción</th>
-                                    <th class="text-right">Cantidad</th>
-                                    <th class="text-right">Precio Unitario</th>
-                                    <th class="text-right">Fecha</th>
-                                    <th class="text-right">Subtotal</th>
+                                    <th class="p-1">Descripción</th>
+                                    <th class="p-1 text-right">Cantidad</th>
+                                    <th class="p-1 text-right">Precio Unitario</th>
+                                    <th class="p-1 text-right">Fecha</th>
+                                    <th class="p-1 text-right">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -226,35 +225,35 @@
                             sum += 1 * item.price;
                             content += 
                             `<tr>
-                                <td>${item.name}</td>
-                                <td class='text-right'>1</td>
-                                <td class='text-right'>$${formattedNumber(parseInt(item.price))}</td>
-                                <td class='text-right'>${item.date}</td>
-                                <td class='text-right productTotal'>$${formattedNumber(parseInt(item.price))}</td>
+                                <td class='p-0'>${item.name}</td>
+                                <td class='p-0 text-right'>1</td>
+                                <td class='p-0 text-right'>$${formattedNumber(parseInt(item.price))}</td>
+                                <td class='p-0 text-right'>${item.date}</td>
+                                <td class='p-0 text-right productTotal'>$${formattedNumber(parseInt(item.price))}</td>
                             </tr>`;
                         });
                         client.products.forEach((item) => {
                             sum += item.quantity * item.price;
                             content += 
                             `<tr>
-                                <td>${item.name}</td>
-                                <td class='text-right'>${item.quantity}</td>
-                                <td class='text-right'>$${formattedNumber(parseInt(item.price))}</td>
-                                <td class='text-right'>-</td>
-                                <td class='text-right productTotal'>$${formattedNumber(item.quantity * item.price)}</td>
+                                <td class='p-0'>${item.name}</td>
+                                <td class='p-0 text-right'>${item.quantity}</td>
+                                <td class='p-0 text-right'>$${formattedNumber(parseInt(item.price))}</td>
+                                <td class='p-0 text-right'>-</td>
+                                <td class='p-0 text-right productTotal'>$${formattedNumber(item.quantity * item.price)}</td>
                             </tr>`;
                         });
                         content += 
                         `<tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td class='text-right'><b style='font-weight: bold'>Total: $${formattedNumber(sum)}</b></td>
+                            <td class="p-0"></td>
+                            <td class="p-0"></td>
+                            <td class="p-0"></td>
+                            <td class="p-0"></td>
+                            <td class='p-0 text-right'><b style='font-weight: bold'>Total: $${formattedNumber(sum)}</b></td>
                         </tr>
                         </tbody>
                         </table>
-                        <hr class='mb-5'>`;
+                        <hr class='mb-2'>`;
                     });
                     $("#tables_container").html(content);
                     calculateTotal();
