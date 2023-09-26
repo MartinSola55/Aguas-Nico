@@ -240,7 +240,7 @@
                                 <td>${item.name}</td>
                                 <td class='text-right'>${item.quantity}</td>
                                 <td class='text-right'>$${formattedNumber(parseInt(item.price))}</td>
-                                <td class='text-right'>${item.date}</td>
+                                <td class='text-right'>-</td>
                                 <td class='text-right productTotal'>$${formattedNumber(item.quantity * item.price)}</td>
                             </tr>`;
                         });
