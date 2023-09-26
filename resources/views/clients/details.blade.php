@@ -182,13 +182,12 @@
             <div class="col-xl-4">
                 <div class="col-12">
                     <div class="row">
-                        <div class="col-12 col-sm-6">
+                        {{-- <div class="col-12 col-sm-6">
                             <div class="ribbon-wrapper card shadow">
                                 <div class="ribbon ribbon-default">Facturación</div>
-                                <a href="{{ route('client.invoice', ['id' => $client->id]) }}"
-                                    class="btn btn-info btn-rounded m-t-10 float-right {{ $client->invoice === false ? 'disabled' : '' }}">{{ $client->invoice === false ? 'No habilitada' : 'Ir' }}</a>
+                                <a href="{{ route('client.invoice', ['id' => $client->id]) }}" class="btn btn-info btn-rounded m-t-10 float-right {{ $client->invoice === false ? 'disabled' : '' }}">{{ $client->invoice === false ? 'No habilitada' : 'Ir' }}</a>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-12 col-sm-6">
                             <div class="ribbon-wrapper card shadow">
                                 @if ($client->debt === 0)
