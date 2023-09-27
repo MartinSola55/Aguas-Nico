@@ -11,7 +11,6 @@ use App\Models\BottleClient;
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
 use App\Models\Client;
-use App\Models\DebtPaymentLog;
 use App\Models\Product;
 use App\Models\ProductsCart;
 use App\Models\ProductsClient;
@@ -293,7 +292,7 @@ class CartController extends Controller
             ]);
 
             $client->increment('debt', $total_cart - $cash);
-            $abonoPrice = AbonoClient::find($request->input('abono_id'));
+            $abonoPrice = AbonoClient::where('cart_id', $cart->id)->first();
             
             // Tiene que ir SI O SI primero la creacion de productos y despues la actualizacion del carrito
             DB::table('products_cart')->insert($products_cart);

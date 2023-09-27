@@ -49,7 +49,48 @@ class Client extends Model
 
     public function getDebtOfTheMonth()
     {
-        return DebtPaymentLog::where('client_id', $this->id)->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->sum('debt');
+        $total = 0;
+        $carts = Cart::where('client_id', $this->id)->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->get();
+        foreach ($carts as $cart) {
+            foreach ($cart->ProductsCart as $product) {
+                $total += $product->quantity * $product->setted_price;
+            }
+            foreach ($cart->CartPaymentMethod as $pm) {
+                $total -= $pm->amount;
+            }
+        }
+        $transfers = Transfer::where('client_id', $this->id)->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->get();
+        foreach ($transfers as $transfer) {
+            $total -= $transfer->amount;
+        }
+        $abono = AbonoClient::where('client_id', $this->id)->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->first();
+        if ($abono) {
+            $total += $abono->setted_price;
+        }
+        return $total;
+    }
+
+    public function getDebtOfPreviousMonth()
+    {
+        $total = 0;
+        $carts = Cart::where('client_id', $this->id)->whereMonth('created_at', date('m', strtotime('-1 month')))->whereYear('created_at', date('Y', strtotime('-1 month')))->get();
+        foreach ($carts as $cart) {
+            foreach ($cart->ProductsCart as $product) {
+                $total += $product->quantity * $product->setted_price;
+            }
+            foreach ($cart->CartPaymentMethod as $pm) {
+                $total -= $pm->amount;
+            }
+        }
+        $transfers = Transfer::where('client_id', $this->id)->whereMonth('created_at', date('m', strtotime('-1 month')))->whereYear('created_at', date('Y', strtotime('-1 month')))->get();
+        foreach ($transfers as $transfer) {
+            $total -= $transfer->amount;
+        }
+        $abono = AbonoClient::where('client_id', $this->id)->whereMonth('created_at', date('m', strtotime('-1 month')))->whereYear('created_at', date('Y', strtotime('-1 month')))->first();
+        if ($abono) {
+            $total += $abono->setted_price;
+        }
+        return $total;
     }
 
     public function getLastCart($route_id)
