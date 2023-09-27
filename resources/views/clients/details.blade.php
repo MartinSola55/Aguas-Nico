@@ -828,6 +828,9 @@
             searching: false,
             info: false,
             ordering: false,
+            "language": {
+                "emptyTable": 'No existen bajadas registradas',
+            },
         });
         $('#table_transfers').DataTable({
             columnDefs: [{ orderable: false }],
@@ -836,7 +839,10 @@
             paging: false,
             searching: false,
             info: false,
-            ordering: false
+            ordering: false,
+            "language": {
+                "emptyTable": 'No existen transferencias registradas',
+            },
         });
     </script>
 
