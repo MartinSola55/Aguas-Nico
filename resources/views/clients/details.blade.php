@@ -84,6 +84,31 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-xl-12">
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <h4 class="card-title">Transferencias</h4>
+                                <div class="table-responsive m-t-10">
+                                    <table class="table table-bordered table-striped" id="table_transfers">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Pago</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($transfers as $transfer)
+                                                <tr>
+                                                    <td>{{ $transfer->created_at->format('d/m/Y') }}</td>
+                                                    <td>${{ $transfer->amount }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -188,7 +213,7 @@
                                 <a href="{{ route('client.invoice', ['id' => $client->id]) }}" class="btn btn-info btn-rounded m-t-10 float-right {{ $client->invoice === false ? 'disabled' : '' }}">{{ $client->invoice === false ? 'No habilitada' : 'Ir' }}</a>
                             </div>
                         </div> --}}
-                        <div class="col-12 col-sm-6">
+                        <div class="col-12">
                             <div class="ribbon-wrapper card shadow">
                                 @if ($client->debt === 0)
                                     <div class="ribbon ribbon-default">Deuda</div>
@@ -199,6 +224,30 @@
                                 @else
                                     <div class="ribbon ribbon-default">Saldo a favor</div>
                                     <p class="ribbon-content" id="clientDebtText">${{ $client->debt * -1 }}</p>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="ribbon-wrapper card shadow">
+                                <div class="ribbon ribbon-default">Mes actual</div>
+                                @if ($client->debtOfTheMonth === 0)
+                                    <p class="ribbon-content">Sin deuda</p>
+                                @elseif ($client->debtOfTheMonth > 0)
+                                    <p class="ribbon-content">Deuda: ${{ $client->debtOfTheMonth }}</p>
+                                @else
+                                    <p class="ribbon-content">Saldo a favor: ${{ $client->debtOfTheMonth * -1 }}</p>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="ribbon-wrapper card shadow">
+                                <div class="ribbon ribbon-default">Mes anterior</div>
+                                @if ($client->debtOfPreviousMonth === 0)
+                                    <p class="ribbon-content">Sin deuda</p>
+                                @elseif ($client->debtOfPreviousMonth > 0)
+                                    <p class="ribbon-content">Deuda: ${{ $client->debtOfPreviousMonth }}</p>
+                                @else
+                                    <p class="ribbon-content">Saldo a favor: ${{ $client->debtOfPreviousMonth * -1 }}</p>
                                 @endif
                             </div>
                         </div>
@@ -405,6 +454,7 @@
                                                                 <option value="1" {{ $client->tax_condition == 1 ? 'selected' : '' }}>Responsable Inscripto</option>
                                                                 <option value="2" {{ $client->tax_condition == 2 ? 'selected' : '' }}>Monotributista</option>
                                                                 <option value="3" {{ $client->tax_condition == 3 ? 'selected' : '' }}>Excento</option>
+                                                                <option value="4" {{ $client->tax_condition == 4 ? 'selected' : '' }}>Consumidor final</option>
                                                             </select>
                                                             <div class="invalid-feedback">
                                                                 Por favor, ingrese una condición frente al IVA
@@ -778,13 +828,15 @@
             searching: false,
             info: false,
             ordering: false,
-            "language": {
-                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ bajadas",
-                "sInfoEmpty": "Mostrando 0 a 0 de 0 bajadas",
-                "sInfoFiltered": "(filtrado de _MAX_ bajadas en total)",
-                "emptyTable": 'No hay bajadas para este cliente',
-                "sLengthMenu": "Mostrar _MENU_ bajadas",
-            },
+        });
+        $('#table_transfers').DataTable({
+            columnDefs: [{ orderable: false }],
+            scrollY: '50vh',
+            scrollCollapse: true,
+            paging: false,
+            searching: false,
+            info: false,
+            ordering: false
         });
     </script>
 

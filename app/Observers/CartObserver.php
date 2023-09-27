@@ -6,7 +6,6 @@ use App\Models\AbonoLog;
 use App\Models\BottleClient;
 use App\Models\Cart;
 use App\Models\Client;
-use App\Models\DebtPaymentLog;
 use App\Models\ProductsClient;
 use Carbon\Carbon;
 
@@ -25,26 +24,7 @@ class CartObserver
      */
     public function updated(Cart $cart): void
     {
-        if ($cart->is_static == false && $cart->state == 1) {
-            $debtPaymentLog = DebtPaymentLog::firstOrCreate(
-                [
-                    'cart_id' => $cart->id,
-                    'client_id' => $cart->client_id
-                ],
-                [
-                    'client_id' => $cart->client_id,
-                    'cart_id' => $cart->id,
-                    'created_at' => Carbon::now(),
-                ]
-            );
-            
-            $debtPaymentLog->debt = $cart->ProductsCart()->get()->sum(function ($item) {
-                return $item->quantity * $item->setted_price;
-            });
-            $debtPaymentLog->debt -= $cart->CartPaymentMethod()->sum('amount');
-            $debtPaymentLog->updated_at = Carbon::now();
-            $debtPaymentLog->save();
-        }
+        //
     }
 
     /**
@@ -93,7 +73,6 @@ class CartObserver
             $abonoClient->delete();
         }
         $client->save();
-
 
         $cart->ProductsCart()->delete();
         $cart->CartPaymentMethod()->delete();

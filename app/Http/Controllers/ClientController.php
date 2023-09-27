@@ -15,6 +15,7 @@ use App\Models\Product;
 use App\Models\ProductsCart;
 use App\Models\ProductsClient;
 use App\Models\StockLog;
+use App\Models\Transfer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -75,6 +76,8 @@ class ClientController extends Controller
     public function show($id)
     {
         $client = Client::find($id);
+        $client->debtOfTheMonth = $client->getDebtOfTheMonth();
+        $client->debtOfPreviousMonth = $client->getDebtOfPreviousMonth();
 
         $carts = Cart::where('client_id', $id)
             ->where('is_static', false)
@@ -85,10 +88,10 @@ class ClientController extends Controller
             ->get();
 
         $client_products = $this->getProducts($client);
-
+        $transfers = Transfer::where('client_id', $id)->limit(10)->get();
         $abonos = Abono::all();
 
-        return view('clients.details', compact('client', 'client_products', 'abonos', 'carts'));
+        return view('clients.details', compact('client', 'client_products', 'abonos', 'carts', 'transfers'));
     }
 
 
