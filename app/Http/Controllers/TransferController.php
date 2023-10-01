@@ -33,6 +33,7 @@ class TransferController extends Controller
                 'client_id' => $request->input('client_id'),
                 'user_id' => $request->input('user_id'),
                 'amount' => $request->input('amount'),
+                'received_from' => $request->input('received_from'),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
@@ -75,6 +76,7 @@ class TransferController extends Controller
                 'client_id' => $request->input('client_id'),
                 'user_id' => $request->input('user_id'),
                 'amount' => $request->input('amount'),
+                'received_from' => $request->input('received_from'),
                 'updated_at' => Carbon::now(),
             ]);
 
@@ -180,6 +182,9 @@ class TransferController extends Controller
                 $response[$i]['name'] = $client->name;
                 $response[$i]['address'] = $client->adress;
                 $response[$i]['debt'] = $client->debt;
+                $response[$i]['debtOfMonth'] = $client->getDebtOfTheMonth();
+                $response[$i]['debtOfPreviousMonth'] = $client->getDebtOfPreviousMonth();
+                $response[$i]['dealers'] = $client->staticRoutesWithUserAndDayOfWeek();
                 $i++;
             }
             return response()->json([
