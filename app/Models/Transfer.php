@@ -14,6 +14,7 @@ class Transfer extends Model
         'amount',
         'client_id',
         'user_id',
+        'received_from',
         'created_at',
         'updated_at',
     ];

@@ -59,7 +59,7 @@ class Client extends Model
                 $total -= $pm->amount;
             }
         }
-        $transfers = Transfer::where('client_id', $this->id)->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->get();
+        $transfers = Transfer::where('client_id', $this->id)->whereMonth('received_from', date('m'))->whereYear('received_from', date('Y'))->get();
         foreach ($transfers as $transfer) {
             $total -= $transfer->amount;
         }
@@ -82,7 +82,7 @@ class Client extends Model
                 $total -= $pm->amount;
             }
         }
-        $transfers = Transfer::where('client_id', $this->id)->whereMonth('created_at', date('m', strtotime('-1 month')))->whereYear('created_at', date('Y', strtotime('-1 month')))->get();
+        $transfers = Transfer::where('client_id', $this->id)->whereMonth('received_from', date('m', strtotime('-1 month')))->whereYear('received_from', date('Y', strtotime('-1 month')))->get();
         foreach ($transfers as $transfer) {
             $total -= $transfer->amount;
         }

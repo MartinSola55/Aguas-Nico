@@ -81,14 +81,14 @@ class ClientController extends Controller
 
         $carts = Cart::where('client_id', $id)
             ->where('is_static', false)
-            ->where('state', '!=', 0)
+            ->where('state', 1)
             ->orderBy('created_at', 'desc')
-            ->limit(10)
+            ->limit(20)
             ->with('ProductsCart', 'ProductsCart.Product', 'AbonoClient', 'AbonoClient.Abono', 'CartPaymentMethod', 'AbonoLog', 'AbonoLog.AbonoClient', 'AbonoLog.AbonoClient.Abono')
             ->get();
 
         $client_products = $this->getProducts($client);
-        $transfers = Transfer::where('client_id', $id)->limit(10)->get();
+        $transfers = Transfer::where('client_id', $id)->limit(20)->get();
         $abonos = Abono::all();
 
         return view('clients.details', compact('client', 'client_products', 'abonos', 'carts', 'transfers'));

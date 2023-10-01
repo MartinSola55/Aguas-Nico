@@ -67,6 +67,15 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="transferDate" class="mb-0">Fecha de pago</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="transferDate" placearia-describedby="inputGroupPrepend" required>
+                                            <div class="invalid-feedback">
+                                                Por favor, ingrese una fecha
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -115,6 +124,9 @@
                                                         <th>Nombre</th>
                                                         <th>Dirección</th>
                                                         <th>Deuda</th>
+                                                        <th>Mes actual</th>
+                                                        <th>Mes anterior</th>
+                                                        <th>Planilla</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -176,6 +188,7 @@
                                         <th>Repartidor</th>
                                         <th>Monto</th>
                                         <th>Fecha</th>
+                                        <th>Recibida</th>
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
@@ -185,6 +198,7 @@
                                             <td>{{ $transfer->client->name }}</td>
                                             <td>{{ $transfer->user->name }}</td>
                                             <td>${{ $transfer->amount }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($transfer->received_from)->format('d/m/Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($transfer->created_at)->format('d/m/Y') }}</td>
                                             <td>
                                                 <div class="d-flex justify-content-center">
@@ -215,8 +229,17 @@
     </div>
 
     <script>
+        const diasSemana = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
         moment.locale('es');
         $('#dateFrom').bootstrapMaterialDatePicker({
+            maxDate: new Date(),
+            time: false,
+            format: 'DD/MM/YYYY',
+            cancelText: "Cancelar",
+            weekStart: 1,
+            lang: 'es',
+        });
+        $('#transferDate').bootstrapMaterialDatePicker({
             maxDate: new Date(),
             time: false,
             format: 'DD/MM/YYYY',
@@ -338,6 +361,7 @@
         $("#btnOpenModalClients").on("click", function() {
             if ($("#transferAmount").val() <= 0 || $("#transferAmount").val() == "") return fireAlert("Debes ingresar un monto");
             if ($("#user_id").val() == "" || $("#user_id").val() == null) return fireAlert("Debes ingresar un repartidor");
+            if ($("#transferDate").val() == "" || $("#transferDate").val() == null) return fireAlert("Debes ingresar una fecha");
             $("#btnCloseModal").click();
             $("#btnOpenModalClientsHidden").click();
             $("#ClientsTableContainer").css("display", "none");
@@ -345,6 +369,7 @@
             // Asignar valores de inputs del modal antererior al nuevo modal
             $("#form-create input[name='user_id']").val($("#user_id").val());
             $("#form-create input[name='amount']").val($("#transferAmount").val());
+            $("#form-create input[name='received_from']").val(formatDate($("#transferDate").val()));
         });
 
         $("#btnSearchClients").on("click", function() {
@@ -395,6 +420,7 @@
                         <td>${item.client.name}</td>
                         <td>${item.user.name}</td>
                         <td>$${item.amount}</td>
+                        <td>${createLocalDate(item.received_from)}</td>
                         <td>${createLocalDate(item.created_at)}</td>
                         <td>
                             <div class="d-flex justify-content-center">
@@ -413,11 +439,36 @@
 
         function drawClientsTable(clients) {
             clients.forEach(client => {
+                let dealers = "";
+                client.dealers.forEach(dealer => {
+                    dealers += `${diasSemana[dealer.day_of_week]} - ${dealer.user_name} <br>`;
+                });
+                let debt = "Sin deuda";
+                if (client.debt > 0) {
+                    debt = `$${client.debt}`;
+                } else if (client.debt < 0) {
+                    debt = `A favor: $${client.debt * -1}`;
+                }
+                let mesActual = "Sin deuda";
+                if (client.debtOfMonth > 0) {
+                    mesActual = `$${client.debtOfMonth}`;
+                } else if (client.debtOfMonth < 0) {
+                    mesActual = `A favor: $${client.debtOfMonth * -1}`;
+                }
+                let mesAnterior = "Sin deuda";
+                if (client.debtOfPreviousMonth > 0) {
+                    mesAnterior = `$${client.debtOfPreviousMonth}`;
+                } else if (client.debtOfPreviousMonth < 0) {
+                    mesAnterior = `A favor: $${client.debtOfPreviousMonth * -1}`;
+                }
                 let content = `
                     <tr data-id='${client.id}' style='cursor: pointer'>
                         <td>${client.name}</td>
                         <td>${client.address}</td>
-                        <td>$${client.debt}</td>
+                        <td>${debt}</td>
+                        <td>${mesActual}</td>
+                        <td>${mesAnterior}</td>
+                        <td>${dealers}</td>
                     </tr>`;
                 $('#ClientsTable').DataTable().row.add($(content)).draw();
             });
@@ -491,6 +542,7 @@
             $("#modalTitle").text("Editar transferencia");
             $("#user_id").val(item.user.id);
             $("#transferAmount").val(item.amount);
+            $("#transferDate").val(createLocalDate(item.received_from));
         };
     </script>
 
