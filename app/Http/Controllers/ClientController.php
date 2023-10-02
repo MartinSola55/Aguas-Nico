@@ -347,7 +347,7 @@ class ClientController extends Controller
         try {
             $carts = Cart::where('client_id', $id)
                 ->where('is_static', false)
-                ->where('state', '!=', 0)
+                ->where('state', 1)
                 ->orderBy('created_at', 'desc')
                 ->limit(10)
                 ->with('ProductsCart', 'ProductsCart.Product', 'AbonoClient', 'AbonoClient.Abono', 'CartPaymentMethod', 'AbonoLog', 'AbonoLog.AbonoClient', 'AbonoLog.AbonoClient.Abono')

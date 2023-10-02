@@ -46,6 +46,7 @@ class CartObserver
             }
             // Volver a incrementar lo disponible del abono
             $abonoLog->AbonoClient->increment('available', $abonoLog->quantity);
+            $abonoLog->delete();
         }
 
         // Productos
@@ -69,14 +70,12 @@ class CartObserver
         $abonoClient = $cart->AbonoClient()->first();
         if ($abonoClient) {
             $client->debt -= $abonoClient->setted_price;
-            $abonoLog->delete();
             $abonoClient->delete();
         }
         $client->save();
 
         $cart->ProductsCart()->delete();
         $cart->CartPaymentMethod()->delete();
-
     }
 
     /**
