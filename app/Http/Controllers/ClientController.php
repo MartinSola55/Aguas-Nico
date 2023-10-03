@@ -79,6 +79,7 @@ class ClientController extends Controller
         $client->debtOfTheMonth = $client->getDebtOfTheMonth();
         $client->debtOfPreviousMonth = $client->getDebtOfPreviousMonth();
 
+        $transfers = Transfer::where('client_id', $id)->limit(20)->get();
         $carts = Cart::where('client_id', $id)
             ->where('is_static', false)
             ->where('state', 1)
@@ -86,12 +87,39 @@ class ClientController extends Controller
             ->limit(20)
             ->with('ProductsCart', 'ProductsCart.Product', 'AbonoClient', 'AbonoClient.Abono', 'CartPaymentMethod', 'AbonoLog', 'AbonoLog.AbonoClient', 'AbonoLog.AbonoClient.Abono')
             ->get();
+        
+        $details = [];
+        $i = -1;
+        foreach ($carts as $cart) {
+            $i++;
+            $details[$i]["created_at"] = $cart->created_at->format('d/m/Y');
+            $details[$i]["detail"] = "";
+            foreach ($cart->ProductsCart as $pc) {
+                $details[$i]["detail"] .= $pc->Product->name . " x " . $pc->quantity . " - $" . $pc->quantity * $pc->setted_price . "<br>";
+            }
+            if ($cart->AbonoClient) {
+                $details[$i]["detail"] .= $cart->AbonoClient->Abono->name . " - $" . $cart->AbonoClient->setted_price . "<br>";
+            }
+            if ($cart->AbonoLog && $cart->AbonoLog->quantity > 0) {
+                $details[$i]["detail"] .= $cart->AbonoLog->AbonoClient->Abono->name . " - Bajó: " . $cart->AbonoLog->quantity . "<br>";
+            }
+            $details[$i]["total"] = $cart->CartPaymentMethod->sum('amount');
+        }
+        foreach ($transfers as $transfer) {
+            $i++;
+            $details[$i]["created_at"] = $transfer->created_at->format('d/m/Y');
+            $details[$i]["detail"] = "Transferencia";
+            $details[$i]["total"] = $transfer->amount;
+        }
+        // Ordenar el array por fecha
+        usort($details, function ($a, $b) {
+            return $a['created_at'] <=> $b['created_at'];
+        });
 
         $client_products = $this->getProducts($client);
-        $transfers = Transfer::where('client_id', $id)->limit(20)->get();
         $abonos = Abono::all();
 
-        return view('clients.details', compact('client', 'client_products', 'abonos', 'carts', 'transfers'));
+        return view('clients.details', compact('client', 'client_products', 'abonos', 'details'));
     }
 
 
