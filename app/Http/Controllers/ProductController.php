@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Product\ProductCreateRequest;
 use App\Http\Requests\Product\ProductUpdateRequest;
+use App\Models\AbonoClient;
+use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductsCart;
 use App\Models\ProductsClient;
@@ -125,13 +127,13 @@ class ProductController extends Controller
 
     public function getClients($id)
     {
-        $clients = ProductsClient::where('product_id', $id)->with('Client')->get();
+        $clients = Client::where('abono_id', $id)->get();
 
         $responseData = $clients->map(function ($client) {
             return [
-                'id' => $client->Client->id,
-                'name' => $client->Client->name,
-                'address' => $client->Client->adress,
+                'id' => $client->id,
+                'name' => $client->name,
+                'address' => $client->adress,
             ];
         });
 

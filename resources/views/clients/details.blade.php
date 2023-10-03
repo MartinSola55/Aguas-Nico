@@ -48,59 +48,22 @@
                     <div class="col-xl-12">
                         <div class="card shadow">
                             <div class="card-body">
-                                <h4 id="proucts_ordered" class="card-title">Productos pedidos</h4>
+                                <h4 id="proucts_ordered" class="card-title">Historial de bajadas y transferencias</h4>
                                 <div class="table-responsive m-t-10">
                                     <table class="table table-bordered table-striped" id="table_products_sold">
                                         <thead>
                                             <tr>
-                                                <th>Fecha bajada</th>
-                                                <th>Productos/Abono</th>
-                                                <th>Pago</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($carts as $cart)
-                                                <tr>
-                                                    <td>{{ $cart->created_at->format('d/m/Y') }}</td>
-                                                    <td>
-                                                        @foreach ($cart->ProductsCart as $pc)
-                                                            <p class="m-0">{{ $pc->Product->name }} x {{ $pc->quantity }} - ${{ $pc->quantity * $pc->setted_price }}</p><br>
-                                                        @endforeach
-                                                        @if ($cart->AbonoClient)
-                                                            <p class="m-0">{{ $cart->AbonoClient->Abono->name }} - ${{ $cart->AbonoClient->setted_price }}</p><br>
-                                                        @endif
-                                                        @if ($cart->AbonoLog && $cart->AbonoLog->quantity > 0)
-                                                            <p class="m-0">{{ $cart->AbonoLog->AbonoClient->Abono->name }} - Bajó: {{ $cart->AbonoLog->quantity }}</p><br>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        ${{ $cart->CartPaymentMethod->sum('amount') }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-12">
-                        <div class="card shadow">
-                            <div class="card-body">
-                                <h4 class="card-title">Transferencias</h4>
-                                <div class="table-responsive m-t-10">
-                                    <table class="table table-bordered table-striped" id="table_transfers">
-                                        <thead>
-                                            <tr>
                                                 <th>Fecha</th>
+                                                <th>Productos/Abono/Transferencia</th>
                                                 <th>Pago</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($transfers as $transfer)
+                                            @foreach ($details as $detail)
                                                 <tr>
-                                                    <td>{{ $transfer->created_at->format('d/m/Y') }}</td>
-                                                    <td>${{ $transfer->amount }}</td>
+                                                    <td>{{ $detail["created_at"] }}</td>
+                                                    <td>{!! $detail["detail"] !!}</td>
+                                                    <td>${{ $detail["total"] }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -230,25 +193,27 @@
                         <div class="col-12 col-sm-6">
                             <div class="ribbon-wrapper card shadow">
                                 <div class="ribbon ribbon-default">Mes actual</div>
-                                @if ($client->debtOfTheMonth === 0)
+                                <p class="ribbon-content">Consumo: ${{ $client->debtOfTheMonth }}</p>
+                                {{-- @if ($client->debtOfTheMonth === 0)
                                     <p class="ribbon-content">Sin deuda</p>
                                 @elseif ($client->debtOfTheMonth > 0)
                                     <p class="ribbon-content">Deuda: ${{ $client->debtOfTheMonth }}</p>
                                 @else
                                     <p class="ribbon-content">Saldo a favor: ${{ $client->debtOfTheMonth * -1 }}</p>
-                                @endif
+                                @endif --}}
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="ribbon-wrapper card shadow">
                                 <div class="ribbon ribbon-default">Mes anterior</div>
-                                @if ($client->debtOfPreviousMonth === 0)
+                                <p class="ribbon-content">Consumo: ${{ $client->debtOfPreviousMonth }}</p>
+                                {{-- @if ($client->debtOfPreviousMonth === 0)
                                     <p class="ribbon-content">Sin deuda</p>
                                 @elseif ($client->debtOfPreviousMonth > 0)
                                     <p class="ribbon-content">Deuda: ${{ $client->debtOfPreviousMonth }}</p>
                                 @else
                                     <p class="ribbon-content">Saldo a favor: ${{ $client->debtOfPreviousMonth * -1 }}</p>
-                                @endif
+                                @endif --}}
                             </div>
                         </div>
                         <div class="col-12">

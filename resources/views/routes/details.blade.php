@@ -678,22 +678,24 @@
                                             @endif
 
                                             {{-- Deuda del mes actual --}}
-                                            @if ($cart->Client->debtOfTheMonth == 0)
+                                            <p class="m-0"><small class="text-muted">Consumo del mes actual: ${{ $cart->Client->debtOfTheMonth }}</small></p>
+                                            {{-- @if ($cart->Client->debtOfTheMonth == 0)
                                                 <p class="m-0"><small class="text-muted">Sin deuda en el mes actual</small></p>
                                             @elseif ($cart->Client->debtOfTheMonth > 0)
                                                 <p class="m-0"><small class="text-muted">Deuda del mes actual: ${{ $cart->Client->debtOfTheMonth }}</small></p>
                                             @else
                                                 <p class="m-0"><small class="text-muted">A favor el mes actual: ${{ $cart->Client->debtOfTheMonth * -1 }}</small></p>
-                                            @endif
+                                            @endif --}}
 
                                             {{-- Deuda del mes anterior --}}
-                                            @if ($cart->Client->debtOfPreviousMonth == 0)
+                                            <p class="m-0"><small class="text-muted">Consumo del mes anterior: ${{ $cart->Client->debtOfPreviousMonth }}</small></p>
+                                            {{-- @if ($cart->Client->debtOfPreviousMonth == 0)
                                                 <p class="m-0"><small class="text-muted">Sin deuda el mes anterior</small></p>
                                             @elseif ($cart->Client->debtOfPreviousMonth > 0)
                                                 <p class="m-0"><small class="text-muted">Deuda del mes anterior: ${{ $cart->Client->debtOfPreviousMonth }}</small></p>
                                             @else
                                                 <p class="m-0"><small class="text-muted">A favor el mes anterior: ${{ $cart->Client->debtOfPreviousMonth * -1 }}</small></p>
-                                            @endif
+                                            @endif --}}
 
                                             <p class="mb-0"><small class="text-muted address-element"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                             @if ($cart->state && auth()->user()->rol_id == '1')
