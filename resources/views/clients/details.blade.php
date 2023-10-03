@@ -178,15 +178,13 @@
                         </div> --}}
                         <div class="col-12">
                             <div class="ribbon-wrapper card shadow">
-                                @if ($client->debt === 0)
-                                    <div class="ribbon ribbon-default">Deuda</div>
+                                <div class="ribbon ribbon-default">Deuda</div>
+                                @if ($client->debt == 0)
                                     <p class="ribbon-content" id="clientDebtText">Sin deuda</p>
                                 @elseif ($client->debt > 0)
-                                    <div class="ribbon ribbon-default">Deuda</div>
                                     <p class="ribbon-content" id="clientDebtText">${{ $client->debt }}</p>
                                 @else
-                                    <div class="ribbon ribbon-default">Saldo a favor</div>
-                                    <p class="ribbon-content" id="clientDebtText">${{ $client->debt * -1 }}</p>
+                                    <p class="ribbon-content" id="clientDebtText">A favor: ${{ $client->debt * -1 }}</p>
                                 @endif
                             </div>
                         </div>
