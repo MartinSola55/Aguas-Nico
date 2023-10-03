@@ -61,7 +61,7 @@
                                         <tbody>
                                             @foreach ($details as $detail)
                                                 <tr>
-                                                    <td>{{ $detail["created_at"] }}</td>
+                                                    <td>{{ $detail["created_at"]->format('d/m/Y') }}</td>
                                                     <td>{!! $detail["detail"] !!}</td>
                                                     <td>${{ $detail["total"] }}</td>
                                                 </tr>

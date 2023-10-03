@@ -92,7 +92,7 @@ class ClientController extends Controller
         $i = -1;
         foreach ($carts as $cart) {
             $i++;
-            $details[$i]["created_at"] = $cart->created_at->format('d/m/Y');
+            $details[$i]["created_at"] = $cart->created_at;
             $details[$i]["detail"] = "";
             foreach ($cart->ProductsCart as $pc) {
                 $details[$i]["detail"] .= $pc->Product->name . " x " . $pc->quantity . " - $" . $pc->quantity * $pc->setted_price . "<br>";
@@ -107,13 +107,13 @@ class ClientController extends Controller
         }
         foreach ($transfers as $transfer) {
             $i++;
-            $details[$i]["created_at"] = $transfer->created_at->format('d/m/Y');
+            $details[$i]["created_at"] = $transfer->created_at;
             $details[$i]["detail"] = "Transferencia";
             $details[$i]["total"] = $transfer->amount;
         }
         // Ordenar el array por fecha
         usort($details, function ($a, $b) {
-            return $a['created_at'] <=> $b['created_at'];
+            return $b['created_at'] <=> $a['created_at'];
         });
 
         $client_products = $this->getProducts($client);
