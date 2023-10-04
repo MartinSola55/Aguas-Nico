@@ -124,8 +124,8 @@
                                                         <th>Nombre</th>
                                                         <th>Dirección</th>
                                                         <th>Deuda</th>
-                                                        <th>Mes actual</th>
-                                                        <th>Mes anterior</th>
+                                                        <th>Consumo mes actual</th>
+                                                        <th>Consumo mes anterior</th>
                                                         <th>Planilla</th>
                                                     </tr>
                                                 </thead>
@@ -449,25 +449,13 @@
                 } else if (client.debt < 0) {
                     debt = `A favor: $${client.debt * -1}`;
                 }
-                let mesActual = "Sin deuda";
-                if (client.debtOfMonth > 0) {
-                    mesActual = `$${client.debtOfMonth}`;
-                } else if (client.debtOfMonth < 0) {
-                    mesActual = `A favor: $${client.debtOfMonth * -1}`;
-                }
-                let mesAnterior = "Sin deuda";
-                if (client.debtOfPreviousMonth > 0) {
-                    mesAnterior = `$${client.debtOfPreviousMonth}`;
-                } else if (client.debtOfPreviousMonth < 0) {
-                    mesAnterior = `A favor: $${client.debtOfPreviousMonth * -1}`;
-                }
                 let content = `
                     <tr data-id='${client.id}' style='cursor: pointer'>
                         <td>${client.name}</td>
                         <td>${client.address}</td>
                         <td>${debt}</td>
-                        <td>${mesActual}</td>
-                        <td>${mesAnterior}</td>
+                        <td>$${client.debtOfMonth}</td>
+                        <td>$${client.debtOfPreviousMonth}</td>
                         <td>${dealers}</td>
                     </tr>`;
                 $('#ClientsTable').DataTable().row.add($(content)).draw();
