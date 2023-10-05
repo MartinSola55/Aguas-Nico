@@ -67,15 +67,6 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-12 mb-3">
-                                        <label for="transferDate" class="mb-0">Fecha de pago</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="transferDate" placearia-describedby="inputGroupPrepend" required>
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese una fecha
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -111,27 +102,38 @@
                                         <input type="hidden" name="amount" value="" />
                                         <input type="hidden" name="received_from" value="" />
 
-                                        <label for="inputSearch">Nombre del cliente</label>
-                                        <div class="d-flex flex-row">
-                                            <input id="inputSearchClients" type="text" class="form-control" >
-                                            <button id="btnSearchClients" type="button" class="btn btn-primary waves-effect waves-light pr-3">Buscar</button>
+                                        <div class="col-12 mb-3">
+                                            <label for="transferDate" class="mb-0">Fecha de pago</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="transferDate" placearia-describedby="inputGroupPrepend" required>
+                                                <div class="invalid-feedback">
+                                                    Por favor, ingrese una fecha
+                                                </div>
+                                            </div>
                                         </div>
+                                        <div class="col-12 mb-3">
+                                            <label for="inputSearch">Nombre del cliente</label>
+                                            <div class="d-flex flex-row">
+                                                <input id="inputSearchClients" type="text" class="form-control" >
+                                                <button id="btnSearchClients" type="button" class="btn btn-primary waves-effect waves-light pr-3">Buscar</button>
+                                            </div>
 
-                                        <div id="ClientsTableContainer" class="m-t-20">
-                                            <table id="ClientsTable" class="table table-bordered table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Nombre</th>
-                                                        <th>Dirección</th>
-                                                        <th>Deuda</th>
-                                                        <th>Consumo mes actual</th>
-                                                        <th>Consumo mes anterior</th>
-                                                        <th>Planilla</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                </tbody>
-                                            </table>
+                                            <div id="ClientsTableContainer" class="m-t-20">
+                                                <table id="ClientsTable" class="table table-bordered table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Dirección</th>
+                                                            <th>Deuda</th>
+                                                            <th>Consumo mes actual</th>
+                                                            <th>Consumo mes anterior</th>
+                                                            <th>Planilla</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -361,7 +363,6 @@
         $("#btnOpenModalClients").on("click", function() {
             if ($("#transferAmount").val() <= 0 || $("#transferAmount").val() == "") return fireAlert("Debes ingresar un monto");
             if ($("#user_id").val() == "" || $("#user_id").val() == null) return fireAlert("Debes ingresar un repartidor");
-            if ($("#transferDate").val() == "" || $("#transferDate").val() == null) return fireAlert("Debes ingresar una fecha");
             $("#btnCloseModal").click();
             $("#btnOpenModalClientsHidden").click();
             $("#ClientsTableContainer").css("display", "none");
@@ -369,7 +370,6 @@
             // Asignar valores de inputs del modal antererior al nuevo modal
             $("#form-create input[name='user_id']").val($("#user_id").val());
             $("#form-create input[name='amount']").val($("#transferAmount").val());
-            $("#form-create input[name='received_from']").val(formatDate($("#transferDate").val()));
         });
 
         $("#btnSearchClients").on("click", function() {
@@ -382,6 +382,8 @@
         
         $("#btnCreateTransfer").on("click", function() {
             if ($("#form-create input[name='client_id']").val() == "") return fireAlert("Debes seleccionar un cliente");
+            if ($("#transferDate").val() == "" || $("#transferDate").val() == null) return fireAlert("Debes ingresar una fecha");
+            $("#form-create input[name='received_from']").val(formatDate($("#transferDate").val()));
             sendForm("create");
         });
 

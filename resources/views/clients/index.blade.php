@@ -191,22 +191,21 @@
                                                 <td>{{ $client->adress }}</td>
                                                 <td>{{ $client->phone }}</td>
                                                 <td>
-                                                @foreach ($client->ProductsClient as $product)
-                                                    @if ($product->stock != 0 && $product->stock != null)
-                                                        {{ $product->Product->name }}: {{ $product->stock }}<br>
-                                                    @endif
-                                                @endforeach
+                                                    @foreach ($client->ProductsClient as $product)
+                                                        @if ($product->stock != 0 && $product->stock != null)
+                                                            {{ $product->Product->name }}: {{ $product->stock }}<br>
+                                                        @endif
+                                                    @endforeach
                                                 </td>
-                                                {{-- <td>{{ $client->email }}</td>
-                                                <td>{{ $client->dni ?? "-" }}</td>
-                                                <td class="text-center">
-                                                    @if ( $client->invoice == true)
-                                                        <i class="bi bi-check2" style="font-size: 1.5rem"></i>
+                                                <td>
+                                                    @if ($client->debt == 0)
+                                                        Sin deuda                                                      
+                                                    @elseif ($client->debt > 0)
+                                                        ${{ $client->debt }}
                                                     @else
-                                                        <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
+                                                        A favor: ${{ $client->debt * -1 }}
                                                     @endif
-                                                </td> --}}
-                                                <td>${{ $client->debt }}</td>
+                                                </td>
                                                 <td>{{ $client->observation }}</td>
                                                 <td class="text-center">
                                                     @if ( $client->is_active == true)
