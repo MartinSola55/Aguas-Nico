@@ -371,7 +371,7 @@ class RouteController extends Controller
             return is_null($client->priority) ? 1 : 0;
         });
         $clients = $clients->where('priority', '==', null);
-        $products = Product::all();
+        $products = Product::where('is_active', true)->get();
         return view('routes.cart', compact('route', 'clients', 'clientsSelected', 'products'));
     }
 
@@ -730,7 +730,7 @@ class RouteController extends Controller
     {
         try {
             $productsDispatched = ProductDispatched::where('route_id', $route)->get();
-            $products = Product::all();
+            $products = Product::where('is_active', true)->get();
             $products4dispatch = [];
             $addedBottleTypeIds = [];
 
