@@ -12,6 +12,7 @@ class Product extends Model
         'name',
         'price',
         'bottle_type_id',
+        'is_active'
     ];
 
     public function Clients()

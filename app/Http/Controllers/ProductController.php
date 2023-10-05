@@ -20,7 +20,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::orderBy('name')->get();
+        $products = Product::orderBy('name')->where('is_active', true)->get();
 
         return view('products.index', compact('products'));
     }
