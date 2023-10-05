@@ -91,6 +91,8 @@
                                             <b>Razón Social:</b> Sodería La Nueva S.A.<br/>
                                             <b>Domicilio Comercial:</b> Lorenza Aguilera 415 - Neuquén, Neuquén<br/>
                                             <b>Condición frente al IVA:</b> IVA Responsable Inscripto<br/>
+                                            <b>{{ $route->User->name }}</b> día <b>{{ $diasSemana[$route->day_of_week] }}</b><br/>
+                                            <i class="fa fa-calendar"></i> <span id="fechas_seleccionadas"></span><br/>
                                         </p>
                                         <p class="text-muted m-l-5 text-right">
                                             <b>Fecha de Emisión:</b> {{ $today->format('d/m/Y') }}<br/>
@@ -167,6 +169,7 @@
         });
 
         $("#dateFrom").on("change", function() {
+            $("#fechas_seleccionadas").html(`${$(this).val()} - ${$("#dateTo").val()}`);
             $("#datesContainer").removeClass("col-lg-5");
             $("#datesContainer").addClass("col-lg-6");
             $("#dateToContainer").css("display", "block");
@@ -179,11 +182,10 @@
                 weekStart: 1,
                 lang: 'es',
             });
-            $("#dateFromInvoice").html(`<i class="fa fa-calendar"></i><b> Fecha desde : </b>` + $(this).val())
         });
         $("#dateTo").on("change", function() {
             $("#buttonDatesContainer").css("display", "flex");
-            $("#dateToInvoice").html(`<i class="fa fa-calendar"></i><b> Fecha hasta : </b>` + $(this).val())
+            $("#fechas_seleccionadas").html(`${$("#dateFrom").val()} - ${$(this).val()}`);
         });
     </script>
 

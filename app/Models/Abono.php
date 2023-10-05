@@ -12,6 +12,7 @@ class Abono extends Model
         'name',
         'price',
         'updated_at',
+        'is_active'
     ];
 
     public function Product()

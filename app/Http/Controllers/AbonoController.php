@@ -15,7 +15,7 @@ class AbonoController extends Controller
      */
     public function index()
     {
-        $abonos = Abono::orderBy('price')->get();
+        $abonos = Abono::orderBy('price')->where('is_active', true)->get();
         return view('abonos.index', compact('abonos'));
     }
 
