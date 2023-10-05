@@ -117,7 +117,7 @@ class ClientController extends Controller
         });
 
         $client_products = $this->getProducts($client);
-        $abonos = Abono::orderBy('price')->get();
+        $abonos = Abono::orderBy('price')->where('is_active', true)->get();
 
         return view('clients.details', compact('client', 'client_products', 'abonos', 'details'));
     }

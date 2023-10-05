@@ -18,6 +18,7 @@ return new class extends Migration
             $table->double('priceSurplus', 8, 2);
             $table->foreignId('product_id')->constrained('products');
             $table->integer('quantity');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

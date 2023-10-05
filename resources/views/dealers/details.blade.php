@@ -42,7 +42,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Repartos anuales</h4>
+                        <h4 class="card-title">Clientes anuales</h4>
                         <div class="text-right"> <span class="text-muted">Completados</span>
                             <h1 class="font-light"><sup></sup>{{ $repartos['completados'] }}</h1>
                         </div>
@@ -56,7 +56,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Repartos anuales</h4>
+                        <h4 class="card-title">Clientes anuales</h4>
                         <div class="text-right"> <span class="text-muted">Cancelados / pendientes</span>
                             <h1 class="font-light"><sup></sup>{{ $repartos['pendientes'] }}</h1>
                         </div>
