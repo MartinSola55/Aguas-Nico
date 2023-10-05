@@ -218,7 +218,7 @@ class ClientController extends Controller
     }
 
     public function getProducts(Client $client) {
-        $products = Product::orderBy('name', 'asc')->where('is_active', true)->get();
+        $products = Product::orderBy('price')->where('is_active', true)->get();
         $productList = [];
         foreach ($products as $key => $product) {
             $productList[$key]['id'] = $product->id;
