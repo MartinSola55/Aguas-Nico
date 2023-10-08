@@ -182,6 +182,83 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
+                            <h4 class="card-title mr-2 mb-2">Clientes a los que no se les bajó máquinas</h4>
+                            <select id="clientsMaqMonth" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un mes</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Setiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                            <select id="clientsMaqYear" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un año</option>
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <hr>
+                        <table id="maquinasTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
+                            <h4 class="card-title mr-2 mb-2">Productos vendidos</h4>
+                            <select id="productsSoldMonth" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un mes</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Setiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                            <select id="productsSoldYear" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un año</option>
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <hr>
+                        <table id="productsSoldTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <form method="GET" action="{{ url('/dealer/getPendingCarts') }}" id="form-pendingCarts" class="form-material m-t-30">
@@ -194,6 +271,20 @@
         <form method="GET" action="{{ url('/dealer/searchClients') }}" id="form-searchClients" class="form-material m-t-30">
             @csrf
             <input type="hidden" name="day_of_week" value="">
+            <input type="hidden" name="id" value="{{ $dealer->id }}">
+        </form>
+
+        <form method="GET" action="{{ url('/dealer/searchClientsMachines') }}" id="form-searchClientsMachines" class="form-material m-t-30">
+            @csrf
+            <input type="hidden" name="month" value="">
+            <input type="hidden" name="year" value="">
+            <input type="hidden" name="id" value="{{ $dealer->id }}">
+        </form>
+
+        <form method="GET" action="{{ url('/dealer/searchProductsSold') }}" id="form-searchProductsSold" class="form-material m-t-30">
+            @csrf
+            <input type="hidden" name="month" value="">
+            <input type="hidden" name="year" value="">
             <input type="hidden" name="id" value="{{ $dealer->id }}">
         </form>
     </div>
@@ -302,7 +393,7 @@
             },
         });
         $("#clientsDay").on("change", function() {
-            $("#form-searchClients input[name='day_of_week']").val($("#clientsDay").val());
+            $("#form-searchClients input[name='day_of_week']").val($(this).val());
             $("#clientsTable").DataTable().clear().draw();
             sendForm("searchClients");
         });
@@ -326,6 +417,101 @@
         }
     </script>
 
+    {{-- Clientes que no se les bajó máquinas --}}
+    <script>
+        $("#maquinasTable").DataTable({
+            "info": false,
+            "scrollY": '30vh',
+            "scrollCollapse": true,
+            "paging": false,
+            "ordering": false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                "sLengthMenu": "Mostrar _MENU_ clientes",
+                "sSearch": "Buscar:",
+            },
+        });
+        $("#clientsMaqMonth").on("change", function() {
+            if ($("#clientsMaqYear").val() == "" || $("#clientsMaqYear").val() == null) {
+                return;
+            }
+            $("#form-searchClientsMachines input[name='month']").val($(this).val());
+            $("#form-searchClientsMachines input[name='year']").val($("#clientsMaqYear").val());
+            $("#maquinasTable").DataTable().clear().draw();
+            sendForm("searchClientsMachines");
+        });
+        $("#clientsMaqYear").on("change", function() {
+            if ($("#clientsMaqMonth").val() === "" || $("#clientsMaqMonth").val() === null) {
+                return;
+            }
+            $("#form-searchClientsMachines input[name='month']").val($("#clientsMaqMonth").val());
+            $("#form-searchClientsMachines input[name='year']").val($(this).val());
+            $("#maquinasTable").DataTable().clear().draw();
+            sendForm("searchClientsMachines");
+        });
+
+        function fillClientsMachinesTable(data) {
+            let table = $("#maquinasTable");
+            data.forEach(function (item) {
+                let row = table.DataTable().row.add([
+                    item.name,
+                ]).draw().node();
+                $(row).attr('id', item.client.id);
+            });
+        }
+    </script>
+
+    {{-- Productos vendidos --}}
+    <script>
+        $("#productsSoldTable").DataTable({
+            "info": false,
+            "searching": false,
+            "paging": false,
+            "ordering": false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ productos",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 productos",
+                "sInfoFiltered": "(filtrado de _MAX_ productos en total)",
+                "emptyTable": 'No hay productos que coincidan con la búsqueda',
+                "sLengthMenu": "Mostrar _MENU_ productos",
+            },
+        });
+        $("#productsSoldMonth").on("change", function() {
+            if ($("#productsSoldYear").val() == "" || $("#productsSoldYear").val() == null) {
+                return;
+            }
+            $("#form-searchProductsSold input[name='month']").val($(this).val());
+            $("#form-searchProductsSold input[name='year']").val($("#productsSoldYear").val());
+            $("#productsSoldTable").DataTable().clear().draw();
+            sendForm("searchProductsSold");
+        });
+        $("#productsSoldYear").on("change", function() {
+            if ($("#productsSoldMonth").val() === "" || $("#productsSoldMonth").val() === null) {
+                return;
+            }
+            $("#form-searchProductsSold input[name='month']").val($("#productsSoldMonth").val());
+            $("#form-searchProductsSold input[name='year']").val($(this).val());
+            $("#productsSoldTable").DataTable().clear().draw();
+            sendForm("searchProductsSold");
+        });
+
+        function fillProductsSoldTable(data) {
+            let table = $("#productsSoldTable");
+            let keys = Object.keys(data);
+            for (let i = 0; i < keys.length; i++) {
+                let key = keys[i];
+                let item = data[key];
+                let row = table.DataTable().row.add([
+                    item.product,
+                    item.quantity,
+                ]).draw().node();
+            }
+        }
+    </script>
+
     <script>
         function sendForm(action) {
             let form = document.getElementById(`form-${action}`);
@@ -340,6 +526,10 @@
                         fillPendingCartsTable(response.data);
                     } else if (action === 'searchClients') {
                         fillClientsTable(response.data);
+                    } else if (action === 'searchClientsMachines') {
+                        fillClientsMachinesTable(response.data);
+                    } else if (action === 'searchProductsSold') {
+                        fillProductsSoldTable(response.data);
                     }
                 },
                 error: function (errorThrown) {

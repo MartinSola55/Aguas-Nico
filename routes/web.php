@@ -41,6 +41,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dealer/details/{id}', [App\Http\Controllers\DealerController::class, 'show'])->name('dealer.details');
     Route::get('/dealer/getPendingCarts', [App\Http\Controllers\DealerController::class, 'getPendingCarts']);
     Route::get('/dealer/searchClients', [App\Http\Controllers\DealerController::class, 'searchClients']);
+    Route::get('/dealer/searchClientsMachines', [App\Http\Controllers\DealerController::class, 'searchClientsMachines']);
+    Route::get('/dealer/searchProductsSold', [App\Http\Controllers\DealerController::class, 'searchProductsSold']);
 
     // PRODUCT
     Route::get('/product/index', [App\Http\Controllers\ProductController::class, 'index']);
