@@ -449,10 +449,12 @@ class DealerController extends Controller
             ->with('Product')
             ->get();
 
-            $products = $productsCart->groupBy('product_id')->map(function ($item) {
+            $products = $productsCart->groupBy(function ($item) {
+                return $item->bottle_type_id ?? $item->product_id;
+            })->map(function ($group) {
                 return [
-                    'product' => $item->first()->Product->name,
-                    'quantity' => $item->sum('quantity')
+                    'product' => $group->first()->Product->name,
+                    'quantity' => $group->sum('quantity'),
                 ];
             });
 
