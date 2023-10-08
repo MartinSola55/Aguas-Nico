@@ -450,7 +450,7 @@ class DealerController extends Controller
             ->get();
 
             $products = $productsCart->groupBy(function ($item) {
-                return $item->bottle_type_id ?? $item->product_id;
+                return $item->Product->bottle_type_id ?? $item->product_id;
             })->map(function ($group) {
                 return [
                     'product' => $group->first()->Product->name,
