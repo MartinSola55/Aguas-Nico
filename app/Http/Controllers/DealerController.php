@@ -7,6 +7,8 @@ use App\Models\CartPaymentMethod;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductsCart;
+use App\Models\ProductsClient;
+use App\Models\Route;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -95,8 +97,9 @@ class DealerController extends Controller
         $monthlySales = $this->monthlySales($id);
 
         $dealer = User::find($id);
+        $years = $this->getYears($id);
 
-        return view('dealers.details', compact('dealer', 'repartos', 'stats', 'anualSales', 'monthlySales'));
+        return view('dealers.details', compact('dealer', 'repartos', 'stats', 'anualSales', 'monthlySales', 'years'));
     }
 
     private function anualSales($id)
@@ -288,5 +291,182 @@ class DealerController extends Controller
             'totalSold' => $totalSold
         ];
         return $stats;
+    }
+
+    private function getYears($id)
+    {
+        try {
+            $routes = Route::where('user_id', $id)->where('is_static', false)->get();
+            $years = $routes->map(function ($route) {
+                return date('Y', strtotime($route->start_date));
+            });
+            $uniqueYears = $years->unique();
+            return $uniqueYears;
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function getPendingCarts(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $dateFrom = $request->input('dateFrom');
+            $dateTo = $request->input('dateTo');
+            $carts = Cart::where('state', '!=', 1)
+                ->where('is_static', false)
+                ->whereHas('route', function ($query) use ($id, $dateFrom, $dateTo) {
+                    $query->where('user_id', $id)
+                        ->whereBetween('start_date', [$dateFrom, $dateTo]);
+                })
+                ->with('Client')
+                ->with('Route')
+                ->orderBy('created_at')
+                ->get();
+            return response()->json([
+                    'success' => true,
+                    'data' => $carts
+                ],201
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al recuperar los repartos pendientes',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+    public function searchClients(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $day_of_week = $request->input('day_of_week');
+            $clients = Route::where('user_id', $id)
+                ->where('day_of_week', $day_of_week)
+                ->where('is_static', true)
+                ->with('Carts')
+                ->with('Carts.Client')
+                ->first();
+
+            return response()->json([
+                'success' => true,
+                'data' => $clients
+            ],201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al recuperar los repartos pendientes',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function searchClientsMachines(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $month = $request->input('month');
+            $year = $request->input('year');
+
+            if($month > date('m') && $year >= date('Y')) {
+                return null;
+            }
+
+            $clientsIDs = [];
+            $staticRoutes = Route::where('user_id', $id)
+                ->where('is_static', true)
+                ->with('Carts')
+                ->get();
+                
+            foreach($staticRoutes as $route) {
+                foreach ($route->Carts as $cart) {
+                    $clientsIDs[] = $cart->client_id;
+                }
+            }
+
+            $clientsWithMachines = ProductsClient::whereIn('client_id', $clientsIDs)
+                ->where('product_id', [1, 9])
+                ->get();
+
+            $clientsWithMachinesIDs = [];
+            foreach($clientsWithMachines as $client) {
+                $clientsWithMachinesIDs[] = $client->client_id;
+            }
+
+            $carts = Cart::where('state', 1)
+                ->where('is_static', false)
+                ->whereIn('client_id', $clientsWithMachinesIDs)
+                ->whereHas('route', function ($query) use ($id, $month, $year) {
+                    $query->where('user_id', $id)
+                        ->whereMonth('start_date', $month)
+                        ->whereYear('start_date', $year);
+                })
+                ->whereHas('productsCart', function ($query) {
+                    $query->whereIn('product_id', [1, 9]);
+                })
+                ->with('Client')
+                ->get();
+
+            $clientesQueBajaron = $carts->pluck('Client.id')->unique();
+            $clientesQueNoBajaron = $clientsWithMachines->whereNotIn('client_id', $clientesQueBajaron)->pluck('Client')->unique();
+
+            return response()->json([
+                'success' => true,
+                'data' => $clientesQueNoBajaron
+            ],201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al recuperar los clientes',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function searchProductsSold(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $year = $request->input('year');
+            $month = $request->input('month');
+
+            if ($month > date('m') && $year >= date('Y')) {
+                return null;
+            }
+
+            $productsCart = ProductsCart::whereHas('cart', function ($query) use ($id, $month, $year) {
+                $query->where('state', 1)
+                    ->where('is_static', false)
+                    ->whereHas('route', function ($query) use ($id, $month, $year) {
+                        $query->where('user_id', $id)
+                            ->whereMonth('start_date', $month)
+                            ->whereYear('start_date', $year);
+                    });
+            })
+            ->with('Product')
+            ->get();
+
+            $products = $productsCart->groupBy('product_id')->map(function ($item) {
+                return [
+                    'product' => $item->first()->Product->name,
+                    'quantity' => $item->sum('quantity')
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $products
+            ],201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al recuperar los productos vendidos',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
     }
 }

@@ -7,7 +7,18 @@
     <!--Morris JavaScript -->
     <script src="{{ asset('plugins/raphael/raphael-min.js') }}"></script>
     <script src="{{ asset('plugins/morrisjs/morris.js') }}"></script>
-    {{-- <script src="{{ asset('js/morris-data.js') }}"></script> --}}
+    <!-- Datepicker -->
+    <link href="{{ asset('plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
+
+    <!-- Datepicker -->
+    <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
+    <script src="{{ asset('plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+
+    <!-- Data table -->
+    <link href="{{ asset('plugins/datatables/media/css/dataTables.bootstrap4.css') }}" rel="stylesheet">
+
+    <!-- This is data table -->
+    <script src="{{ asset('plugins/datatables/datatables.min.js') }}"></script>
 
 
     <div class="container-fluid">
@@ -117,8 +128,421 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex flex-row justify-content-start align-items-center">
+                            <h4 class="card-title mr-2 mb-2">Clientes del día:</h4>
+                            <select id="clientsDay" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un día</option>
+                                <option value="1">Lunes</option>
+                                <option value="2">Martes</option>
+                                <option value="3">Miércoles</option>
+                                <option value="4">Jueves</option>
+                                <option value="5">Viernes</option>
+                            </select>
+                        </div>
+                        <table id="clientsTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Deuda</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h4 class="card-title mr-2 mb-2">Repartos pendientes</h4>
+                        <hr>
+                        <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
+                            <div class="form-group">
+                                <label for="dateFromPendingCarts">Fecha desde</label>
+                                <input id="dateFromPendingCarts" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                            </div>
+                            <div class="form-group">
+                                <label for="dateToPendingCarts">Fecha hasta</label>
+                                <input id="dateToPendingCarts" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                            </div>
+                            <button id="btnSearchPendingCarts" class="btn btn-info">Buscar</button>
+                        </div>
+                        <table id="pendingCartsTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Día</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
+                            <h4 class="card-title mr-2 mb-2">Clientes a los que no se les bajó máquinas</h4>
+                            <select id="clientsMaqMonth" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un mes</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Setiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                            <select id="clientsMaqYear" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un año</option>
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <hr>
+                        <table id="maquinasTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
+                            <h4 class="card-title mr-2 mb-2">Productos vendidos</h4>
+                            <select id="productsSoldMonth" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un mes</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Setiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                            <select id="productsSoldYear" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un año</option>
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <hr>
+                        <table id="productsSoldTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <form method="GET" action="{{ url('/dealer/getPendingCarts') }}" id="form-pendingCarts" class="form-material m-t-30">
+            @csrf
+            <input type="hidden" name="dateFrom" value="">
+            <input type="hidden" name="dateTo" value="">
+            <input type="hidden" name="id" value="{{ $dealer->id }}">
+        </form>
+
+        <form method="GET" action="{{ url('/dealer/searchClients') }}" id="form-searchClients" class="form-material m-t-30">
+            @csrf
+            <input type="hidden" name="day_of_week" value="">
+            <input type="hidden" name="id" value="{{ $dealer->id }}">
+        </form>
+
+        <form method="GET" action="{{ url('/dealer/searchClientsMachines') }}" id="form-searchClientsMachines" class="form-material m-t-30">
+            @csrf
+            <input type="hidden" name="month" value="">
+            <input type="hidden" name="year" value="">
+            <input type="hidden" name="id" value="{{ $dealer->id }}">
+        </form>
+
+        <form method="GET" action="{{ url('/dealer/searchProductsSold') }}" id="form-searchProductsSold" class="form-material m-t-30">
+            @csrf
+            <input type="hidden" name="month" value="">
+            <input type="hidden" name="year" value="">
+            <input type="hidden" name="id" value="{{ $dealer->id }}">
+        </form>
     </div>
+
+    {{-- Constantes --}}
+    <script>
+        function createLocalDate(date) {
+            return new Date(date).toLocaleString("es-AR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            });
+        }
+        function formatDate(date) {
+            // Convertir a formato yyyy-mm-dd
+            let partesFecha = date.split("/");
+            let fechaNueva = new Date(partesFecha[2], partesFecha[1] - 1, partesFecha[0]);
+            let fechaISO = fechaNueva.toISOString().slice(0,10);
+            return fechaISO;
+        }
+        const states = ['Pendiente', 'Completado', 'No estaba', 'No necesitaba', 'De vacaciones'];
+        const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    </script>
+
+    {{-- Repartos pendientes --}}
+    <script>
+        $("#pendingCartsTable").DataTable({
+            "info": false,
+            "scrollY": '30vh',
+            "scrollCollapse": true,
+            "paging": false,
+            "ordering": false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ repartos",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 repartos",
+                "sInfoFiltered": "(filtrado de _MAX_ repartos en total)",
+                "emptyTable": 'No hay repartos que coincidan con la búsqueda',
+                "sLengthMenu": "Mostrar _MENU_ repartos",
+                "sSearch": "Buscar:",
+            },
+        });
+        $('#dateFromPendingCarts').bootstrapMaterialDatePicker({
+            maxDate: new Date(),
+            time: false,
+            format: 'DD/MM/YYYY',
+            cancelText: "Cancelar",
+            weekStart: 1,
+            lang: 'es',
+        });
+        $("#dateFromPendingCarts").on("change", function() {
+            $('#dateToPendingCarts').bootstrapMaterialDatePicker({
+                minDate: $("#dateFromPendingCarts").val(),
+                maxDate: new Date(),
+                time: false,
+                format: 'DD/MM/YYYY',
+                cancelText: "Cancelar",
+                weekStart: 1,
+                lang: 'es',
+            });
+        });
+        $("#btnSearchPendingCarts").on("click", function() {
+            if ($("#dateFromPendingCarts").val() === "" || $("#dateToPendingCarts").val() === "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error',
+                    text: 'Debe seleccionar un rango de fechas',
+                    confirmButtonColor: '#1e88e5',
+                });
+                return;
+            }
+            $("#form-pendingCarts input[name='dateFrom']").val(formatDate($("#dateFromPendingCarts").val()));
+            $("#form-pendingCarts input[name='dateTo']").val(formatDate($("#dateToPendingCarts").val()));
+            $("#pendingCartsTable").DataTable().clear().draw();
+            sendForm("pendingCarts");
+        });
+
+        function fillPendingCartsTable(data) {
+            let table = $("#pendingCartsTable");
+            data.forEach(function (item) {
+                let row = table.DataTable().row.add([
+                    item.client.name,
+                    dias[item.route.day_of_week],
+                    createLocalDate(item.created_at),
+                    states[item.state],
+                ]).draw().node();
+                $(row).attr('id', item.id);
+            });
+        }
+    </script>
+
+    {{-- Clientes de un día --}}
+    <script>
+        $("#clientsTable").DataTable({
+            "info": false,
+            "scrollY": '30vh',
+            "scrollCollapse": true,
+            "paging": false,
+            "ordering": false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                "sLengthMenu": "Mostrar _MENU_ clientes",
+                "sSearch": "Buscar:",
+            },
+        });
+        $("#clientsDay").on("change", function() {
+            $("#form-searchClients input[name='day_of_week']").val($(this).val());
+            $("#clientsTable").DataTable().clear().draw();
+            sendForm("searchClients");
+        });
+
+        function fillClientsTable(data) {
+            let table = $("#clientsTable");
+            data.carts.forEach(function (item) {
+                let client = item.client;
+                let debt = "Sin deuda";
+                if (client.debt > 0) {
+                    debt = `$${client.debt}`;
+                } else if (client.debt < 0){
+                    debt = `A favor: $${client.debt * -1}`;
+                }
+                let row = table.DataTable().row.add([
+                    client.name,
+                    debt,
+                ]).draw().node();
+                $(row).attr('id', client.id);
+            });
+        }
+    </script>
+
+    {{-- Clientes que no se les bajó máquinas --}}
+    <script>
+        $("#maquinasTable").DataTable({
+            "info": false,
+            "scrollY": '30vh',
+            "scrollCollapse": true,
+            "paging": false,
+            "ordering": false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                "sLengthMenu": "Mostrar _MENU_ clientes",
+                "sSearch": "Buscar:",
+            },
+        });
+        $("#clientsMaqMonth").on("change", function() {
+            if ($("#clientsMaqYear").val() == "" || $("#clientsMaqYear").val() == null) {
+                return;
+            }
+            $("#form-searchClientsMachines input[name='month']").val($(this).val());
+            $("#form-searchClientsMachines input[name='year']").val($("#clientsMaqYear").val());
+            $("#maquinasTable").DataTable().clear().draw();
+            sendForm("searchClientsMachines");
+        });
+        $("#clientsMaqYear").on("change", function() {
+            if ($("#clientsMaqMonth").val() === "" || $("#clientsMaqMonth").val() === null) {
+                return;
+            }
+            $("#form-searchClientsMachines input[name='month']").val($("#clientsMaqMonth").val());
+            $("#form-searchClientsMachines input[name='year']").val($(this).val());
+            $("#maquinasTable").DataTable().clear().draw();
+            sendForm("searchClientsMachines");
+        });
+
+        function fillClientsMachinesTable(data) {
+            let table = $("#maquinasTable");
+            data.forEach(function (item) {
+                let row = table.DataTable().row.add([
+                    item.name,
+                ]).draw().node();
+                $(row).attr('id', item.client.id);
+            });
+        }
+    </script>
+
+    {{-- Productos vendidos --}}
+    <script>
+        $("#productsSoldTable").DataTable({
+            "info": false,
+            "searching": false,
+            "paging": false,
+            "ordering": false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ productos",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 productos",
+                "sInfoFiltered": "(filtrado de _MAX_ productos en total)",
+                "emptyTable": 'No hay productos que coincidan con la búsqueda',
+                "sLengthMenu": "Mostrar _MENU_ productos",
+            },
+        });
+        $("#productsSoldMonth").on("change", function() {
+            if ($("#productsSoldYear").val() == "" || $("#productsSoldYear").val() == null) {
+                return;
+            }
+            $("#form-searchProductsSold input[name='month']").val($(this).val());
+            $("#form-searchProductsSold input[name='year']").val($("#productsSoldYear").val());
+            $("#productsSoldTable").DataTable().clear().draw();
+            sendForm("searchProductsSold");
+        });
+        $("#productsSoldYear").on("change", function() {
+            if ($("#productsSoldMonth").val() === "" || $("#productsSoldMonth").val() === null) {
+                return;
+            }
+            $("#form-searchProductsSold input[name='month']").val($("#productsSoldMonth").val());
+            $("#form-searchProductsSold input[name='year']").val($(this).val());
+            $("#productsSoldTable").DataTable().clear().draw();
+            sendForm("searchProductsSold");
+        });
+
+        function fillProductsSoldTable(data) {
+            let table = $("#productsSoldTable");
+            let keys = Object.keys(data);
+            for (let i = 0; i < keys.length; i++) {
+                let key = keys[i];
+                let item = data[key];
+                let row = table.DataTable().row.add([
+                    item.product,
+                    item.quantity,
+                ]).draw().node();
+            }
+        }
+    </script>
+
+    <script>
+        function sendForm(action) {
+            let form = document.getElementById(`form-${action}`);
+
+            // Enviar solicitud AJAX
+            $.ajax({
+                url: $(form).attr('action'), // Utiliza la ruta del formulario
+                method: $(form).attr('method'), // Utiliza el método del formulario
+                data: $(form).serialize(), // Utiliza los datos del formulario
+                success: function (response) {
+                    if (action === 'pendingCarts') {
+                        fillPendingCartsTable(response.data);
+                    } else if (action === 'searchClients') {
+                        fillClientsTable(response.data);
+                    } else if (action === 'searchClientsMachines') {
+                        fillClientsMachinesTable(response.data);
+                    } else if (action === 'searchProductsSold') {
+                        fillProductsSoldTable(response.data);
+                    }
+                },
+                error: function (errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorThrown.responseJSON.title,
+                        text: errorThrown.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        };
+    </script>
 
     {{-- Ventas anuales --}}
     <script>
