@@ -371,7 +371,6 @@
                     createLocalDate(item.created_at),
                     states[item.state],
                 ]).draw().node();
-                $(row).attr('id', item.id);
             });
         }
     </script>
@@ -413,7 +412,6 @@
                     client.name,
                     debt,
                 ]).draw().node();
-                $(row).attr('id', client.id);
             });
         }
     </script>
@@ -460,7 +458,6 @@
                 let row = table.DataTable().row.add([
                     item.name,
                 ]).draw().node();
-                $(row).attr('id', item.client.id);
             });
         }
     </script>
@@ -527,9 +524,9 @@
                         fillPendingCartsTable(response.data);
                     } else if (action === 'searchClients') {
                         fillClientsTable(response.data);
-                    } else if (action === 'searchClientsMachines') {
+                    } else if (action === 'searchClientsMachines' && response.data != null) {
                         fillClientsMachinesTable(response.data);
-                    } else if (action === 'searchProductsSold') {
+                    } else if (action === 'searchProductsSold' && response.data != null) {
                         fillProductsSoldTable(response.data);
                     }
                 },
