@@ -142,6 +142,7 @@
                                 <option value="5">Viernes</option>
                             </select>
                         </div>
+                        <hr>
                         <table id="clientsTable" class="table table-striped table-bordered table-hover">
                             <thead>
                                 <tr>
