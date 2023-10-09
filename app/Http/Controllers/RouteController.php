@@ -326,6 +326,8 @@ class RouteController extends Controller
     {
         return Route::where('day_of_week', $day)
             ->where('is_static', true)
+            ->join('users', 'routes.user_id', '=', 'users.id')
+            ->orderBy('users.name')
             ->with(['Carts' => function ($query) {
                 $query->orderBy('priority');
             }])
