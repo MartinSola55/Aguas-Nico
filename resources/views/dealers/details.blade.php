@@ -170,6 +170,13 @@
                             </div>
                             <button id="btnSearchPendingCarts" class="btn btn-info">Buscar</button>
                         </div>
+                        <div class="d-flex justify-content-start align-items-center">
+                            <select class="form-control w-50" id="estadoSelect" style="display: none;">
+                                <option value="">Filtrar por estado</option>
+                                <option value="No estaba">No estaba</option>
+                                <option value="No necesitaba">No necesitaba</option>
+                              </select>
+                        </div>
                         <table id="pendingCartsTable" class="table table-striped table-bordered table-hover">
                             <thead>
                                 <tr>
@@ -360,6 +367,19 @@
             $("#form-pendingCarts input[name='dateTo']").val(formatDate($("#dateToPendingCarts").val()));
             $("#pendingCartsTable").DataTable().clear().draw();
             sendForm("pendingCarts");
+
+            $('#estadoSelect').show();
+            $('#estadoSelect').on('change', function() {
+                let estadoFiltrar = $(this).val();
+
+                $('#pendingCartsTable tbody tr').show(); // Mostrar todos los elementos
+
+                if (estadoFiltrar) {
+                $('#pendingCartsTable tbody tr').filter(function() {
+                    return $('td:eq(3)', this).text() !== estadoFiltrar;
+                }).hide();
+                }
+            });
         });
 
         function fillPendingCartsTable(data) {
@@ -586,7 +606,7 @@
                 behaveLikeLine: true,
                 gridLineColor: '#e0e0e0',
                 hideHover: 'auto'
-            });   
+            });
     </script>
 
     <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
