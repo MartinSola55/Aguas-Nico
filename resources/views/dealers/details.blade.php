@@ -151,6 +151,9 @@
                                 </tr>
                             </thead>
                         </table>
+                        <div class="d-flex flex-row justify-content-end mt-2" id="searchClientsTotal">
+                            <p>Total: $0</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -393,12 +396,21 @@
             },
         });
         $("#clientsDay").on("change", function() {
+            $("#searchClientsTotal p").text(`Total: $0`);
             $("#form-searchClients input[name='day_of_week']").val($(this).val());
             $("#clientsTable").DataTable().clear().draw();
             sendForm("searchClients");
         });
 
         function fillClientsTable(data) {
+            // convertir deuda total a formato 1.000,00
+            let total = data.totalDebt;
+            total = total.toLocaleString("es-AR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+            $("#searchClientsTotal p").text(`Total: $${total}`);
+
             let table = $("#clientsTable");
             data.carts.forEach(function (item) {
                 let client = item.client;

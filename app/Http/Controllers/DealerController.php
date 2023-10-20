@@ -348,6 +348,10 @@ class DealerController extends Controller
                 ->with('Carts')
                 ->with('Carts.Client')
                 ->first();
+            $clients->totalDebt = 0;
+            foreach ($clients->Carts as $cart) {
+                $clients->totalDebt += $cart->Client->debt;
+            }
 
             return response()->json([
                 'success' => true,
