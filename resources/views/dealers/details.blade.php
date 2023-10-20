@@ -160,6 +160,33 @@
             <div class="col-12 col-lg-6">
                 <div class="card shadow">
                     <div class="card-body">
+                        <h4 class="card-title mr-2 mb-2">Clientes no visitados</h4>
+                        <hr>
+                        <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
+                            <div class="form-group">
+                                <label for="dateFromClientsNotVisited">Fecha desde</label>
+                                <input id="dateFromClientsNotVisited" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                            </div>
+                            <div class="form-group">
+                                <label for="dateToClientsNotVisited">Fecha hasta</label>
+                                <input id="dateToClientsNotVisited" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                            </div>
+                            <button id="btnClientsNotVisited" class="btn btn-info">Buscar</button>
+                        </div>
+                        <table id="clientsNotVisitedTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Dirección</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
                         <h4 class="card-title mr-2 mb-2">Repartos pendientes</h4>
                         <hr>
                         <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
@@ -298,6 +325,13 @@
             <input type="hidden" name="year" value="">
             <input type="hidden" name="id" value="{{ $dealer->id }}">
         </form>
+
+        <form method="GET" action="{{ url('/dealer/searchClientsNotVisited') }}" id="form-searchClientsNotVisited" class="form-material m-t-30">
+            @csrf
+            <input type="hidden" name="dateFrom" value="">
+            <input type="hidden" name="dateTo" value="">
+            <input type="hidden" name="id" value="{{ $dealer->id }}">
+        </form>
     </div>
 
     {{-- Constantes --}}
@@ -318,6 +352,72 @@
         }
         const states = ['Pendiente', 'Completado', 'No estaba', 'No necesitaba', 'De vacaciones'];
         const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    </script>
+
+    {{-- Clientes no visitados --}}
+    <script>
+        $("#clientsNotVisitedTable").DataTable({
+            "info": false,
+            "scrollY": '30vh',
+            "scrollCollapse": true,
+            "paging": false,
+            "ordering": false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                "sLengthMenu": "Mostrar _MENU_ clientes",
+                "sSearch": "Buscar:",
+            },
+        });
+        $('#dateFromClientsNotVisited').bootstrapMaterialDatePicker({
+            maxDate: new Date(),
+            time: false,
+            format: 'DD/MM/YYYY',
+            cancelText: "Cancelar",
+            weekStart: 1,
+            lang: 'es',
+        });
+        $("#dateFromClientsNotVisited").on("change", function() {
+            $('#dateToClientsNotVisited').bootstrapMaterialDatePicker({
+                minDate: $("#dateFromClientsNotVisited").val(),
+                maxDate: new Date(),
+                time: false,
+                format: 'DD/MM/YYYY',
+                cancelText: "Cancelar",
+                weekStart: 1,
+                lang: 'es',
+            });
+        });
+        $("#btnClientsNotVisited").on("click", function() {
+            if ($("#dateFromClientsNotVisited").val() === "" || $("#dateToClientsNotVisited").val() === "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error',
+                    text: 'Debe seleccionar un rango de fechas',
+                    confirmButtonColor: '#1e88e5',
+                });
+                return;
+            }
+            $("#form-searchClientsNotVisited input[name='dateFrom']").val(formatDate($("#dateFromClientsNotVisited").val()));
+            $("#form-searchClientsNotVisited input[name='dateTo']").val(formatDate($("#dateToClientsNotVisited").val()));
+            $("#clientsNotVisitedTable").DataTable().clear().draw();
+            sendForm("searchClientsNotVisited");
+        });
+
+        function fillClientsNotVisitedTable(data) {
+            let table = $("#clientsNotVisitedTable");
+            let keys = Object.keys(data);
+            for (let i = 0; i < keys.length; i++) {
+                let key = keys[i];
+                let item = data[key];
+                let row = table.DataTable().row.add([
+                    item.name,
+                    item.adress,
+                ]).draw().node();
+            }
+        }
     </script>
 
     {{-- Repartos pendientes --}}
@@ -560,6 +660,8 @@
                         fillClientsMachinesTable(response.data);
                     } else if (action === 'searchProductsSold' && response.data != null) {
                         fillProductsSoldTable(response.data);
+                    } else if (action === 'searchClientsNotVisited' && response.data != null) {
+                        fillClientsNotVisitedTable(response.data);
                     }
                 },
                 error: function (errorThrown) {
