@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
+use App\Models\Client;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductsCart;
@@ -31,19 +32,22 @@ class DealerController extends Controller
         // Total repartos
         $repartos_totales = Cart::with('Route')->whereHas('route', function ($query) {
             $query->where('is_static', false)
-                  ->whereYear('start_date', date('Y'));
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('is_static', false)->count();
 
         // Repartos completados
         $repartos_completados = Cart::with('Route')->whereHas('route', function ($query) {
             $query->where('is_static', false)
-                  ->whereYear('start_date', date('Y'));
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('state', 1)->where('is_static', false)->count();
 
         // Repartos pendientes
         $repartos_pendientes = Cart::with('Route')->whereHas('route', function ($query) {
             $query->where('is_static', false)
-                  ->whereYear('start_date', date('Y'));
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('state', '!=', 1)->where('is_static', false)->count();
 
         $repartos = [
@@ -68,22 +72,25 @@ class DealerController extends Controller
         // Total repartos
         $repartos_totales = Cart::with('Route')->whereHas('route', function ($query) use ($id) {
             $query->where('is_static', false)
-                  ->where('user_id', $id)
-                  ->whereYear('start_date', date('Y'));
+                ->where('user_id', $id)
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('is_static', false)->count();
 
         // Repartos completados
         $repartos_completados = Cart::with('Route')->whereHas('route', function ($query) use ($id) {
             $query->where('is_static', false)
-                  ->where('user_id', $id)
-                  ->whereYear('start_date', date('Y'));
+                ->where('user_id', $id)
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('state', 1)->where('is_static', false)->count();
 
         // Repartos pendientes
         $repartos_pendientes = Cart::with('Route')->whereHas('route', function ($query) use ($id) {
             $query->where('is_static', false)
-                  ->where('user_id', $id)
-                  ->whereYear('start_date', date('Y'));
+                ->where('user_id', $id)
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('state', '!=', 1)->where('is_static', false)->count();
 
         $repartos = [
@@ -326,8 +333,7 @@ class DealerController extends Controller
             return response()->json([
                     'success' => true,
                     'data' => $carts
-                ],201
-            );
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -348,6 +354,10 @@ class DealerController extends Controller
                 ->with('Carts')
                 ->with('Carts.Client')
                 ->first();
+            $clients->totalDebt = 0;
+            foreach ($clients->Carts as $cart) {
+                $clients->totalDebt += $cart->Client->debt;
+            }
 
             return response()->json([
                 'success' => true,
@@ -466,6 +476,46 @@ class DealerController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al recuperar los productos vendidos',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function searchClientsNotVisited(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $dateFrom = $request->input('dateFrom');
+            $dateTo = $request->input('dateTo');
+
+            $clientsVisited = Client::whereHas('Carts', function ($query) use ($id, $dateFrom, $dateTo) {
+                $query->where('state', 1)
+                    ->where('is_static', false)
+                    ->whereHas('route', function ($query) use ($id, $dateFrom, $dateTo) {
+                        $query->where('user_id', $id)
+                            ->whereBetween('start_date', [$dateFrom, $dateTo]);
+                    });
+            })->get();
+
+            $clientsNotVisited = Client::whereHas('Carts', function ($query) use ($id, $dateFrom, $dateTo) {
+                $query->where('state', '!=', 1)
+                    ->where('is_static', false)
+                    ->whereHas('route', function ($query) use ($id, $dateFrom, $dateTo) {
+                        $query->where('user_id', $id)
+                            ->whereBetween('start_date', [$dateFrom, $dateTo]);
+                    });
+            })->get();
+            $clients = $clientsNotVisited->whereNotIn('id', $clientsVisited->pluck('id'));
+
+            return response()->json([
+                'success' => true,
+                'data' => $clients
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al recuperar los repartos pendientes',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);

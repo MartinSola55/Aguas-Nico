@@ -119,18 +119,19 @@
                                                     <option value="1">Responsable Inscripto</option>
                                                     <option value="2">Monotributista</option>
                                                     <option value="3">Excento</option>
+                                                    <option value="4">Consumidor final</option>
                                                 </select>
                                                 <div class="invalid-feedback">
                                                     Por favor, ingrese una condición frente al IVA
                                                 </div>
                                             </div>
-                                            <div class="form-group mb-3">
+                                            {{-- <div class="form-group mb-3">
                                                 <label class="form-control-label mb-0" for="clientBusinessName">Razón Social</label>
                                                 <input required type="text" id="clientBusinessName" name="business_name" class="form-control form-control-alternative">
                                                 <div class="invalid-feedback">
                                                     Por favor, ingrese una razón social
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                             <div class="form-group mb-3">
                                                 <label class="form-control-label mb-0" for="clientCUIT">CUIT</label>
                                                 <input required type="number" id="clientCUIT" name="cuit" class="form-control form-control-alternative">
@@ -138,13 +139,13 @@
                                                     Por favor, ingrese un CUIT
                                                 </div>
                                             </div>
-                                            <div class="form-group mb-3">
+                                            {{-- <div class="form-group mb-3">
                                                 <label class="form-control-label mb-0" for="clientTaxAdress">Dirección de facturación</label>
                                                 <input required type="text" id="clientTaxAdress" name="tax_address" class="form-control form-control-alternative">
                                                 <div class="invalid-feedback">
                                                     Por favor, ingrese una dirección de facturación
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                         </div>
                                     </div>
                                 </div>

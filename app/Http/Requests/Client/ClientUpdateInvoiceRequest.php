@@ -23,19 +23,19 @@ class ClientUpdateInvoiceRequest extends BaseFormRequest
     {
         $this->validate([
             'invoice_type' => ['required', 'string', 'max:255'],
-            'business_name' => ['required', 'string', 'max:255'],
+            // 'business_name' => ['required', 'string', 'max:255'],
             'tax_condition' => ['required', 'string', 'max:255'],
             'cuit' => ['required', 'string', 'max:255'],
-            'tax_address' => ['required', 'string', 'max:255'],
+            // 'tax_address' => ['required', 'string', 'max:255'],
         ]);
 
        return [
             'user_id',
             'invoice_type',
-            'business_name',
+            // 'business_name',
             'tax_condition',
             'cuit',
-            'tax_address'
+            // 'tax_address'
         ];
     }
 }

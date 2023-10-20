@@ -149,6 +149,7 @@
         };
 
         $("#day_of_week").on("change", function() {
+            $("#tableBody").html("");
             // Enviar solicitud AJAX
             $.ajax({
                 url: $("#formSearchRoutes").attr('action'), // Utiliza la ruta del formulario

@@ -43,6 +43,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dealer/searchClients', [App\Http\Controllers\DealerController::class, 'searchClients']);
     Route::get('/dealer/searchClientsMachines', [App\Http\Controllers\DealerController::class, 'searchClientsMachines']);
     Route::get('/dealer/searchProductsSold', [App\Http\Controllers\DealerController::class, 'searchProductsSold']);
+    Route::get('/dealer/searchClientsNotVisited', [App\Http\Controllers\DealerController::class, 'searchClientsNotVisited']);
 
     // PRODUCT
     Route::get('/product/index', [App\Http\Controllers\ProductController::class, 'index']);

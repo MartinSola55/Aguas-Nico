@@ -50,10 +50,10 @@
                 @endif
                 <hr />
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Clientes anuales</h4>
+                        <h4 class="card-title">Clientes del mes</h4>
                         <div class="text-right"> <span class="text-muted">Completados</span>
                             <h1 class="font-light"><sup></sup>{{ $repartos['completados'] }}</h1>
                         </div>
@@ -64,11 +64,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Clientes anuales</h4>
-                        <div class="text-right"> <span class="text-muted">Cancelados / pendientes</span>
+                        <h4 class="card-title">Clientes del mes</h4>
+                        <div class="text-right"> <span class="text-muted">Pendientes / No bajado</span>
                             <h1 class="font-light"><sup></sup>{{ $repartos['pendientes'] }}</h1>
                         </div>
                         <span class="text-dark">{{ round($repartos['pendientes'] * 100 / ($repartos['totales'] !== 0 ? $repartos['totales'] : 1)) }}%</span>
@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            {{-- <div class="col-lg-3 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Producto más vendido</h4>
@@ -91,8 +91,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
+            </div> --}}
+            <div class="col-lg-4 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Total recaudado en el mes</h4>
@@ -102,7 +102,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
+            {{-- <div class="col-lg-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Ventas anuales</h4>
@@ -127,7 +127,7 @@
                         <div id="extra-area-chart"></div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             <div class="col-12 col-lg-6">
                 <div class="card shadow">
                     <div class="card-body">
@@ -151,6 +151,36 @@
                                 </tr>
                             </thead>
                         </table>
+                        <div class="d-flex flex-row justify-content-end mt-2" id="searchClientsTotal">
+                            <p>Total: $0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h4 class="card-title mr-2 mb-2">Clientes no visitados</h4>
+                        <hr>
+                        <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
+                            <div class="form-group">
+                                <label for="dateFromClientsNotVisited">Fecha desde</label>
+                                <input id="dateFromClientsNotVisited" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                            </div>
+                            <div class="form-group">
+                                <label for="dateToClientsNotVisited">Fecha hasta</label>
+                                <input id="dateToClientsNotVisited" type="text" class="form-control" placeholder="dd/mm/aaaa">
+                            </div>
+                            <button id="btnClientsNotVisited" class="btn btn-info">Buscar</button>
+                        </div>
+                        <table id="clientsNotVisitedTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Dirección</th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -169,6 +199,13 @@
                                 <input id="dateToPendingCarts" type="text" class="form-control" placeholder="dd/mm/aaaa">
                             </div>
                             <button id="btnSearchPendingCarts" class="btn btn-info">Buscar</button>
+                        </div>
+                        <div class="d-flex justify-content-start align-items-center">
+                            <select class="form-control w-50" id="estadoSelect" style="display: none;">
+                                <option value="">Filtrar por estado</option>
+                                <option value="No estaba">No estaba</option>
+                                <option value="No necesitaba">No necesitaba</option>
+                              </select>
                         </div>
                         <table id="pendingCartsTable" class="table table-striped table-bordered table-hover">
                             <thead>
@@ -288,6 +325,13 @@
             <input type="hidden" name="year" value="">
             <input type="hidden" name="id" value="{{ $dealer->id }}">
         </form>
+
+        <form method="GET" action="{{ url('/dealer/searchClientsNotVisited') }}" id="form-searchClientsNotVisited" class="form-material m-t-30">
+            @csrf
+            <input type="hidden" name="dateFrom" value="">
+            <input type="hidden" name="dateTo" value="">
+            <input type="hidden" name="id" value="{{ $dealer->id }}">
+        </form>
     </div>
 
     {{-- Constantes --}}
@@ -308,6 +352,72 @@
         }
         const states = ['Pendiente', 'Completado', 'No estaba', 'No necesitaba', 'De vacaciones'];
         const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    </script>
+
+    {{-- Clientes no visitados --}}
+    <script>
+        $("#clientsNotVisitedTable").DataTable({
+            "info": false,
+            "scrollY": '30vh',
+            "scrollCollapse": true,
+            "paging": false,
+            "ordering": false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                "sLengthMenu": "Mostrar _MENU_ clientes",
+                "sSearch": "Buscar:",
+            },
+        });
+        $('#dateFromClientsNotVisited').bootstrapMaterialDatePicker({
+            maxDate: new Date(),
+            time: false,
+            format: 'DD/MM/YYYY',
+            cancelText: "Cancelar",
+            weekStart: 1,
+            lang: 'es',
+        });
+        $("#dateFromClientsNotVisited").on("change", function() {
+            $('#dateToClientsNotVisited').bootstrapMaterialDatePicker({
+                minDate: $("#dateFromClientsNotVisited").val(),
+                maxDate: new Date(),
+                time: false,
+                format: 'DD/MM/YYYY',
+                cancelText: "Cancelar",
+                weekStart: 1,
+                lang: 'es',
+            });
+        });
+        $("#btnClientsNotVisited").on("click", function() {
+            if ($("#dateFromClientsNotVisited").val() === "" || $("#dateToClientsNotVisited").val() === "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error',
+                    text: 'Debe seleccionar un rango de fechas',
+                    confirmButtonColor: '#1e88e5',
+                });
+                return;
+            }
+            $("#form-searchClientsNotVisited input[name='dateFrom']").val(formatDate($("#dateFromClientsNotVisited").val()));
+            $("#form-searchClientsNotVisited input[name='dateTo']").val(formatDate($("#dateToClientsNotVisited").val()));
+            $("#clientsNotVisitedTable").DataTable().clear().draw();
+            sendForm("searchClientsNotVisited");
+        });
+
+        function fillClientsNotVisitedTable(data) {
+            let table = $("#clientsNotVisitedTable");
+            let keys = Object.keys(data);
+            for (let i = 0; i < keys.length; i++) {
+                let key = keys[i];
+                let item = data[key];
+                let row = table.DataTable().row.add([
+                    item.name,
+                    item.adress,
+                ]).draw().node();
+            }
+        }
     </script>
 
     {{-- Repartos pendientes --}}
@@ -360,6 +470,19 @@
             $("#form-pendingCarts input[name='dateTo']").val(formatDate($("#dateToPendingCarts").val()));
             $("#pendingCartsTable").DataTable().clear().draw();
             sendForm("pendingCarts");
+
+            $('#estadoSelect').show();
+            $('#estadoSelect').on('change', function() {
+                let estadoFiltrar = $(this).val();
+
+                $('#pendingCartsTable tbody tr').show(); // Mostrar todos los elementos
+
+                if (estadoFiltrar) {
+                $('#pendingCartsTable tbody tr').filter(function() {
+                    return $('td:eq(3)', this).text() !== estadoFiltrar;
+                }).hide();
+                }
+            });
         });
 
         function fillPendingCartsTable(data) {
@@ -393,12 +516,21 @@
             },
         });
         $("#clientsDay").on("change", function() {
+            $("#searchClientsTotal p").text(`Total: $0`);
             $("#form-searchClients input[name='day_of_week']").val($(this).val());
             $("#clientsTable").DataTable().clear().draw();
             sendForm("searchClients");
         });
 
         function fillClientsTable(data) {
+            // convertir deuda total a formato 1.000,00
+            let total = data.totalDebt;
+            total = total.toLocaleString("es-AR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+            $("#searchClientsTotal p").text(`Total: $${total}`);
+
             let table = $("#clientsTable");
             data.carts.forEach(function (item) {
                 let client = item.client;
@@ -528,6 +660,8 @@
                         fillClientsMachinesTable(response.data);
                     } else if (action === 'searchProductsSold' && response.data != null) {
                         fillProductsSoldTable(response.data);
+                    } else if (action === 'searchClientsNotVisited' && response.data != null) {
+                        fillClientsNotVisitedTable(response.data);
                     }
                 },
                 error: function (errorThrown) {
@@ -543,51 +677,51 @@
     </script>
 
     {{-- Ventas anuales --}}
-    <script>
+    {{-- <script>
         let anualSales = {!! json_encode($anualSales) !!};
         let anualJson = JSON.parse(anualSales);
         let anualData = anualJson.data;
 
         Morris.Area({
-                element: 'morris-area-chart',
-                data: anualData,
-                xkey: 'period',
-                ykeys: ['sold'],
-                labels: ['$'],
-                pointSize: 3,
-                fillOpacity: 0,
-                pointStrokeColors:['#2f3d4a'],
-                behaveLikeLine: true,
-                gridLineColor: '#009efb',
-                lineWidth: 3,
-                hideHover: 'auto',
-                lineColors: ['#2f3d4a'],
-                resize: true,
-            });
-    </script>
+            element: 'morris-area-chart',
+            data: anualData,
+            xkey: 'period',
+            ykeys: ['sold'],
+            labels: ['$'],
+            pointSize: 3,
+            fillOpacity: 0,
+            pointStrokeColors:['#2f3d4a'],
+            behaveLikeLine: true,
+            gridLineColor: '#009efb',
+            lineWidth: 3,
+            hideHover: 'auto',
+            lineColors: ['#2f3d4a'],
+            resize: true,
+        });
+    </script> --}}
 
     {{-- Ventas mensuales --}}
-    <script>
+    {{-- <script>
         let monthlySales = {!! json_encode($monthlySales) !!};
         let monthJson = JSON.parse(monthlySales);
         let monthdata = monthJson.data;
 
         Morris.Area({
-                element: 'extra-area-chart',
-                data: monthdata,
-                lineColors: ['#2f3d4a'],
-                xkey: 'period',
-                ykeys: ['sold'],
-                labels: ['$'],
-                pointSize: 0,
-                lineWidth: 0,
-                resize:true,
-                fillOpacity: 0.8,
-                behaveLikeLine: true,
-                gridLineColor: '#e0e0e0',
-                hideHover: 'auto'
-            });   
-    </script>
+            element: 'extra-area-chart',
+            data: monthdata,
+            lineColors: ['#2f3d4a'],
+            xkey: 'period',
+            ykeys: ['sold'],
+            labels: ['$'],
+            pointSize: 0,
+            lineWidth: 0,
+            resize:true,
+            fillOpacity: 0.8,
+            behaveLikeLine: true,
+            gridLineColor: '#e0e0e0',
+            hideHover: 'auto'
+        });
+    </script> --}}
 
     <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
     <script>

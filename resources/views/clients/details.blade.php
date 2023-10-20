@@ -426,7 +426,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-lg-6">
+                                                    {{-- <div class="col-lg-6">
                                                         <div class="form-group">
                                                             <label class="form-control-label" for="clientBusinessName">Razón Social</label>
                                                             <input disabled required type="text" id="clientBusinessName" name="business_name" class="form-control form-control-alternative" value="{{ $client->business_name }}">
@@ -434,8 +434,8 @@
                                                                 Por favor, ingrese una razón social
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-lg-6">
+                                                    </div> --}}
+                                                    <div class="col-12">
                                                         <div class="form-group">
                                                             <label class="form-control-label" for="clientCUIT">CUIT</label>
                                                             <input disabled required type="number" id="clientCUIT" name="cuit" class="form-control form-control-alternative" value="{{ $client->cuit }}">
@@ -445,7 +445,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
+                                                {{-- <div class="row">
                                                     <div class="col-lg-12">
                                                         <div class="form-group">
                                                             <label class="form-control-label" for="clientTaxAdress">Dirección de facturación</label>
@@ -455,7 +455,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> --}}
                                                 <div class="row" id="divSaveInvoiceData" style="display: none">
                                                     <hr class="my-4">
                                                     <div class="d-flex flex-end">
