@@ -50,10 +50,10 @@
                 @endif
                 <hr />
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Clientes anuales</h4>
+                        <h4 class="card-title">Clientes del mes</h4>
                         <div class="text-right"> <span class="text-muted">Completados</span>
                             <h1 class="font-light"><sup></sup>{{ $repartos['completados'] }}</h1>
                         </div>
@@ -64,11 +64,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h4 class="card-title">Clientes anuales</h4>
-                        <div class="text-right"> <span class="text-muted">Cancelados / pendientes</span>
+                        <h4 class="card-title">Clientes del mes</h4>
+                        <div class="text-right"> <span class="text-muted">Pendientes / No bajado</span>
                             <h1 class="font-light"><sup></sup>{{ $repartos['pendientes'] }}</h1>
                         </div>
                         <span class="text-dark">{{ round($repartos['pendientes'] * 100 / ($repartos['totales'] !== 0 ? $repartos['totales'] : 1)) }}%</span>
@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            {{-- <div class="col-lg-3 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Producto más vendido</h4>
@@ -91,8 +91,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
+            </div> --}}
+            <div class="col-lg-4 col-md-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Total recaudado en el mes</h4>
@@ -102,7 +102,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
+            {{-- <div class="col-lg-6">
                 <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Ventas anuales</h4>
@@ -127,7 +127,7 @@
                         <div id="extra-area-chart"></div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             <div class="col-12 col-lg-6">
                 <div class="card shadow">
                     <div class="card-body">
@@ -575,51 +575,51 @@
     </script>
 
     {{-- Ventas anuales --}}
-    <script>
+    {{-- <script>
         let anualSales = {!! json_encode($anualSales) !!};
         let anualJson = JSON.parse(anualSales);
         let anualData = anualJson.data;
 
         Morris.Area({
-                element: 'morris-area-chart',
-                data: anualData,
-                xkey: 'period',
-                ykeys: ['sold'],
-                labels: ['$'],
-                pointSize: 3,
-                fillOpacity: 0,
-                pointStrokeColors:['#2f3d4a'],
-                behaveLikeLine: true,
-                gridLineColor: '#009efb',
-                lineWidth: 3,
-                hideHover: 'auto',
-                lineColors: ['#2f3d4a'],
-                resize: true,
-            });
-    </script>
+            element: 'morris-area-chart',
+            data: anualData,
+            xkey: 'period',
+            ykeys: ['sold'],
+            labels: ['$'],
+            pointSize: 3,
+            fillOpacity: 0,
+            pointStrokeColors:['#2f3d4a'],
+            behaveLikeLine: true,
+            gridLineColor: '#009efb',
+            lineWidth: 3,
+            hideHover: 'auto',
+            lineColors: ['#2f3d4a'],
+            resize: true,
+        });
+    </script> --}}
 
     {{-- Ventas mensuales --}}
-    <script>
+    {{-- <script>
         let monthlySales = {!! json_encode($monthlySales) !!};
         let monthJson = JSON.parse(monthlySales);
         let monthdata = monthJson.data;
 
         Morris.Area({
-                element: 'extra-area-chart',
-                data: monthdata,
-                lineColors: ['#2f3d4a'],
-                xkey: 'period',
-                ykeys: ['sold'],
-                labels: ['$'],
-                pointSize: 0,
-                lineWidth: 0,
-                resize:true,
-                fillOpacity: 0.8,
-                behaveLikeLine: true,
-                gridLineColor: '#e0e0e0',
-                hideHover: 'auto'
-            });
-    </script>
+            element: 'extra-area-chart',
+            data: monthdata,
+            lineColors: ['#2f3d4a'],
+            xkey: 'period',
+            ykeys: ['sold'],
+            labels: ['$'],
+            pointSize: 0,
+            lineWidth: 0,
+            resize:true,
+            fillOpacity: 0.8,
+            behaveLikeLine: true,
+            gridLineColor: '#e0e0e0',
+            hideHover: 'auto'
+        });
+    </script> --}}
 
     <script src="{{ asset('plugins/moment/moment-with-locales.js') }}"></script>
     <script>

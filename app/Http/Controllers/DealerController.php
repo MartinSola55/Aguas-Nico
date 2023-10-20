@@ -31,19 +31,22 @@ class DealerController extends Controller
         // Total repartos
         $repartos_totales = Cart::with('Route')->whereHas('route', function ($query) {
             $query->where('is_static', false)
-                  ->whereYear('start_date', date('Y'));
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('is_static', false)->count();
 
         // Repartos completados
         $repartos_completados = Cart::with('Route')->whereHas('route', function ($query) {
             $query->where('is_static', false)
-                  ->whereYear('start_date', date('Y'));
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('state', 1)->where('is_static', false)->count();
 
         // Repartos pendientes
         $repartos_pendientes = Cart::with('Route')->whereHas('route', function ($query) {
             $query->where('is_static', false)
-                  ->whereYear('start_date', date('Y'));
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('state', '!=', 1)->where('is_static', false)->count();
 
         $repartos = [
@@ -68,22 +71,25 @@ class DealerController extends Controller
         // Total repartos
         $repartos_totales = Cart::with('Route')->whereHas('route', function ($query) use ($id) {
             $query->where('is_static', false)
-                  ->where('user_id', $id)
-                  ->whereYear('start_date', date('Y'));
+                ->where('user_id', $id)
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('is_static', false)->count();
 
         // Repartos completados
         $repartos_completados = Cart::with('Route')->whereHas('route', function ($query) use ($id) {
             $query->where('is_static', false)
-                  ->where('user_id', $id)
-                  ->whereYear('start_date', date('Y'));
+                ->where('user_id', $id)
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('state', 1)->where('is_static', false)->count();
 
         // Repartos pendientes
         $repartos_pendientes = Cart::with('Route')->whereHas('route', function ($query) use ($id) {
             $query->where('is_static', false)
-                  ->where('user_id', $id)
-                  ->whereYear('start_date', date('Y'));
+                ->where('user_id', $id)
+                ->whereYear('start_date', date('Y'))
+                ->whereMonth('start_date', date('m'));
         })->where('state', '!=', 1)->where('is_static', false)->count();
 
         $repartos = [
