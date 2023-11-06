@@ -300,6 +300,28 @@ class RouteController extends Controller
         $client = Client::find($request->input('client_id'));
         $abonoClient = null; // Inicializar la variable $abonoClient
 
+        $tieneMaquina = false;
+
+        foreach ($products as $product) {
+            if ($product->product_id == 1 || $product->product_id == 9) {
+                $tieneMaquina = true;
+                break;
+            }
+        }
+
+        $maquinasRenovadas = null;
+        if($tieneMaquina) {
+            $maquinasRenovadas = ProductsCart::whereMonth('created_at', date('m'))
+                ->whereHas('cart', function ($query) use ($client) {
+                    $query->where('client_id', $client->id);
+                })
+                ->where(function ($query) {
+                    $query->where('product_id', 1)
+                        ->orWhere('product_id', 9);
+                })
+                ->sum('quantity');
+        }
+
         if ($client->abono_id !== null) {
             $abonoType = Abono::find($client->abono_id);
             $abonoType->client_id = $request->input('client_id');
@@ -313,7 +335,7 @@ class RouteController extends Controller
         } else {
             $abonoType = null;
         }
-        return response()->json(['products' => $products, 'abonoType' => $abonoType, 'abonoClient' => $abonoClient, 'client_abono_id' => $client->abono_id]);
+        return response()->json(['products' => $products, 'abonoType' => $abonoType, 'abonoClient' => $abonoClient, 'client_abono_id' => $client->abono_id, 'maquinasRenovadas' => $maquinasRenovadas]);
     }
 
     /**
