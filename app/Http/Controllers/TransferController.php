@@ -29,9 +29,19 @@ class TransferController extends Controller
     public function store(TransferRequest $request)
     {
         try {
+            $client = Client::findOrFail($request->input('client_id'))->staticRoutesWithUserAndDayOfWeek()->first();
+            if ($client == null) {
+                return response()->json([
+                    'success' => false,
+                    'title' => 'Error al crear la transferencia',
+                    'message' => 'El cliente no pertenece a ninguna planilla, por lo que no es posible asignar un repartidor a la transferencia',
+                ], 400);
+            }
+            $user_id = $client->user_id;
+
             $transfer = Transfer::create([
                 'client_id' => $request->input('client_id'),
-                'user_id' => $request->input('user_id'),
+                'user_id' => $user_id,
                 'amount' => $request->input('amount'),
                 'received_from' => $request->input('received_from'),
                 'created_at' => Carbon::now(),
@@ -74,7 +84,6 @@ class TransferController extends Controller
 
             $transfer->update([
                 'client_id' => $request->input('client_id'),
-                'user_id' => $request->input('user_id'),
                 'amount' => $request->input('amount'),
                 'received_from' => $request->input('received_from'),
                 'updated_at' => Carbon::now(),

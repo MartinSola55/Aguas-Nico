@@ -34,55 +34,8 @@
         <!-- Start Page Content -->
         <!-- ============================================================== -->
 
-        <!-- Modal transfer data -->
-        <div id="modalTransferData" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 id="modalTitle" class="modal-title"></h4>
-                        <button type="button" class="close" id="btnCloseModal" data-dismiss="modal" aria-hidden="true">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-column">
-                                    <div class="col-12 mb-3">
-                                        <label for="transferAmount" class="mb-0">Monto</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">$</span>
-                                            </div>
-                                            <input type="number" step="0.01" min="0" max="1000000" class="form-control" id="transferAmount" placearia-describedby="inputGroupPrepend" required>
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese un monto
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 mb-3">
-                                        <label for="user_id" class="mb-0">Repartidor</label>
-                                        <select class="form-control" id="user_id">
-                                            <option disabled selected value="">Seleccione un repartidor</option>
-                                            @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
-                        <button id="btnOpenModalClients" type="button" class="btn btn-success waves-effect waves-light">Buscar cliente</button>
-                        <button id="btnOpenModalClientsHidden" type="button" data-toggle="modal" data-target="#modalTransferClient" style="display: none"></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Modal -->
-
         <!-- Modal transfer client -->
-        <div id="modalTransferClient" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div id="modalTransfer" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-lg">
                 <form role="form" class="needs-validation" method="POST" action="{{ url('/transfer/create') }}" id="form-create" autocomplete="off" novalidate>
                     <div class="modal-content">
@@ -97,17 +50,30 @@
                                         {{-- TOKEN --}}
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                         <input type="hidden" name="transfer_id" value="" />
-                                        <input type="hidden" name="user_id" value="" />
                                         <input type="hidden" name="client_id" value="" />
-                                        <input type="hidden" name="amount" value="" />
                                         <input type="hidden" name="received_from" value="" />
 
-                                        <div class="col-12 mb-3">
-                                            <label for="transferDate" class="mb-0">Fecha de pago</label>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" id="transferDate" placearia-describedby="inputGroupPrepend" required>
-                                                <div class="invalid-feedback">
-                                                    Por favor, ingrese una fecha
+                                        <div class="row">
+                                            <div class="col-12 col-lg-6 mb-3">
+                                                <label for="transferAmount" class="mb-0">Monto</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input name="amount" type="number" step="0.01" min="0" max="1000000" class="form-control" id="transferAmount" placearia-describedby="inputGroupPrepend" required>
+                                                    <div class="invalid-feedback">
+                                                        Por favor, ingrese un monto
+                                                    </div>
+                                                </div>
+                                            </div>
+    
+                                            <div class="col-12 col-lg-6 mb-3">
+                                                <label for="transferDate" class="mb-0">Fecha de pago</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="transferDate" placearia-describedby="inputGroupPrepend" required>
+                                                    <div class="invalid-feedback">
+                                                        Por favor, ingrese una fecha
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -180,7 +146,7 @@
                     <div class="card-body">
                         <div class="d-flex flex-row justify-content-between">
                             <h2 class="card-title">Listado de transferencias</h4>
-                            <button id="btnAddTransfer" type="button" class="btn btn-info btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalTransferData">Nueva transferencia</button>
+                            <button id="btnAddTransfer" type="button" class="btn btn-info btn-rounded m-t-10 float-right" data-toggle="modal" data-target="#modalTransfer">Nueva transferencia</button>
                         </div>
                         <div class="table-responsive m-t-20">
                             <table id="DataTable" class="table table-bordered table-striped">
@@ -204,7 +170,7 @@
                                             <td>{{ \Carbon\Carbon::parse($transfer->created_at)->format('d/m/Y') }}</td>
                                             <td>
                                                 <div class="d-flex justify-content-center">
-                                                    <button type='button' class='btn btn-outline-info btn-rounded btn-sm mr-2' onclick='editObj({{ json_encode($transfer) }})' data-toggle="modal" data-target="#modalTransferData"><i class="bi bi-pen"></i></button>
+                                                    <button type='button' class='btn btn-outline-info btn-rounded btn-sm mr-2' onclick='editObj({{ json_encode($transfer) }})' data-toggle="modal" data-target="#modalTransfer"><i class="bi bi-pen"></i></button>
                                                     <button type='button' class='btn btn-danger btn-rounded btn-sm ml-2' onclick='deleteObj({{ $transfer->id }})'><i class='bi bi-trash3'></i></button>
                                                 </div>
                                             </td>
@@ -356,20 +322,7 @@
             $("#form-create").attr('action', "/transfer/create");
             $("#modalTitle").text("Nueva transferencia");
             $("#form-create input:not([name='_token'])").val("");
-            $("#user_id option:first").prop("selected", true);
             $("#transferAmount").val("");
-        });
-
-        $("#btnOpenModalClients").on("click", function() {
-            if ($("#transferAmount").val() <= 0 || $("#transferAmount").val() == "") return fireAlert("Debes ingresar un monto");
-            if ($("#user_id").val() == "" || $("#user_id").val() == null) return fireAlert("Debes ingresar un repartidor");
-            $("#btnCloseModal").click();
-            $("#btnOpenModalClientsHidden").click();
-            $("#ClientsTableContainer").css("display", "none");
-
-            // Asignar valores de inputs del modal antererior al nuevo modal
-            $("#form-create input[name='user_id']").val($("#user_id").val());
-            $("#form-create input[name='amount']").val($("#transferAmount").val());
         });
 
         $("#btnSearchClients").on("click", function() {
@@ -383,6 +336,7 @@
         $("#btnCreateTransfer").on("click", function() {
             if ($("#form-create input[name='client_id']").val() == "") return fireAlert("Debes seleccionar un cliente");
             if ($("#transferDate").val() == "" || $("#transferDate").val() == null) return fireAlert("Debes ingresar una fecha");
+            if ($("#transferAmount").val() == "" || $("#transferAmount").val() == null) return fireAlert("Debes ingresar un monto");
             $("#form-create input[name='received_from']").val(formatDate($("#transferDate").val()));
             sendForm("create");
         });
@@ -426,7 +380,7 @@
                         <td>${createLocalDate(item.created_at)}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                                <button type='button' class='btn btn-outline-info btn-rounded btn-sm mr-2' onclick='editObj(${JSON.stringify(item)})' data-toggle="modal" data-target="#modalTransferData"><i class="bi bi-pen"></i></button>
+                                <button type='button' class='btn btn-outline-info btn-rounded btn-sm mr-2' onclick='editObj(${JSON.stringify(item)})' data-toggle="modal" data-target="#modalTransfer"><i class="bi bi-pen"></i></button>
                                 <button type='button' class='btn btn-danger btn-rounded btn-sm ml-2' onclick='deleteObj(${item.id})'><i class='bi bi-trash3'></i></button>
                             </div>
                         </td>
@@ -530,7 +484,6 @@
             $("#form-create input[name='transfer_id']").val(item.id);
             $("#form-create").attr('action', "/transfer/edit");
             $("#modalTitle").text("Editar transferencia");
-            $("#user_id").val(item.user.id);
             $("#transferAmount").val(item.amount);
             $("#transferDate").val(createLocalDate(item.received_from));
         };

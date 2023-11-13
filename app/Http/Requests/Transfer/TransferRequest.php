@@ -22,13 +22,11 @@ class TransferRequest extends BaseFormRequest
     public function rules(): array
     {
         $this->validate([
-            'user_id' => ['required', 'exists:users,id'],
             'client_id' => ['required', 'exists:clients,id'],
             'amount' => ['required', 'numeric', 'min:1'],
         ]);
 
        return [
-            'user_id',
             'client_id',
             'amount',
         ];
