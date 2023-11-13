@@ -977,21 +977,12 @@
             $("#colAbono").empty();
             let content = "";
             response.products.forEach(p => {
-                if(p.product.id == 1 || p.product.id == 9) {
-                    content += `content += 
-                    <tr>
-                        <td>${p.product.name}<br/><small>Renovadas este mes: ${response.maquinasRenovadas}</small></td>
-                        <td class="precioProducto">$${p.product.price}</td>
-                        <td><input type="number" min="0" max="1000" class="form-control quantity-input" data-id="${p.product.id}" ></td>
-                    </tr>`;
-                } else {
-                    content += `
-                    <tr>
-                        <td>${p.product.name}</td>
-                        <td class="precioProducto">$${p.product.price}</td>
-                        <td><input type="number" min="0" max="1000" class="form-control quantity-input" data-id="${p.product.id}" ></td>
-                    </tr>`;
-                }
+                content += `
+                <tr>
+                    <td>${p.product.name}</td>
+                    <td class="precioProducto">$${p.product.price}</td>
+                    <td><input type="number" min="0" max="1000" class="form-control quantity-input" data-id="${p.product.id}" ></td>
+                </tr>`;
             });
             $("#tableBody").html(content);
             if (response.abonoClient !== null) {
