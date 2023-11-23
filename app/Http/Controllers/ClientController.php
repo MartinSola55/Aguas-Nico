@@ -353,17 +353,26 @@ class ClientController extends Controller
             $client_id = $request->input('client_id');
             $machine_id = $request->input('machine_id');
             $quantity = $request->input('quantity');
-            Client::find($client_id)->update(['machine_id' => $machine_id, 'machines' => $quantity]);
+
+            if($quantity == 0) {
+                $machine_id = null;
+            } else if($quantity < 0) {
+                return response()->json([
+                    'success' => false,
+                    'title' => 'Error al actualizar la máquina',
+                    'message' => 'La cantidad no puede ser menor a 0',
+                ], 400);
+            }
+            Client::findOrFail($client_id)->update(['machine_id' => $machine_id, 'machines' => $quantity]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Maquina actualizada correctamente',
+                'message' => 'Máquina actualizada correctamente',
             ], 201);
         } catch (\Exception $e) {
-            DB::rollback();
             return response()->json([
                 'success' => false,
-                'title' => 'Error al actualizar el maquina',
+                'title' => 'Error al actualizar la máquina',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);
