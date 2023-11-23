@@ -11,6 +11,7 @@ use App\Models\Abono;
 use App\Models\AbonoLog;
 use App\Models\Cart;
 use App\Models\Client;
+use App\Models\Machine;
 use App\Models\Product;
 use App\Models\ProductsCart;
 use App\Models\ProductsClient;
@@ -78,6 +79,7 @@ class ClientController extends Controller
         $client = Client::find($id);
         $client->debtOfTheMonth = $client->getDebtOfTheMonth();
         $client->debtOfPreviousMonth = $client->getDebtOfPreviousMonth();
+        $machines = Machine::all();
 
         $transfers = Transfer::where('client_id', $id)->limit(20)->get();
         $carts = Cart::where('client_id', $id)
@@ -87,7 +89,7 @@ class ClientController extends Controller
             ->limit(20)
             ->with('ProductsCart', 'ProductsCart.Product', 'AbonoClient', 'AbonoClient.Abono', 'CartPaymentMethod', 'AbonoLog', 'AbonoLog.AbonoClient', 'AbonoLog.AbonoClient.Abono')
             ->get();
-        
+
         $details = [];
         $i = -1;
         foreach ($carts as $cart) {
@@ -119,7 +121,7 @@ class ClientController extends Controller
         $client_products = $this->getProducts($client);
         $abonos = Abono::orderBy('price')->where('is_active', true)->get();
 
-        return view('clients.details', compact('client', 'client_products', 'abonos', 'details'));
+        return view('clients.details', compact('client', 'client_products', 'abonos', 'details', 'machines'));
     }
 
 
@@ -339,6 +341,29 @@ class ClientController extends Controller
             return response()->json([
                 'success' => false,
                 'title' => 'Error al actualizar el abono',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function updateMachine(Request $request)
+    {
+        try {
+            $client_id = $request->input('client_id');
+            $machine_id = $request->input('machine_id');
+            $quantity = $request->input('quantity');
+            Client::find($client_id)->update(['machine_id' => $machine_id, 'machines' => $quantity]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Maquina actualizada correctamente',
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al actualizar el maquina',
                 'message' => 'Intente nuevamente o comuníquese para soporte',
                 'error' => $e->getMessage()
             ], 400);

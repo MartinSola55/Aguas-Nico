@@ -25,6 +25,8 @@ class Client extends Model
         'cuit',
         'tax_address',
         'abono_id',
+        'machine_id',
+        'machines'
     ];
 
     public function Products()

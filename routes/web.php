@@ -63,6 +63,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/client/products/{client}', [App\Http\Controllers\ClientController::class, 'getProducts']);
     Route::post('/client/updateProducts', [App\Http\Controllers\ClientController::class, 'updateProducts']);
     Route::post('/client/updateAbono', [App\Http\Controllers\ClientController::class, 'updateAbono']);
+    Route::post('/client/updateMachine', [App\Http\Controllers\ClientController::class, 'updateMachine']);
     Route::post('/client/setIsActive', [App\Http\Controllers\ClientController::class, 'setIsActive']);
     Route::get('/client/getHistory/{id}', [App\Http\Controllers\ClientController::class, 'getHistory']);
 

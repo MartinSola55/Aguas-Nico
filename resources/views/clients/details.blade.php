@@ -165,6 +165,48 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-8">
+                                        <h3 class="card-title">Maquinas asociadas</h3>
+                                    </div>
+                                    <div class="col-4 text-right mb-3">
+                                        <button id="btnEditMachines" class="btn btn-sm btn-outline-info btn-rounded px-3">Editar</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <form role="form" method="POST" action="{{ url('/client/updateMachine') }}" id="form-machines">
+                                        <table class="table table-hover table-bordered table-grey" id="machines_table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="col-10">Nombre</th>
+                                                    <th scope="col" class="col-2">Cantidad</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($machines as $machine)
+                                                    <tr>
+                                                        <td>{{ $machine->name }} ${{ $machine->price }}</td>
+                                                        <td class="text-center">
+                                                            <input id="machine_{{ $machine->id }}" min="0" type="number" class="form-control machine-input" value="{{ $client->machine_id == $machine->id ? $client->machines : '0' }}" disabled>
+                                                            <label for="machine_{{ $machine->id }}" class="pl-3 mb-0"></label>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        <div class="row" id="divSaveMachines" style="display: none">
+                                            <div class="col-md-12 d-flex justify-content-end">
+                                                <button type="button" id="btnSaveMachines" class="btn btn-sm btn-success btn-rounded px-3">Guardar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-xl-4">
@@ -743,7 +785,6 @@
             }
         });
 
-
         $("#btnSaveAbonos").on("click", function(e) {
             $.ajax({
                 url: $("#form-abonos").attr('action'),
@@ -757,6 +798,76 @@
                 },
                 success: function(response) {
                     $("#btnEditAbonos").click();
+                    Swal.fire({
+                        title: response.message,
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#1e88e5',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON.message,
+                        confirmButtonColor: '#1e88e5',
+                    });
+                }
+            });
+        });
+
+        $("#btnEditMachines").on("click", function() {
+            $("#form-machines :input[type='number']").prop('disabled', function(i, val) {
+                return !val;
+            });
+            $("#divSaveMachines").toggle();
+
+            if ($("#machines_table").hasClass("table-grey")) {
+                $("#machines_table").removeClass("table-grey");
+            } else {
+                $("#machines_table").addClass("table-grey");
+            }
+        });
+
+        $(".machine-input").on("change", function() {
+            var currentValue = parseInt($(this).val());
+            if (currentValue > 0) {
+                $(".machine-input").not(this).val(0);
+            }
+        });
+
+        $("#btnSaveMachines").on("click", function(e) {
+            let selectedMachineId = null;
+            let selectedQuantity = null;
+
+            $(".machine-input").each(function(index, element) {
+                var currentValue = parseInt($(element).val());
+
+                if (currentValue > 0) {
+                    selectedMachineId = $(element).attr("id").replace("machine_", "");
+                    selectedQuantity = currentValue;
+                }
+            });
+
+            $.ajax({
+                url: $("#form-machines").attr('action'),
+                method: $("#form-machines").attr('method'),
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data:{
+                    client_id: {{ $client->id }},
+                    machine_id: selectedMachineId,
+                    quantity: selectedQuantity
+                },
+                success: function(response) {
+                    $("#btnEditMachines").click();
                     Swal.fire({
                         title: response.message,
                         icon: 'success',
