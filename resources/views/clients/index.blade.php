@@ -180,7 +180,6 @@
                                             <th>Stock</th>
                                             <th>Deuda</th>
                                             <th>Observación</th>
-                                            <th>Activo</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table_body">
@@ -208,13 +207,6 @@
                                                     @endif
                                                 </td>
                                                 <td>{{ $client->observation }}</td>
-                                                <td class="text-center">
-                                                    @if ( $client->is_active == true)
-                                                        <i class="bi bi-check2" style="font-size: 1.5rem"></i>
-                                                    @else
-                                                        <i class="bi bi-x-lg" style="font-size: 1.3rem"></i>
-                                                    @endif
-                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -252,7 +244,6 @@
                     <td></td>
                     <td>$` + client.debt + `</td>
                     <td>` + client.observation + `</td>
-                    <td class="text-center"><i class="bi bi-check2" style="font-size: 1.5rem"></i></td>
                 </tr>`;
                 $('#clientsTable').DataTable().row.add($(content)).draw();
             }
