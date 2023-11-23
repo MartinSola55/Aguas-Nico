@@ -15,6 +15,7 @@ class ClientMachine extends Model
         'client_id',
         'machine_id',
         'quantity',
+        'price',
     ];
 
     public function Client()

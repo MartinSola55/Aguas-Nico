@@ -36,8 +36,8 @@
                         </div>
                         <div class="modal-body">
                             <div class="row">
-                                <div class="col-lg-12" id="colAbono">
-                                </div>
+                                <div class="col-lg-12" id="colAbono"></div>
+                                <div class="col-lg-12" id="colMachines"></div>
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
                                         <table class="table" id="modalTable">
@@ -1042,6 +1042,34 @@
                 $("#colAbono").html(cont);
             }
 
+            if(response.machine !== null) {
+                let btn = "";
+                if (response.client.machines - response.machine.quantity > 0) {
+                    btn = `<button type="button" class="btn btn-success waves-effect waves-light" onclick="renewMachines(${response.client.id}, ${response.client.machines - response.machine.quantity})">Renovar máquinas</button>`;
+                }
+                let cont = `
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Maquina</th>
+                                <th>Disponible</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${response.machine.name} - $${response.machine.price}</td>
+                                <td id="machinesAvailables">${response.client.machines - response.machine.quantity}</td>
+                                <td id="machinesAvailablesBtn">${btn}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                </div>`;
+                $("#colMachines").html(cont);
+            }
+
             $(".quantity-input").on("input", function() {
                 total = 0 + totalRenewAbono; // Reiniciar el valor total a cero en cada iteración
 
@@ -1701,6 +1729,63 @@
             });
         }
     </script>
+
+    <!-- Renovar y descontar máquinas -->
+    <script>
+        function renewMachines(client_id, max_quantity) {
+            Swal.fire({
+                title: 'Ingrese la cantidad:',
+                text: `Máximo ${max_quantity} máquinas`,
+                input: 'number',
+                inputAttributes: {
+                    min: 1,
+                    max: max_quantity,
+                    step: 1
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Renovar',
+                cancelButtonText: 'Cancelar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
+                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
+                },
+                showLoaderOnConfirm: true,
+                inputValidator: (value) => {
+                    if (!value || value < 1 || value > max_quantity) {
+                        return 'Por favor, ingrese una cantidad válida';
+                    }
+                },
+                preConfirm: (cantidad) => {
+                    $.ajax({
+                        url: "{{ url('/machine/renew') }}",
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            client_id: client_id,
+                            quantity: cantidad,
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                confirmButtonColor: '#1e88e5',
+                                allowOutsideClick: false,
+                            });
+                            $("#machinesAvailables").text(response.data[1]);
+                            $("#machinesAvailablesBtn").html(`<button type="button" class="btn btn-success waves-effect waves-light" onclick="renewMachines(${response.data[0]}, ${response.data[1]})">Renovar máquinas</button>`);
+                        },
+                        error: function(errorThrown) {
+                            SwalError(errorThrown.responseJSON.message);
+                        }
+                    });
+                },
+            });
+        };
+    </script>
+    
 
     <!-- Editar un carrito -->
     <script>
