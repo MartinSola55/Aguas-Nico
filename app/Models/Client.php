@@ -49,6 +49,21 @@ class Client extends Model
         return $this->hasMany(BottleClient::class, 'client_id');
     }
 
+    public function AbonoClient()
+    {
+        return $this->hasMany(AbonoClient::class, 'client_id');
+    }
+
+    public function Machine()
+    {
+        return $this->belongsTo(Machine::class);
+    }
+
+    public function ClientMachines()
+    {
+        return $this->hasMany(ClientMachine::class, 'client_id');
+    }
+
     public function getDebtOfTheMonth()
     {
         // Ahora solo calcula lo que consumio, no la deuda total

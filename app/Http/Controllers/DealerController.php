@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
 use App\Models\Client;
+use App\Models\ClientMachine;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductsCart;
@@ -396,32 +397,18 @@ class DealerController extends Controller
                 }
             }
 
-            $clientsWithMachines = ProductsClient::whereIn('client_id', $clientsIDs)
-                ->where('product_id', [1, 9])
+            $clientsWithMachines = Client::whereIn('id', $clientsIDs)
+                ->where('machines', '!=', null)
                 ->get();
 
-            $clientsWithMachinesIDs = [];
-            foreach($clientsWithMachines as $client) {
-                $clientsWithMachinesIDs[] = $client->client_id;
-            }
-
-            $carts = Cart::where('state', 1)
-                ->where('is_static', false)
-                ->whereIn('client_id', $clientsWithMachinesIDs)
-                ->whereHas('route', function ($query) use ($id, $month, $year) {
-                    $query->where('user_id', $id)
-                        ->whereMonth('start_date', $month)
-                        ->whereYear('start_date', $year);
-                })
-                ->whereHas('productsCart', function ($query) {
-                    $query->whereIn('product_id', [1, 9]);
-                })
-                ->with('Client')
-                ->get();
-
-            $clientesQueBajaron = $carts->pluck('Client.id')->unique();
-            $clientesQueNoBajaron = $clientsWithMachines->whereNotIn('client_id', $clientesQueBajaron)->pluck('Client')->unique();
-
+                
+            $clientesQueBajaron = ClientMachine::whereIn('client_id', $clientsWithMachines->pluck('id'))
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
+                ->pluck('client_id');
+            $clientesQueNoBajaron = $clientsWithMachines->whereNotIn('id', $clientesQueBajaron);
+            dd($clientesQueNoBajaron);
+                
             return response()->json([
                 'success' => true,
                 'data' => $clientesQueNoBajaron

@@ -151,5 +151,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
     Route::get('/abono/getlog', [App\Http\Controllers\AbonoClientController::class, 'getLog']);
     Route::get('/client/getHistory/{id}', [App\Http\Controllers\ClientController::class, 'getHistory']);
+    
+    //MACHINES
+    Route::post('/machine/renew', [App\Http\Controllers\MachineController::class, 'store']);
+
 });
 

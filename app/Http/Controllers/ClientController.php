@@ -29,7 +29,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = Client::all()->load('ProductsClient');
+        $clients = Client::where('is_active', true)->get()->load('ProductsClient');
         // dd($clients);
         return view('clients.index', compact('clients'));
     }
