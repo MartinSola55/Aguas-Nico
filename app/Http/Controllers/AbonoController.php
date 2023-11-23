@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Abono;
 use App\Models\AbonoClient;
+use App\Models\Client;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -95,13 +96,13 @@ class AbonoController extends Controller
 
     public function getClients($id)
     {
-        $clients = AbonoClient::where('abono_id', $id)->with('Client')->get();
+        $clients = Client::where('abono_id', $id)->get();
 
         $responseData = $clients->map(function ($client) {
             return [
-                'id' => $client->Client->id,
-                'name' => $client->Client->name,
-                'address' => $client->Client->adress,
+                'id' => $client->id,
+                'name' => $client->name,
+                'address' => $client->adress,
             ];
         });
 
