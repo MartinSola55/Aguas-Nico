@@ -1,3 +1,12 @@
+@php
+    $diasSemana = [
+        1 => 'Lunes',
+        2 => 'Martes',
+        3 => 'Miércoles',
+        4 => 'Jueves',
+        5 => 'Viernes',
+    ];
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -64,7 +73,7 @@
                                                 Por favor, ingrese un teléfono
                                             </div>
                                         </div>
-                                        <div class="col-12 mb-3">
+                                        {{-- <div class="col-12 mb-3">
                                             <label for="clientEmail" class="mb-0">Email</label>
                                             <input type="email" class="form-control" id="clientEmail" name="email">
                                             <div class="invalid-feedback">
@@ -77,7 +86,7 @@
                                             <div class="invalid-feedback">
                                                 Por favor, ingrese un DNI
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <div class="col-12 mb-3">
                                             <label for="clientDebt" class="mb-0">Deuda</label>
                                             <div class="input-group">
@@ -228,9 +237,6 @@
     @if (auth()->user()->rol_id == '1')
         <script>
             function fillTable(client) {
-                if (client.observation == null) {
-                    client.observation = "";
-                }
                 if (client.phone == null) {
                     client.phone = "";
                 }
@@ -243,7 +249,7 @@
                     <td>` + client.phone + `</td>
                     <td></td>
                     <td>$` + client.debt + `</td>
-                    <td>` + client.observation + `</td>
+                    <td></td>
                 </tr>`;
                 $('#clientsTable').DataTable().row.add($(content)).draw();
             }

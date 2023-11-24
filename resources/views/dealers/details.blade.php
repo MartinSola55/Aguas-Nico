@@ -258,6 +258,46 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-sm-row justify-content-start align-items-center">
+                            <h4 class="card-title mr-2 mb-2">Clientes a los que no se les renovó abono</h4>
+                            <select id="clientsAbonoMonth" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un mes</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Setiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                            <select id="clientsAbonoYear" class="form-control mb-2" style="max-width: fit-content">
+                                <option value="" selected disabled>Seleccione un año</option>
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <hr>
+                        <table id="abonosTable" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-12 col-lg-6">
                 <div class="card shadow">
                     <div class="card-body">
@@ -313,6 +353,13 @@
         </form>
 
         <form method="GET" action="{{ url('/dealer/searchClientsMachines') }}" id="form-searchClientsMachines" class="form-material m-t-30">
+            @csrf
+            <input type="hidden" name="month" value="">
+            <input type="hidden" name="year" value="">
+            <input type="hidden" name="id" value="{{ $dealer->id }}">
+        </form>
+
+        <form method="GET" action="{{ url('/dealer/searchClientsAbono') }}" id="form-searchClientsAbono" class="form-material m-t-30">
             @csrf
             <input type="hidden" name="month" value="">
             <input type="hidden" name="year" value="">
@@ -594,6 +641,52 @@
         }
     </script>
 
+    {{-- Clientes que no se les renovó abonos --}}
+    <script>
+        $("#abonosTable").DataTable({
+            "info": false,
+            "scrollY": '30vh',
+            "scrollCollapse": true,
+            "paging": false,
+            "ordering": false,
+            "language": {
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 clientes",
+                "sInfoFiltered": "(filtrado de _MAX_ clientes en total)",
+                "emptyTable": 'No hay clientes que coincidan con la búsqueda',
+                "sLengthMenu": "Mostrar _MENU_ clientes",
+                "sSearch": "Buscar:",
+            },
+        });
+        $("#clientsAbonoMonth").on("change", function() {
+            if ($("#clientsAbonoYear").val() == "" || $("#clientsAbonoYear").val() == null) {
+                return;
+            }
+            $("#form-searchClientsAbono input[name='month']").val($(this).val());
+            $("#form-searchClientsAbono input[name='year']").val($("#clientsAbonoYear").val());
+            $("#abonosTable").DataTable().clear().draw();
+            sendForm("searchClientsAbono");
+        });
+        $("#clientsAbonoYear").on("change", function() {
+            if ($("#clientsAbonoMonth").val() === "" || $("#clientsAbonoMonth").val() === null) {
+                return;
+            }
+            $("#form-searchClientsAbono input[name='month']").val($("#clientsAbonoMonth").val());
+            $("#form-searchClientsAbono input[name='year']").val($(this).val());
+            $("#abonosTable").DataTable().clear().draw();
+            sendForm("searchClientsAbono");
+        });
+
+        function fillClientsAbonoTable(data) {
+            let table = $("#abonosTable");
+            Object.values(data).forEach(function (item) {
+                let row = table.DataTable().row.add([
+                    item.name,
+                ]).draw().node();
+            });
+        }
+    </script>
+
     {{-- Productos vendidos --}}
     <script>
         $("#productsSoldTable").DataTable({
@@ -658,6 +751,8 @@
                         fillClientsTable(response.data);
                     } else if (action === 'searchClientsMachines' && response.data != null) {
                         fillClientsMachinesTable(response.data);
+                    } else if (action === 'searchClientsAbono' && response.data != null) {
+                        fillClientsAbonoTable(response.data);
                     } else if (action === 'searchProductsSold' && response.data != null) {
                         fillProductsSoldTable(response.data);
                     } else if (action === 'searchClientsNotVisited' && response.data != null) {

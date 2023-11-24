@@ -30,7 +30,6 @@ class ClientController extends Controller
     public function index()
     {
         $clients = Client::where('is_active', true)->get()->load('ProductsClient');
-        // dd($clients);
         return view('clients.index', compact('clients'));
     }
 
@@ -44,9 +43,9 @@ class ClientController extends Controller
                 'name' => $request->input('name'),
                 'adress' => $request->input('adress'),
                 'phone' => $request->input('phone'),
-                'email' => $request->input('email'),
+                // 'email' => $request->input('email'),
                 'debt' => $request->input('debt'),
-                'dni' => $request->input('dni'),
+                // 'dni' => $request->input('dni'),
                 'invoice' => $request->input('invoice') == 1 ? true : false,
                 'observation' => $request->input('observation'),
                 'invoice_type' => $request->input('invoice_type'),

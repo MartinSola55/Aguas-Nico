@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AbonoClient;
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
 use App\Models\Client;
@@ -407,11 +408,59 @@ class DealerController extends Controller
                 ->whereYear('created_at', $year)
                 ->pluck('client_id');
             $clientesQueNoBajaron = $clientsWithMachines->whereNotIn('id', $clientesQueBajaron);
-            dd($clientesQueNoBajaron);
+            // dd($clientesQueNoBajaron);
                 
             return response()->json([
                 'success' => true,
                 'data' => $clientesQueNoBajaron
+            ],201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al recuperar los clientes',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function searchClientsAbono(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $month = $request->input('month');
+            $year = $request->input('year');
+
+            if($month > date('m') && $year >= date('Y')) {
+                return null;
+            }
+
+            $clientsIDs = [];
+            $staticRoutes = Route::where('user_id', $id)
+                ->where('is_static', true)
+                ->with('Carts')
+                ->get();
+                
+            foreach($staticRoutes as $route) {
+                foreach ($route->Carts as $cart) {
+                    $clientsIDs[] = $cart->client_id;
+                }
+            }
+
+            $clientsWithAbonos = Client::whereIn('id', $clientsIDs)
+                ->where('abono_id', '!=', null)
+                ->get();
+
+                
+            $clientesQueRenovaron = AbonoClient::whereIn('client_id', $clientsWithAbonos->pluck('id'))
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
+                ->pluck('client_id');
+            $clientesQueNoRenovaron = $clientsWithAbonos->whereNotIn('id', $clientesQueRenovaron);
+                
+            return response()->json([
+                'success' => true,
+                'data' => $clientesQueNoRenovaron
             ],201);
         } catch (\Exception $e) {
             return response()->json([
