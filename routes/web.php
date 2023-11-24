@@ -42,6 +42,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dealer/getPendingCarts', [App\Http\Controllers\DealerController::class, 'getPendingCarts']);
     Route::get('/dealer/searchClients', [App\Http\Controllers\DealerController::class, 'searchClients']);
     Route::get('/dealer/searchClientsMachines', [App\Http\Controllers\DealerController::class, 'searchClientsMachines']);
+    Route::get('/dealer/searchClientsAbono', [App\Http\Controllers\DealerController::class, 'searchClientsAbono']);
     Route::get('/dealer/searchProductsSold', [App\Http\Controllers\DealerController::class, 'searchProductsSold']);
     Route::get('/dealer/searchClientsNotVisited', [App\Http\Controllers\DealerController::class, 'searchClientsNotVisited']);
 
@@ -63,6 +64,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/client/products/{client}', [App\Http\Controllers\ClientController::class, 'getProducts']);
     Route::post('/client/updateProducts', [App\Http\Controllers\ClientController::class, 'updateProducts']);
     Route::post('/client/updateAbono', [App\Http\Controllers\ClientController::class, 'updateAbono']);
+    Route::post('/client/updateMachine', [App\Http\Controllers\ClientController::class, 'updateMachine']);
     Route::post('/client/setIsActive', [App\Http\Controllers\ClientController::class, 'setIsActive']);
     Route::get('/client/getHistory/{id}', [App\Http\Controllers\ClientController::class, 'getHistory']);
 
@@ -101,7 +103,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/abono/clientes', [App\Http\Controllers\AbonoController::class, 'abonoClients'])->name('abono.clientes');
     Route::post('/abono/edit', [App\Http\Controllers\AbonoController::class, 'update']);
     Route::post('/abono/updatePrice', [App\Http\Controllers\AbonoController::class, 'updatePrice']);
-    Route::get('/abono/clients/{id}', [App\Http\Controllers\ProductController::class, 'getClients']);
+    Route::get('/abono/clients/{id}', [App\Http\Controllers\AbonoController::class, 'getClients']);
 });
 
 // EMPLOYEE
@@ -150,5 +152,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
     Route::get('/abono/getlog', [App\Http\Controllers\AbonoClientController::class, 'getLog']);
     Route::get('/client/getHistory/{id}', [App\Http\Controllers\ClientController::class, 'getHistory']);
+    
+    //MACHINES
+    Route::post('/machine/renew', [App\Http\Controllers\MachineController::class, 'store']);
+
 });
 

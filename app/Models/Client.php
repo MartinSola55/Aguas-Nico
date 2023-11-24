@@ -25,6 +25,8 @@ class Client extends Model
         'cuit',
         'tax_address',
         'abono_id',
+        'machine_id',
+        'machines'
     ];
 
     public function Products()
@@ -45,6 +47,21 @@ class Client extends Model
     public function BottleClient()
     {
         return $this->hasMany(BottleClient::class, 'client_id');
+    }
+
+    public function AbonoClient()
+    {
+        return $this->hasMany(AbonoClient::class, 'client_id');
+    }
+
+    public function Machine()
+    {
+        return $this->belongsTo(Machine::class);
+    }
+
+    public function ClientMachines()
+    {
+        return $this->hasMany(ClientMachine::class, 'client_id');
     }
 
     public function getDebtOfTheMonth()

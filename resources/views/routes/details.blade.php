@@ -36,8 +36,8 @@
                         </div>
                         <div class="modal-body">
                             <div class="row">
-                                <div class="col-lg-12" id="colAbono">
-                                </div>
+                                <div class="col-lg-12" id="colAbono"></div>
+                                <div class="col-lg-12" id="colMachines"></div>
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
                                         <table class="table" id="modalTable">
@@ -1042,6 +1042,30 @@
                 $("#colAbono").html(cont);
             }
 
+            if(response.machine !== null) {
+                let cont = `
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Maquina</th>
+                                <th>Disponible</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${response.machine.name} - $${response.machine.price}</td>
+                                <td id="machinesAvailables">${response.client.machines - response.machine.quantity}</td>
+                                <td id="machinesAvailablesBtn"><button type="button" class="btn btn-success waves-effect waves-light" onclick="renewMachines(${response.client.id})">Renovar máquinas</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                </div>`;
+                $("#colMachines").html(cont);
+            }
+
             $(".quantity-input").on("input", function() {
                 total = 0 + totalRenewAbono; // Reiniciar el valor total a cero en cada iteración
 
@@ -1701,6 +1725,48 @@
             });
         }
     </script>
+
+    <!-- Renovar y descontar máquinas -->
+    <script>
+        function renewMachines(client_id) {
+            Swal.fire({
+                title: '¿Seguro deseas renovar las máquinas?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText : 'Cancelar',
+                confirmButtonColor: '#1e88e5',
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ url('/machine/renew') }}",
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            client_id: client_id,
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                confirmButtonColor: '#1e88e5',
+                                allowOutsideClick: false,
+                            });
+                            $("#machinesAvailables").text("0");
+                            $("#machinesAvailablesBtn").html("");
+                        },
+                        error: function(errorThrown) {
+                            SwalError(errorThrown.responseJSON.message);
+                        }
+                    });
+                }
+            });
+        };
+    </script>
+    
 
     <!-- Editar un carrito -->
     <script>

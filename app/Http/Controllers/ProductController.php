@@ -127,13 +127,12 @@ class ProductController extends Controller
 
     public function getClients($id)
     {
-        $clients = Client::where('abono_id', $id)->get();
-
-        $responseData = $clients->map(function ($client) {
+        $productClients = ProductsClient::where('product_id', $id)->get();
+        $responseData = $productClients->map(function ($productClient) {
             return [
-                'id' => $client->id,
-                'name' => $client->name,
-                'address' => $client->adress,
+                'id' => $productClient->Client->id,
+                'name' => $productClient->Client->name,
+                'address' => $productClient->Client->adress,
             ];
         });
 

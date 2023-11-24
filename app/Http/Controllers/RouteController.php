@@ -13,7 +13,9 @@ use App\Models\BottleClient;
 use App\Models\BottleType;
 use App\Models\Cart;
 use App\Models\Client;
+use App\Models\ClientMachine;
 use App\Models\Expense;
+use App\Models\Machine;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductDispatched;
@@ -296,24 +298,36 @@ class RouteController extends Controller
     */
     public function getProductsClient(Request $request)
     {
-        $products = ProductsClient::where('client_id', $request->input('client_id'))->with('Product')->get();
-        $client = Client::find($request->input('client_id'));
-        $abonoClient = null; // Inicializar la variable $abonoClient
-
-        if ($client->abono_id !== null) {
-            $abonoType = Abono::find($client->abono_id);
-            $abonoType->client_id = $request->input('client_id');
-            if ($client->abono_id !== "NULL") {
-                $abonoClient = AbonoClient::where('abono_id', $abonoType->id)
-                    ->where('client_id', $request->input('client_id'))
-                    ->whereYear('created_at', now()->year)
-                    ->whereMonth('created_at', now()->month)
-                    ->first();
+        try {
+            $products = ProductsClient::where('client_id', $request->input('client_id'))->with('Product')->get();
+            $client = Client::find($request->input('client_id'));
+            $abonoClient = null;
+    
+            if ($client->abono_id !== null) {
+                $abonoType = Abono::find($client->abono_id);
+                $abonoType->client_id = $request->input('client_id');
+                if ($client->abono_id !== "NULL") {
+                    $abonoClient = AbonoClient::where('abono_id', $abonoType->id)
+                        ->where('client_id', $request->input('client_id'))
+                        ->whereYear('created_at', now()->year)
+                        ->whereMonth('created_at', now()->month)
+                        ->first();
+                }
+            } else {
+                $abonoType = null;
             }
-        } else {
-            $abonoType = null;
+            $machine = null;
+            if ($client->machine_id !== null) {
+                $machine = Machine::findOrFail($client->machine_id);
+                $machine->quantity = ClientMachine::whereMonth('created_at', now()->month)
+                    ->where('machine_id', $machine->id)
+                    ->where('client_id', $client->id)
+                    ->sum('quantity');
+            }
+            return response()->json(['products' => $products, 'abonoType' => $abonoType, 'abonoClient' => $abonoClient, 'client_abono_id' => $client->abono_id, 'machine' => $machine, 'client' => $client]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al obtener los productos del cliente', 'error' => $e->getMessage()], 400);
         }
-        return response()->json(['products' => $products, 'abonoType' => $abonoType, 'abonoClient' => $abonoClient, 'client_abono_id' => $client->abono_id]);
     }
 
     /**

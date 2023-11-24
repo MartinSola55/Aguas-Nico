@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AbonoClient;
 use App\Models\Cart;
 use App\Models\CartPaymentMethod;
 use App\Models\Client;
+use App\Models\ClientMachine;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductsCart;
@@ -396,35 +398,69 @@ class DealerController extends Controller
                 }
             }
 
-            $clientsWithMachines = ProductsClient::whereIn('client_id', $clientsIDs)
-                ->where('product_id', [1, 9])
+            $clientsWithMachines = Client::whereIn('id', $clientsIDs)
+                ->where('machines', '!=', null)
                 ->get();
 
-            $clientsWithMachinesIDs = [];
-            foreach($clientsWithMachines as $client) {
-                $clientsWithMachinesIDs[] = $client->client_id;
-            }
-
-            $carts = Cart::where('state', 1)
-                ->where('is_static', false)
-                ->whereIn('client_id', $clientsWithMachinesIDs)
-                ->whereHas('route', function ($query) use ($id, $month, $year) {
-                    $query->where('user_id', $id)
-                        ->whereMonth('start_date', $month)
-                        ->whereYear('start_date', $year);
-                })
-                ->whereHas('productsCart', function ($query) {
-                    $query->whereIn('product_id', [1, 9]);
-                })
-                ->with('Client')
-                ->get();
-
-            $clientesQueBajaron = $carts->pluck('Client.id')->unique();
-            $clientesQueNoBajaron = $clientsWithMachines->whereNotIn('client_id', $clientesQueBajaron)->pluck('Client')->unique();
-
+                
+            $clientesQueBajaron = ClientMachine::whereIn('client_id', $clientsWithMachines->pluck('id'))
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
+                ->pluck('client_id');
+            $clientesQueNoBajaron = $clientsWithMachines->whereNotIn('id', $clientesQueBajaron);
+            // dd($clientesQueNoBajaron);
+                
             return response()->json([
                 'success' => true,
                 'data' => $clientesQueNoBajaron
+            ],201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al recuperar los clientes',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function searchClientsAbono(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $month = $request->input('month');
+            $year = $request->input('year');
+
+            if($month > date('m') && $year >= date('Y')) {
+                return null;
+            }
+
+            $clientsIDs = [];
+            $staticRoutes = Route::where('user_id', $id)
+                ->where('is_static', true)
+                ->with('Carts')
+                ->get();
+                
+            foreach($staticRoutes as $route) {
+                foreach ($route->Carts as $cart) {
+                    $clientsIDs[] = $cart->client_id;
+                }
+            }
+
+            $clientsWithAbonos = Client::whereIn('id', $clientsIDs)
+                ->where('abono_id', '!=', null)
+                ->get();
+
+                
+            $clientesQueRenovaron = AbonoClient::whereIn('client_id', $clientsWithAbonos->pluck('id'))
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
+                ->pluck('client_id');
+            $clientesQueNoRenovaron = $clientsWithAbonos->whereNotIn('id', $clientesQueRenovaron);
+                
+            return response()->json([
+                'success' => true,
+                'data' => $clientesQueNoRenovaron
             ],201);
         } catch (\Exception $e) {
             return response()->json([
