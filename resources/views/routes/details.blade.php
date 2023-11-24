@@ -1043,10 +1043,6 @@
             }
 
             if(response.machine !== null) {
-                let btn = "";
-                if (response.client.machines - response.machine.quantity > 0) {
-                    btn = `<button type="button" class="btn btn-success waves-effect waves-light" onclick="renewMachines(${response.client.id}, ${response.client.machines - response.machine.quantity})">Renovar máquinas</button>`;
-                }
                 let cont = `
                 <div class="table-responsive">
                     <table class="table">
@@ -1061,7 +1057,7 @@
                             <tr>
                                 <td>${response.machine.name} - $${response.machine.price}</td>
                                 <td id="machinesAvailables">${response.client.machines - response.machine.quantity}</td>
-                                <td id="machinesAvailablesBtn">${btn}</td>
+                                <td id="machinesAvailablesBtn"><button type="button" class="btn btn-success waves-effect waves-light" onclick="renewMachines(${response.client.id})">Renovar máquinas</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -1732,31 +1728,17 @@
 
     <!-- Renovar y descontar máquinas -->
     <script>
-        function renewMachines(client_id, max_quantity) {
+        function renewMachines(client_id) {
             Swal.fire({
-                title: 'Ingrese la cantidad:',
-                text: `Máximo ${max_quantity} máquinas`,
-                input: 'number',
-                inputAttributes: {
-                    min: 1,
-                    max: max_quantity,
-                    step: 1
-                },
+                title: '¿Seguro deseas renovar las máquinas?',
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Renovar',
-                cancelButtonText: 'Cancelar',
-                buttonsStyling: false,
-                customClass: {
-                    confirmButton: 'btn btn-success waves-effect waves-light px-3 py-2',
-                    cancelButton: 'btn btn-default waves-effect waves-light px-3 py-2'
-                },
-                showLoaderOnConfirm: true,
-                inputValidator: (value) => {
-                    if (!value || value < 1 || value > max_quantity) {
-                        return 'Por favor, ingrese una cantidad válida';
-                    }
-                },
-                preConfirm: (cantidad) => {
+                confirmButtonText: 'Confirmar',
+                cancelButtonText : 'Cancelar',
+                confirmButtonColor: '#1e88e5',
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
                     $.ajax({
                         url: "{{ url('/machine/renew') }}",
                         type: "POST",
@@ -1765,7 +1747,6 @@
                         },
                         data: {
                             client_id: client_id,
-                            quantity: cantidad,
                         },
                         success: function(response) {
                             Swal.fire({
@@ -1774,14 +1755,14 @@
                                 confirmButtonColor: '#1e88e5',
                                 allowOutsideClick: false,
                             });
-                            $("#machinesAvailables").text(response.data[1]);
-                            $("#machinesAvailablesBtn").html(`<button type="button" class="btn btn-success waves-effect waves-light" onclick="renewMachines(${response.data[0]}, ${response.data[1]})">Renovar máquinas</button>`);
+                            $("#machinesAvailables").text("0");
+                            $("#machinesAvailablesBtn").html("");
                         },
                         error: function(errorThrown) {
                             SwalError(errorThrown.responseJSON.message);
                         }
                     });
-                },
+                }
             });
         };
     </script>
