@@ -345,8 +345,23 @@ class CartController extends Controller
                         'updated_at' => Carbon::now(),
                     ]
                 );
-                
+
+                // Sumar el stock que ya tenia si es que existe, y luego restar la cantidad que se devuelve
+                if ($log->quantity !== null) {
+                    $client->BottleClient()->where('bottle_types_id', $type_id)->increment('stock', $log->quantity);
+                }
                 $client->BottleClient()->where('bottle_types_id', $type_id)->decrement('stock', $request->input('quantity'));
+
+                // Ademas de la bottle, para que en client index figure bien la cantidad, se resta la cantidad de ProductsClient
+                foreach ($client->ProductsClient()->get() as $pc) {
+                    if ($pc->product->bottle_type_id == $type_id) {
+                        $pc->decrement('stock', $request->input('quantity'));
+                        if ($log->quantity !== null) {
+                            $pc->increment('stock', $log->quantity);
+                        }
+                    }
+                }
+                
             } else {
                 $log = StockLog::firstOrCreate(
                     [

@@ -74,7 +74,7 @@ class RouteController extends Controller
             $cart->Client->lastCart = $cart->Client->getLastCart($id);
         }
 
-        $products = Product::distinct()->pluck('name');
+        $products = Product::distinct()->where('is_active', true)->pluck('name');
         if (auth()->user()->rol_id == '1') {
             $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
 

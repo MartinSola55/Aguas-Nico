@@ -200,11 +200,20 @@
                                                 <td>{{ $client->adress }}</td>
                                                 <td>{{ $client->phone }}</td>
                                                 <td>
-                                                    @foreach ($client->ProductsClient as $product)
-                                                        @if ($product->stock != 0 && $product->stock != null)
-                                                            {{ $product->Product->name }}: {{ $product->stock }}<br>
+                                                    <ul>
+                                                        @foreach ($client->ProductsClient as $product)
+                                                            @if ($product->stock != 0 && $product->stock != null)
+                                                            <li>
+                                                                {{ $product->Product->name }}: {{ $product->stock }}
+                                                            </li>
+                                                            @endif
+                                                        @endforeach
+                                                        @if ($client->machine_id !== null)
+                                                            <li>
+                                                                {{ $client->Machine->name }}: {{ $client->machines }}
+                                                            </li>
                                                         @endif
-                                                    @endforeach
+                                                    </ul>
                                                 </td>
                                                 <td>
                                                     @if ($client->debt == 0)
@@ -299,6 +308,10 @@
         });
 
         $('#clientsTable').DataTable({
+            "paging": true,
+            "ordering": false,
+            "info": true,
+            "searching": true,
             "language": {
                 // "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json" // La url reemplaza todo al español
                 "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ clientes",
