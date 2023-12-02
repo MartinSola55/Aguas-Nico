@@ -679,36 +679,20 @@
 
                                             {{-- Deuda del mes actual --}}
                                             <p class="m-0"><small class="text-muted">Consumo del mes actual: ${{ $cart->Client->debtOfTheMonth }}</small></p>
-                                            {{-- @if ($cart->Client->debtOfTheMonth == 0)
-                                                <p class="m-0"><small class="text-muted">Sin deuda en el mes actual</small></p>
-                                            @elseif ($cart->Client->debtOfTheMonth > 0)
-                                                <p class="m-0"><small class="text-muted">Deuda del mes actual: ${{ $cart->Client->debtOfTheMonth }}</small></p>
-                                            @else
-                                                <p class="m-0"><small class="text-muted">A favor el mes actual: ${{ $cart->Client->debtOfTheMonth * -1 }}</small></p>
-                                            @endif --}}
 
                                             {{-- Deuda del mes anterior --}}
                                             <p class="m-0"><small class="text-muted">Consumo del mes anterior: ${{ $cart->Client->debtOfPreviousMonth }}</small></p>
-                                            {{-- @if ($cart->Client->debtOfPreviousMonth == 0)
-                                                <p class="m-0"><small class="text-muted">Sin deuda el mes anterior</small></p>
-                                            @elseif ($cart->Client->debtOfPreviousMonth > 0)
-                                                <p class="m-0"><small class="text-muted">Deuda del mes anterior: ${{ $cart->Client->debtOfPreviousMonth }}</small></p>
-                                            @else
-                                                <p class="m-0"><small class="text-muted">A favor el mes anterior: ${{ $cart->Client->debtOfPreviousMonth * -1 }}</small></p>
-                                            @endif --}}
 
                                             <p class="mb-0"><small class="text-muted address-element"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                             @if ($cart->state && auth()->user()->rol_id == '1')
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-calendar-check"></i> {{ $cart->updated_at->format('d-m-Y H:i') }}&nbsp;hs. </small></p>
                                             @endif
                                         </div>
-                                        @if ($cart->state === 1)
-                                        <hr>
-                                        @endif
                                         <div class="timeline-body">
                                             @if ($cart->state === 1)
-                                                <div class="row">
-                                                    <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <hr>
                                                     @if ($cart->ProductsCart->count() > 0)
                                                         <h3 class="text-center type-element text-muted mb-0">Bajada</h3>
                                                         <div class="table-responsive">
@@ -761,6 +745,37 @@
                                                     </div>
                                                     @endif
                                                 </div>
+                                                @if ($cart->StockLogs->where('l_r', 1)->count() > 0)
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <hr>
+                                                        <h3 class="text-center type-element text-muted mb-0">Devoluciones</h3>
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Cantidad</th>
+                                                                        <th>Producto</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($cart->StockLogs->where('l_r', 1) as $log)
+                                                                        <tr>
+                                                                            <td>{{ $log->quantity}}</td>
+                                                                            @if ($log->product_id !== null)                                                                                
+                                                                                <td class="product-element">{{ $log->Product->name }}</td>
+                                                                            @else
+                                                                                <td class="product-element">{{ $log->BottleType->name }}</td>
+                                                                            @endif
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @endif
+
                                                 <div class="d-flex flex-md-row flex-column justify-content-end">
                                                     @if (auth()->user()->rol_id == 2)
                                                         <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-sm btn-info btn-rounded px-3 mb-2 mb-md-0 ml-auto ml-md-0">Devuelve</button>
