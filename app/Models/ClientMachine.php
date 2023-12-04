@@ -16,6 +16,7 @@ class ClientMachine extends Model
         'machine_id',
         'quantity',
         'price',
+        'cart_id',
     ];
 
     public function Client()
@@ -26,5 +27,10 @@ class ClientMachine extends Model
     public function Machine()
     {
         return $this->belongsTo(Machine::class);
+    }
+
+    public function Cart()
+    {
+        return $this->belongsTo(Cart::class);
     }
 }

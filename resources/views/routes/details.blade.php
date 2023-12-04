@@ -612,6 +612,14 @@
                                                             <option value="Bajada">Bajada</option>
                                                         </select>
                                                     </div>
+                                                    <div class="form-group mb-2 px-3">
+                                                        <select class="form-control" id="machineSelect">
+                                                            <option value="">Por Maquina</option>
+                                                            @foreach ($machines as $machine)
+                                                                <option value="{{ $machine->name }}">{{ $machine->name }} ${{ $machine->price }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -666,6 +674,11 @@
                                             {{-- Datos del último reparto --}}
                                             @if ($cart->Client->lastCart != null && $cart->Client->lastCart->created_at != null)
                                             <p class="m-0">Último reparto: {{ $cart->Client->lastCart->created_at->format('d/m/Y') }} - {{ $states[$cart->Client->lastCart->state] }}</p>
+                                            @endif
+
+                                            {{-- Mostrar si renovo maquina --}}
+                                            @if ($cart->RenewMachine)
+                                                <p class="m-0 machine-element"><small><b>Renovo {{$cart->RenewMachine->Machine->name}} x {{$cart->RenewMachine->quantity}}</b></small></p>
                                             @endif
 
                                             {{-- Mostrar las duedas de cada cliente --}}
@@ -762,7 +775,7 @@
                                                                     @foreach ($cart->StockLogs->where('l_r', 1) as $log)
                                                                         <tr>
                                                                             <td>{{ $log->quantity}}</td>
-                                                                            @if ($log->product_id !== null)                                                                                
+                                                                            @if ($log->product_id !== null)
                                                                                 <td class="product-element">{{ $log->Product->name }}</td>
                                                                             @else
                                                                                 <td class="product-element">{{ $log->BottleType->name }}</td>
@@ -864,7 +877,7 @@
                         @csrf
                         <input type="hidden" id="client_id" name="client_id" value="">
                     </form>
-    
+
                     <!-- Cambiar estado de un carrito -->
                     <form id="form_no_confirmation" action="{{ url('/cart/changeState') }}" method="POST">
                         @csrf
@@ -1184,7 +1197,7 @@
             if (response.data !== null) {
                 let cont = "";
                 response.message.forEach(function(transfer) {
-                    cont += 
+                    cont +=
                     `<tr>
                         <td><a href="/client/details/${transfer.client.id}">${transfer.client.name}</a></td>
                         <td>$${transfer.amount}</td>
@@ -1473,7 +1486,7 @@
             return /^\d+$/.test(valor);
         }
         let totalRenewAbono = 0;
-        
+
         function openModal(cart_id, client_id, debt) {
             $("#form-confirm input[name='cart_id']").val(cart_id);
             $("#tableBody").html("");
@@ -1482,13 +1495,13 @@
             $("#cash_input_container").css("display", "flex");
             $("#cash_input_container input").prop("disabled", false);
             $("#cash_input_container input").val("");
-            
+
             $("#method_checkbox").prop("checked", false);
             $("#methods_input_container").css("display", "none");
-            
+
             $("#amount_input_container").css("display", "none");
             $("#amount_input").prop("disabled", true);
-            
+
             // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
             $.ajax({
                 url: $("#form_search_products").attr('action'), // Utiliza la ruta del formulario
@@ -1762,6 +1775,7 @@
                         },
                         data: {
                             client_id: client_id,
+                            cart_id: $("#form-confirm input[name='cart_id']").val(),
                         },
                         success: function(response) {
                             Swal.fire({
@@ -1781,7 +1795,7 @@
             });
         };
     </script>
-    
+
 
     <!-- Editar un carrito -->
     <script>
@@ -1971,6 +1985,19 @@
             });
         });
 
+        $("#machineSelect").on("change", function() {
+            let searchText = $(this).val().toLowerCase();
+            $(".timeline > li").each(function() {
+                let nameAndStateElement = $(this).find(".machine-element");
+
+                if (nameAndStateElement.text().toLowerCase().includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
         function applyFilters() {
             let productText = $("#productSelect").val().toLowerCase();
             let typeText = $("#typeSelect").val().toLowerCase();
@@ -1978,6 +2005,7 @@
             $(".timeline > li").each(function() {
                 let productElement = $(this).find(".product-element");
                 let typeElement = $(this).find(".type-element");
+                let machineElement = $(this).find(".machine-element");
 
                 let productMatch = productText === "" || productElement.text().toLowerCase().includes(productText);
                 let typeMatch = typeText === "" || typeElement.text().toLowerCase().includes(typeText);
@@ -2045,5 +2073,5 @@
             })
         }
     </script>
-    
+
 @endsection
