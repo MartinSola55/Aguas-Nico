@@ -51,6 +51,7 @@ class MachineController extends Controller
                 'machine_id' => $client->machine_id,
                 'quantity' => $client->machines,
                 'price' => $machine->price,
+                'cart_id' => $request->input('cart_id'),
             ]);
 
             $client->debt = $client->debt + ($client->machines * $machine->price);
