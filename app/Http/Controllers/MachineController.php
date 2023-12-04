@@ -10,7 +10,36 @@ use Illuminate\Support\Facades\DB;
 
 class MachineController extends Controller
 {
-    public function store(Request $request)
+
+    public function index()
+    {
+        $machines = Machine::orderBy('id')->get();
+        return view('machines.index', compact('machines'));
+    }
+
+    public function updatePrice(Request $request)
+    {
+        try {
+            $machine = Machine::findOrFail($request->input('id'));
+            $machine->price = $request->input('price');
+            $machine->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Precio actualizado correctamente',
+                'data' => $machine,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al actualizar el precio',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function renew(Request $request)
     {
         try {
             $client = Client::findOrFail($request->input('client_id'));
@@ -22,6 +51,7 @@ class MachineController extends Controller
                 'machine_id' => $client->machine_id,
                 'quantity' => $client->machines,
                 'price' => $machine->price,
+                'cart_id' => $request->input('cart_id'),
             ]);
 
             $client->debt = $client->debt + ($client->machines * $machine->price);

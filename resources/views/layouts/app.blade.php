@@ -169,6 +169,9 @@
                                 <a class="waves-effect waves-dark" href="{{ url('/product/index') }}" aria-expanded="false"><i class="bi bi-box-seam"></i><span class="hide-menu">Productos</span></a>
                             </li>
                             <li>
+                                <a class="waves-effect waves-dark" href="{{ url('/machine/index') }}" aria-expanded="false"><i class="bi bi-hr"></i><span class="hide-menu">Máquinas</span></a>
+                            </li>
+                            <li>
                                 <a class="waves-effect waves-dark" href="{{ url('/client/index') }}" aria-expanded="false"><i class="bi bi-person-square"></i><span class="hide-menu">Clientes</span></a>
                             </li>
                             <li class="nav-devider"></li>

@@ -612,6 +612,14 @@
                                                             <option value="Bajada">Bajada</option>
                                                         </select>
                                                     </div>
+                                                    <div class="form-group mb-2 px-3">
+                                                        <select class="form-control" id="machineSelect">
+                                                            <option value="">Por Maquina</option>
+                                                            @foreach ($machines as $machine)
+                                                                <option value="{{ $machine->name }}">{{ $machine->name }} ${{ $machine->price }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -668,6 +676,11 @@
                                             <p class="m-0">Último reparto: {{ $cart->Client->lastCart->created_at->format('d/m/Y') }} - {{ $states[$cart->Client->lastCart->state] }}</p>
                                             @endif
 
+                                            {{-- Mostrar si renovo maquina --}}
+                                            @if ($cart->RenewMachine)
+                                                <p class="m-0 machine-element"><small><b>Renovo {{$cart->RenewMachine->Machine->name}} x {{$cart->RenewMachine->quantity}}</b></small></p>
+                                            @endif
+
                                             {{-- Mostrar las duedas de cada cliente --}}
                                             @if ($cart->Client->debt == 0)
                                                 <p class="m-0"><small class="text-muted">Sin deuda</small></p>
@@ -679,36 +692,20 @@
 
                                             {{-- Deuda del mes actual --}}
                                             <p class="m-0"><small class="text-muted">Consumo del mes actual: ${{ $cart->Client->debtOfTheMonth }}</small></p>
-                                            {{-- @if ($cart->Client->debtOfTheMonth == 0)
-                                                <p class="m-0"><small class="text-muted">Sin deuda en el mes actual</small></p>
-                                            @elseif ($cart->Client->debtOfTheMonth > 0)
-                                                <p class="m-0"><small class="text-muted">Deuda del mes actual: ${{ $cart->Client->debtOfTheMonth }}</small></p>
-                                            @else
-                                                <p class="m-0"><small class="text-muted">A favor el mes actual: ${{ $cart->Client->debtOfTheMonth * -1 }}</small></p>
-                                            @endif --}}
 
                                             {{-- Deuda del mes anterior --}}
                                             <p class="m-0"><small class="text-muted">Consumo del mes anterior: ${{ $cart->Client->debtOfPreviousMonth }}</small></p>
-                                            {{-- @if ($cart->Client->debtOfPreviousMonth == 0)
-                                                <p class="m-0"><small class="text-muted">Sin deuda el mes anterior</small></p>
-                                            @elseif ($cart->Client->debtOfPreviousMonth > 0)
-                                                <p class="m-0"><small class="text-muted">Deuda del mes anterior: ${{ $cart->Client->debtOfPreviousMonth }}</small></p>
-                                            @else
-                                                <p class="m-0"><small class="text-muted">A favor el mes anterior: ${{ $cart->Client->debtOfPreviousMonth * -1 }}</small></p>
-                                            @endif --}}
 
                                             <p class="mb-0"><small class="text-muted address-element"><i class="bi bi-house-door"></i> {{ $cart->Client->adress }}&nbsp;&nbsp;-&nbsp;&nbsp;<i class="bi bi-telephone"></i> {{ $cart->Client->phone }}</small></p>
                                             @if ($cart->state && auth()->user()->rol_id == '1')
                                             <p class="mb-0"><small class="text-muted"><i class="bi bi-calendar-check"></i> {{ $cart->updated_at->format('d-m-Y H:i') }}&nbsp;hs. </small></p>
                                             @endif
                                         </div>
-                                        @if ($cart->state === 1)
-                                        <hr>
-                                        @endif
                                         <div class="timeline-body">
                                             @if ($cart->state === 1)
-                                                <div class="row">
-                                                    <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <hr>
                                                     @if ($cart->ProductsCart->count() > 0)
                                                         <h3 class="text-center type-element text-muted mb-0">Bajada</h3>
                                                         <div class="table-responsive">
@@ -761,6 +758,37 @@
                                                     </div>
                                                     @endif
                                                 </div>
+                                                @if ($cart->StockLogs->where('l_r', 1)->count() > 0)
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <hr>
+                                                        <h3 class="text-center type-element text-muted mb-0">Devoluciones</h3>
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Cantidad</th>
+                                                                        <th>Producto</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($cart->StockLogs->where('l_r', 1) as $log)
+                                                                        <tr>
+                                                                            <td>{{ $log->quantity}}</td>
+                                                                            @if ($log->product_id !== null)
+                                                                                <td class="product-element">{{ $log->Product->name }}</td>
+                                                                            @else
+                                                                                <td class="product-element">{{ $log->BottleType->name }}</td>
+                                                                            @endif
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @endif
+
                                                 <div class="d-flex flex-md-row flex-column justify-content-end">
                                                     @if (auth()->user()->rol_id == 2)
                                                         <button type="button" onclick="getReturnStock('{{ $cart->Client->id }}', '{{ $cart->Client->name }}', '{{ $cart->id }}')" class="btn btn-sm btn-info btn-rounded px-3 mb-2 mb-md-0 ml-auto ml-md-0">Devuelve</button>
@@ -849,7 +877,7 @@
                         @csrf
                         <input type="hidden" id="client_id" name="client_id" value="">
                     </form>
-    
+
                     <!-- Cambiar estado de un carrito -->
                     <form id="form_no_confirmation" action="{{ url('/cart/changeState') }}" method="POST">
                         @csrf
@@ -1169,7 +1197,7 @@
             if (response.data !== null) {
                 let cont = "";
                 response.message.forEach(function(transfer) {
-                    cont += 
+                    cont +=
                     `<tr>
                         <td><a href="/client/details/${transfer.client.id}">${transfer.client.name}</a></td>
                         <td>$${transfer.amount}</td>
@@ -1458,7 +1486,7 @@
             return /^\d+$/.test(valor);
         }
         let totalRenewAbono = 0;
-        
+
         function openModal(cart_id, client_id, debt) {
             $("#form-confirm input[name='cart_id']").val(cart_id);
             $("#tableBody").html("");
@@ -1467,13 +1495,13 @@
             $("#cash_input_container").css("display", "flex");
             $("#cash_input_container input").prop("disabled", false);
             $("#cash_input_container input").val("");
-            
+
             $("#method_checkbox").prop("checked", false);
             $("#methods_input_container").css("display", "none");
-            
+
             $("#amount_input_container").css("display", "none");
             $("#amount_input").prop("disabled", true);
-            
+
             // Pegada AJAX que busca los productos del carrito seleccionado y completa el modal
             $.ajax({
                 url: $("#form_search_products").attr('action'), // Utiliza la ruta del formulario
@@ -1747,6 +1775,7 @@
                         },
                         data: {
                             client_id: client_id,
+                            cart_id: $("#form-confirm input[name='cart_id']").val(),
                         },
                         success: function(response) {
                             Swal.fire({
@@ -1766,7 +1795,7 @@
             });
         };
     </script>
-    
+
 
     <!-- Editar un carrito -->
     <script>
@@ -1956,6 +1985,19 @@
             });
         });
 
+        $("#machineSelect").on("change", function() {
+            let searchText = $(this).val().toLowerCase();
+            $(".timeline > li").each(function() {
+                let nameAndStateElement = $(this).find(".machine-element");
+
+                if (nameAndStateElement.text().toLowerCase().includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
         function applyFilters() {
             let productText = $("#productSelect").val().toLowerCase();
             let typeText = $("#typeSelect").val().toLowerCase();
@@ -1963,6 +2005,7 @@
             $(".timeline > li").each(function() {
                 let productElement = $(this).find(".product-element");
                 let typeElement = $(this).find(".type-element");
+                let machineElement = $(this).find(".machine-element");
 
                 let productMatch = productText === "" || productElement.text().toLowerCase().includes(productText);
                 let typeMatch = typeText === "" || typeElement.text().toLowerCase().includes(typeText);
@@ -2030,5 +2073,5 @@
             })
         }
     </script>
-    
+
 @endsection

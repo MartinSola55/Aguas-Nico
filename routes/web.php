@@ -104,6 +104,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/abono/edit', [App\Http\Controllers\AbonoController::class, 'update']);
     Route::post('/abono/updatePrice', [App\Http\Controllers\AbonoController::class, 'updatePrice']);
     Route::get('/abono/clients/{id}', [App\Http\Controllers\AbonoController::class, 'getClients']);
+
+    //MACHINES
+    Route::get('/machine/index', [App\Http\Controllers\MachineController::class, 'index']);
+    Route::post('/machine/updatePrice', [App\Http\Controllers\MachineController::class, 'updatePrice']);
 });
 
 // EMPLOYEE
@@ -154,7 +158,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/client/getHistory/{id}', [App\Http\Controllers\ClientController::class, 'getHistory']);
     
     //MACHINES
-    Route::post('/machine/renew', [App\Http\Controllers\MachineController::class, 'store']);
+    Route::post('/machine/renew', [App\Http\Controllers\MachineController::class, 'renew']);
 
 });
 

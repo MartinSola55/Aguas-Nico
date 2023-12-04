@@ -55,6 +55,11 @@ class Cart extends Model
     {
         return $this->hasMany(StockLog::class, 'cart_id');
     }
+
+    public function RenewMachine()
+    {
+        return $this->hasOne(ClientMachine::class, 'cart_id');
+    }
 }
 
 // state

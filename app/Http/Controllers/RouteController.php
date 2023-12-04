@@ -74,20 +74,21 @@ class RouteController extends Controller
             $cart->Client->lastCart = $cart->Client->getLastCart($id);
         }
 
-        $products = Product::distinct()->pluck('name');
+        $products = Product::distinct()->where('is_active', true)->pluck('name');
+        $machines = Machine::orderBy('id')->get();
         if (auth()->user()->rol_id == '1') {
             $productsDispatched = ProductDispatched::where('route_id', $id)->with('Product')->get();
 
             $data = $this->getStats($route, $productsDispatched);
 
-            return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'data', 'products'));
+            return view('routes.details', compact('route', 'payment_methods', 'cash', 'productsDispatched', 'data', 'products', 'machines'));
         } else {
             $clients = collect();
             foreach ($route->Carts as $cart) {
                 $clients->push($cart->Client);
             }
             $clients = $clients->sortBy('name')->unique('id')->values();
-            return view('routes.details', compact('route', 'payment_methods', 'cash', 'clients', 'products'));
+            return view('routes.details', compact('route', 'payment_methods', 'cash', 'clients', 'products', 'machines'));
         }
     }
 
@@ -302,7 +303,7 @@ class RouteController extends Controller
             $products = ProductsClient::where('client_id', $request->input('client_id'))->with('Product')->get();
             $client = Client::find($request->input('client_id'));
             $abonoClient = null;
-    
+
             if ($client->abono_id !== null) {
                 $abonoType = Abono::find($client->abono_id);
                 $abonoType->client_id = $request->input('client_id');
