@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AbonoClient;
 use App\Models\Client;
+use App\Models\ClientMachine;
 use App\Models\ProductsCart;
 use App\Models\Route;
 use Carbon\Carbon;
@@ -19,6 +20,7 @@ class InvoiceController extends Controller
 
     public function searchAllSales(Request $request)
     {
+        ini_set('max_execution_time', 180);
         try {
             $dateFrom = Carbon::createFromFormat('Y-m-d', $request->input('dateFrom'))->startOfDay();
             $dateTo = Carbon::createFromFormat('Y-m-d', $request->input('dateTo'))->endOfDay();
@@ -31,13 +33,14 @@ class InvoiceController extends Controller
             })->where('invoice', true)->orderBy('name', 'asc')->get();
             $products = ProductsCart::whereBetween('created_at', [$dateFrom, $dateTo])->with('Cart', 'Product')->orderBy('created_at', 'asc')->get();
             $abonos = AbonoClient::whereBetween('created_at', [$dateFrom, $dateTo])->with('Client', 'Abono')->orderBy('created_at', 'asc')->get();
+            $machines = ClientMachine::whereBetween('created_at', [$dateFrom, $dateTo])->with('Client', 'Machine')->orderBy('created_at', 'asc')->get();
 
             $data = [
                 'clients' => []
             ];
 
             foreach ($clients as $client) {
-                if ($client->Carts->count() === 0 && $client->Abonos->count() === 0) {
+                if ($client->Carts->count() === 0 && $client->Abonos->count() === 0 && $client->ClientMachines->count() === 0) {
                     continue;
                 }
                 $clientData = [
@@ -45,11 +48,25 @@ class InvoiceController extends Controller
                     'cuit' => $client->cuit,
                     'invoice_type' =>$client->invoice_type,
                     'products' => [],
-                    'abonos' => []
+                    'abonos' => [],
+                    'machines' => []
                 ];
 
                 $clientProducts = $products->where('cart.client_id', $client->id);
                 $clientAbonos = $abonos->where('client_id', $client->id);
+                $clientMachines = $machines->where('client_id', $client->id);
+
+                foreach ($clientMachines as $machine) {
+                    $machineData = [
+                        'id' => $machine->machine_id,
+                        'name' => $machine->Machine->name,
+                        'quantity' => $machine->quantity,
+                        'price' => $machine->price,
+                        'date' => $machine->created_at->format('d/m/Y')
+                    ];
+
+                    $clientData['machines'][] = $machineData;
+                }
 
                 foreach ($clientAbonos as $abono) {
                     $abonoData = [

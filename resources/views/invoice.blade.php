@@ -202,6 +202,7 @@
         $("#btnSearchSale").on("click", function() {
             $("#dateFromFormatted").val(formatDate($("#dateFrom").val()));
             $("#dateToFormatted").val(formatDate($("#dateTo").val()));
+            $("#tables_container").html("<h3 class='text-center'>Cargando... <span class='loader'></span></h3>");
             $.ajax({
                 url: $("#form-sales").attr('action'), // Utiliza la ruta del formulario
                 method: $("#form-sales").attr('method'), // Utiliza el método del formulario
@@ -245,6 +246,17 @@
                                 <td class='p-0 text-right productTotal'>$${formattedNumber(item.quantity * item.price)}</td>
                             </tr>`;
                         });
+                        client.machines.forEach((item) => {
+                            sum += item.quantity * item.price;
+                            content += 
+                            `<tr>
+                                <td class='p-0'>${item.name}</td>
+                                <td class='p-0 text-right'>${item.quantity}</td>
+                                <td class='p-0 text-right'>$${formattedNumber(parseInt(item.price))}</td>
+                                <td class='p-0 text-right'>${item.date}</td>
+                                <td class='p-0 text-right productTotal'>$${formattedNumber(item.quantity * item.price)}</td>
+                            </tr>`;
+                        });
                         content += 
                         `<tr>
                             <td class="p-0"></td>
@@ -261,6 +273,16 @@
                     calculateTotal();
                 },
                 error: function(errorThrown) {
+                    $("#tables_container").html("");
+                    if (errorThrown.exception !== null) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            html: 'Se agotó el tiempo de espera, por favor intente nuevamente.<br>Si el problema persiste, intente seleccionar un intervalo de fechas más corto.',
+                            confirmButtonColor: '#1e88e5',
+                        });
+                        return;
+                    }
                     Swal.fire({
                         icon: 'error',
                         title: errorThrown.responseJSON.title,
@@ -271,5 +293,26 @@
             });
         });
     </script>
+    
+    <style>
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #000000;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
 
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        } 
+    </style>
 @endsection
