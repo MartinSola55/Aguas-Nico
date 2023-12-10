@@ -449,8 +449,8 @@ class ClientController extends Controller
             $response = $history->map(function ($log) {
                 $name = $log->product_id !== null ? $log->Product->name : ($log->bottle_types_id !== null ? $log->BottleType->name : null);
 
-                $formattedDate = $log->updated_at->format('d-m-Y H:i');
-                $action = $log->l_r == 0 ? 'presta' : 'devuelve';
+                $formattedDate = $log->updated_at->format('d/m/Y H:i');
+                $action = $log->l_r == 0 ? 'Presta' : 'Devuelve';
 
                 return [
                     'name' => $name,
