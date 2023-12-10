@@ -34,8 +34,8 @@ class ClientController extends Controller
                 $query->where('is_active', true);
             }])
             ->orderBy('name')
-            ->get(); 
-        
+            ->get();
+
         return view('clients.index', compact('clients'));
     }
 
@@ -437,5 +437,41 @@ class ClientController extends Controller
         $client = Client::find($id);
 
         return view('clients.invoice', compact('client'));
+    }
+
+    public function stockHistory (Request $request)
+    {
+        try {
+            $history = StockLog::where('client_id', $request->input('client_id'))
+                ->orderBy('updated_at', 'desc')
+                ->get();
+
+            $response = $history->map(function ($log) {
+                $name = $log->product_id !== null ? $log->Product->name : ($log->bottle_types_id !== null ? $log->BottleType->name : null);
+
+                $formattedDate = $log->updated_at->format('d-m-Y H:i');
+                $action = $log->l_r == 0 ? 'presta' : 'devuelve';
+
+                return [
+                    'name' => $name,
+                    'cant' => $log->quantity,
+                    'action' => $action,
+                    'date' => $formattedDate
+                ];
+            })->filter(); // Remove null values from the map
+
+            return response()->json([
+                'success' => true,
+                'data' => $response->values(), // Reset array keys for consistency
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'title' => 'Error al buscar historial de stock',
+                'message' => 'Intente nuevamente o comuníquese para soporte',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+
     }
 }

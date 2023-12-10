@@ -37,7 +37,7 @@ class CartController extends Controller
             $cart = Cart::find($request->input('cart_id'));
             $products_quantity = json_decode($request->input('products_quantity'), true);
             $cash = $request->input('cash');
-            
+
             DB::beginTransaction();
             if ($request->input('abono_log_id_edit') != "null") {
                 $abonoLog = AbonoLog::find($request->input('abono_log_id_edit'));
@@ -114,7 +114,7 @@ class CartController extends Controller
 
                     $stockLog->quantity = $pc["quantity"];
                     $stockLog->updated_at = Carbon::now();
-                    $stockLog->save();  
+                    $stockLog->save();
                 }
             }
 
@@ -165,7 +165,7 @@ class CartController extends Controller
             $client->increment('debt', $cartPM->amount);
             CartPaymentMethod::where('cart_id', $cart->id)->where('payment_method_id', 1)->update(['amount' => $cash]);
             $client->decrement('debt', $cash);
-            
+
             // Acá se suma a la deuda el precio de las nuevas cantidades de productos, y más arriba se restan las anteriores
             $client->increment('debt', $total_cart);
 
@@ -235,7 +235,7 @@ class CartController extends Controller
                     'text' => 'Probablemente presionó el botón de confirmar dos veces. Intente recargar la página'
                 ], 400);
             }
-            
+
             $total_cart = 0;
             DB::beginTransaction();
 
@@ -293,7 +293,7 @@ class CartController extends Controller
 
             $client->increment('debt', $total_cart - $cash);
             $abonoPrice = AbonoClient::where('cart_id', $cart->id)->first();
-            
+
             // Tiene que ir SI O SI primero la creacion de productos y despues la actualizacion del carrito
             DB::table('products_cart')->insert($products_cart);
             if ($abonoPrice) {
@@ -361,7 +361,7 @@ class CartController extends Controller
                         }
                     }
                 }
-                
+
             } else {
                 $log = StockLog::firstOrCreate(
                     [
@@ -382,7 +382,7 @@ class CartController extends Controller
                 if ($log->quantity !== null) {
                     $client->ProductsClient()->where('product_id', $type_id)->increment('stock', $log->quantity);
                 }
-                
+
                 $client->ProductsClient()->where('product_id', $type_id)->decrement('stock', $request->input('quantity'));
             }
             $log->quantity = $request->input('quantity');

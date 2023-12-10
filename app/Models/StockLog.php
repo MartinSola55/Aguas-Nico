@@ -45,3 +45,7 @@ class StockLog extends Model
         return $this->Cart->Route->id;
     }
 }
+
+
+//DEVUELVE = 1 Return
+//Preste = 0 load

@@ -207,6 +207,40 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-12">
+                                        <h3 class="card-title">Historial de envases</h3>
+                                    </div>
+                                </div>
+                                <div>
+                                    <table class="table table-hover table-bordered table-grey" id="stockHistory_table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="col-3">Nombre</th>
+                                                <th scope="col" class="col-4">Tipo</th>
+                                                <th scope="col" class="col-2">Cant</th>
+                                                <th scope="col" class="col-3">Fecha</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{-- @foreach ($machines as $machine)
+                                                <tr>
+                                                    <td>{{ $machine->name }} ${{ $machine->price }}</td>
+                                                    <td class="text-center">
+                                                        <input id="machine_{{ $machine->id }}" min="0" type="number" class="form-control machine-input" value="{{ $client->machine_id == $machine->id ? $client->machines : '0' }}" disabled>
+                                                        <label for="machine_{{ $machine->id }}" class="pl-3 mb-0"></label>
+                                                    </td>
+                                                </tr>
+                                            @endforeach --}}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-xl-4">
@@ -760,6 +794,7 @@
     {{-- Abonos asociados al cliente --}}
     <script>
         $(document).ready(function() {
+            getStockHistory();
             $('.abono-checkbox').on('change', function() {
                 if ($(this).is(':checked')) {
                     $('.abono-checkbox').not(this).prop('checked', false);
@@ -918,6 +953,33 @@
                 "emptyTable": 'No existen transferencias registradas',
             },
         });
+    </script>
+
+    <script>
+        function getStockHistory() {
+            $.ajax({
+                url: '/client/getStockHistory',
+                method: 'GET',
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data:{
+                    client_id: {{ $client->id }},
+                },
+                success: function(response) {
+                    response.data.forEach(client => {
+                        let content = `
+                            <tr>
+                                <td>${client.name}</td>
+                                <td>${client.action}</td>
+                                <td>${client.cant}</td>
+                                <td>${client.date} hs</td>
+                            </tr>`;
+                        $('#stockHistory_table').DataTable().row.add($(content)).draw();
+                    });
+                },
+            });
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
