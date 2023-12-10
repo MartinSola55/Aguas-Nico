@@ -953,6 +953,18 @@
                 "emptyTable": 'No existen transferencias registradas',
             },
         });
+        $('#stockHistory_table').DataTable({
+            columnDefs: [{ orderable: false }],
+            scrollY: '50vh',
+            scrollCollapse: true,
+            paging: false,
+            searching: false,
+            info: false,
+            ordering: false,
+            "language": {
+                "emptyTable": 'No existen envases registrados',
+            },
+        });
     </script>
 
     <script>
