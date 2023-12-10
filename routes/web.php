@@ -67,6 +67,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/client/updateMachine', [App\Http\Controllers\ClientController::class, 'updateMachine']);
     Route::post('/client/setIsActive', [App\Http\Controllers\ClientController::class, 'setIsActive']);
     Route::get('/client/getHistory/{id}', [App\Http\Controllers\ClientController::class, 'getHistory']);
+    Route::get('/client/getStockHistory', [App\Http\Controllers\ClientController::class, 'stockHistory']);
 
     // ROUTE
     Route::get('/route/index', [App\Http\Controllers\RouteController::class, 'index']);
@@ -156,7 +157,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/abono/renew', [App\Http\Controllers\AbonoClientController::class, 'store']);
     Route::get('/abono/getlog', [App\Http\Controllers\AbonoClientController::class, 'getLog']);
     Route::get('/client/getHistory/{id}', [App\Http\Controllers\ClientController::class, 'getHistory']);
-    
+
     //MACHINES
     Route::post('/machine/renew', [App\Http\Controllers\MachineController::class, 'renew']);
 
