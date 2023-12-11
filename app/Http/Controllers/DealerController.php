@@ -153,7 +153,7 @@ class DealerController extends Controller
     {
         $month = date('m'); // obtener el número del mes actual
         $year = date('Y'); // obtener el año actual
-        $days_in_month = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $days_in_month = date("t");
         $data = array_fill(0, $days_in_month, 0);
 
         // Total vendido
@@ -178,7 +178,7 @@ class DealerController extends Controller
         $i = 0;
         foreach ($data as $day) {
             $graph[$i] = [
-                'period' => '2023-' . $month . '-' . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
+                'period' => $year . '-' . $month . '-' . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
                 'sold' => $day
             ];
             $i++;
