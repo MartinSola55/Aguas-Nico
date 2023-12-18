@@ -276,11 +276,45 @@ class CartController extends Controller
 
                 // Actualizar stock de los productos del cliente
                 if ($bottleType !== null) {
-                    BottleClient::firstOrCreate(['client_id' => $client->id, 'bottle_types_id' => $bottleType])
-                        ->increment('stock', $product['quantity']);
-                } else {
-                    ProductsClient::firstOrCreate(['client_id' => $client->id, 'product_id' => $product['product_id']])
-                        ->increment('stock', $product['quantity']);
+                    // BottleClient::firstOrCreate(['client_id' => $client->id, 'bottle_types_id' => $bottleType])
+                    //     ->increment('stock', $product['quantity']);
+
+                    $bottleClient = BottleClient::where('client_id', $client->id)
+                        ->where('bottle_types_id', $bottleType)
+                        ->first();
+                    // Verificar si se encontró un BottleClient
+                    if ($bottleClient) {
+                        // Incrementar el stock del BottleClient existente
+                        $bottleClient->increment('stock', $product['quantity']);
+                    } else {
+                        // Si no existe, crear un nuevo BottleClient
+                        BottleClient::create([
+                            'client_id' => $client->id,
+                            'bottle_types_id' => $bottleType,
+                            'stock' => $product['quantity'],
+                        ]);
+                    }
+
+                } else{
+                    // ProductsClient::firstOrCreate(['client_id' => $client->id, 'product_id' => $product['product_id']])
+                    //     ->increment('stock', $product['quantity']);
+                    // Buscar ProductsClient existente con las condiciones dadas
+                    $productClient = ProductsClient::where('client_id', $client->id)
+                        ->where('product_id', $productId)
+                        ->first();
+
+                        // Verificar si se encontró un ProductsClient
+                    if ($productClient) {
+                        // Incrementar el stock del ProductsClient existente
+                        $productClient->increment('stock', $product['quantity']);
+                    } else {
+                        // Si no existe, crear un nuevo ProductsClient
+                        ProductsClient::create([
+                            'client_id' => $client->id,
+                            'product_id' => $product['product_id'],
+                            'stock' => $product['quantity'],
+                        ]);
+                    }
                 }
             }
 
