@@ -431,14 +431,14 @@ class RouteController extends Controller
                     'updated_at' => now(),
                 ];
 
-                $client_stock = $products_client->where('product_id', $product->id)->first()['stock'];
-                if ($client_stock < $product_cart['quantity']) {
-                    return response()->json([
-                        'success' => false,
-                        'title' => 'Error al crear la venta',
-                        'message' => 'El cliente no tiene asignado suficientes ' . $product->name,
-                    ], 400);
-                }
+                // $client_stock = $products_client->where('product_id', $product->id)->first()['stock'];
+                // if ($client_stock < $product_cart['quantity']) {
+                //     return response()->json([
+                //         'success' => false,
+                //         'title' => 'Error al crear la venta',
+                //         'message' => 'El cliente no tiene asignado suficientes ' . $product->name,
+                //     ], 400);
+                // }
 
                 $bottleType = $product->bottle_type_id ?? null;
                 StockLog::create([
