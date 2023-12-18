@@ -311,6 +311,18 @@ class ClientController extends Controller
             $client_id = $request->input('client_id');
             DB::beginTransaction();
                 foreach ($products_quantity as $product) {
+                    $productClient = ProductsClient::where('client_id', $client_id)
+                        ->where('product_id', $product["product_id"])
+                        ->first();
+                    if ($productClient) {
+                        $productClient->update(['stock' => $product["quantity"]]);
+                    }else {
+                        ProductsClient::create([
+                            'client_id' => $client_id,
+                            'product_id' => $product["product_id"],
+                            'stock' => $product["quantity"],
+                        ]);
+                    }
                     $modelProd = Product::find($product["product_id"]);
                     if ($modelProd->bottle_type_id !== null) {
                         $bottleClient = BottleClient::where('client_id', $client_id)
@@ -325,20 +337,7 @@ class ClientController extends Controller
                                 'stock' => $product["quantity"],
                             ]);
                         }
-                    }else {
-                        $productClient = ProductsClient::where('client_id', $client_id)
-                            ->where('product_id', $product["product_id"])
-                            ->first();
-                        if ($productClient) {
-                            $productClient->update(['stock' => $product["quantity"]]);
-                        }else {
-                            ProductsClient::create([
-                                'client_id' => $client_id,
-                                'product_id' => $product["product_id"],
-                                'stock' => $product["quantity"],
-                            ]);
-                        }
-                    };
+                    }
                 }
             DB::commit();
 
