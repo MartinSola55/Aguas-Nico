@@ -9,6 +9,7 @@ use App\Http\Requests\Client\ClientUpdateRequest;
 use App\Http\Requests\Client\SearchSalesRequest;
 use App\Models\Abono;
 use App\Models\AbonoLog;
+use App\Models\BottleClient;
 use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Machine;
@@ -235,9 +236,15 @@ class ClientController extends Controller
 
             $exists = $client_products->contains('id',$product->id);
 
+            if ($product->bottle_type_id !== null && $exists) {
+                $stock = BottleClient::where('client_id', $client->id)->where('bottle_types_id', $product->bottle_type_id)->first()->stock;
+            }elseif ($exists) {
+                $stock = ProductsClient::where('client_id', $client->id)->where('product_id', $product->id)->first()->stock;
+            }
+
             if ($exists) {
                 $productList[$key]['active'] = true;
-                $productList[$key]['stock'] = ProductsClient::where('client_id', $client->id)->where('product_id', $product->id)->first()->stock;
+                $productList[$key]['stock'] = $stock;
             } else {
                 $productList[$key]['active'] = false;
                 $productList[$key]['stock'] = null;
@@ -300,19 +307,37 @@ class ClientController extends Controller
             $products_quantity = json_decode($request->input('products_quantity'), true);
             $client_id = $request->input('client_id'); // Obtener el cliente
             $productsUpdated = [];
-
             DB::beginTransaction();
-
-            foreach ($products_quantity as $product) {
-                $productsUpdated[] = [
-                    'client_id' => $client_id,
-                    'product_id' => $product["product_id"],
-                    'stock' => $product["quantity"],
-                ];
-            }
-
-            ProductsClient::where('client_id', $client_id)->delete(); // Eliminar todos los productos del cliente
-            DB::table('products_client')->insert($productsUpdated); // Insertar los nuevos productos del cliente
+                foreach ($products_quantity as $product) {
+                    $modelProd = Product::find($product["product_id"]);
+                    if ($modelProd->bottle_type_id !== null) {
+                        $bottleClient = BottleClient::where('client_id', $client_id)
+                            ->where('bottle_types_id', $modelProd->bottle_type_id)
+                            ->first();
+                        if ($bottleClient) {
+                            $bottleClient->update(['stock' => $product["quantity"]]);
+                        }else {
+                            BottleClient::create([
+                                'client_id' => $client_id,
+                                'bottle_types_id' => $modelProd->bottle_type_id,
+                                'stock' => $product["quantity"],
+                            ]);
+                        }
+                    }else {
+                        $productClient = ProductsClient::where('client_id', $client_id)
+                            ->where('product_id', $product["product_id"])
+                            ->first();
+                        if ($productClient) {
+                            $productClient->update(['stock' => $product["quantity"]]);
+                        }else {
+                            ProductsClient::create([
+                                'client_id' => $client_id,
+                                'product_id' => $product["product_id"],
+                                'stock' => $product["quantity"],
+                            ]);
+                        }
+                    };
+                }
             DB::commit();
 
             return response()->json([
