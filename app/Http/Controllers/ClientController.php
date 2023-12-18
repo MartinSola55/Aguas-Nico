@@ -232,20 +232,23 @@ class ClientController extends Controller
             $productList[$key]['id'] = $product->id;
             $productList[$key]['name'] = $product->name;
             $productList[$key]['price'] = $product->price;
-            $client_products = $client->Products;
 
-            $exists = $client_products->contains('id',$product->id);
-
-            if ($product->bottle_type_id !== null && $exists) {
-                $stock = BottleClient::where('client_id', $client->id)->where('bottle_types_id', $product->bottle_type_id)->first()->stock;
-            }elseif ($exists) {
-                $stock = ProductsClient::where('client_id', $client->id)->where('product_id', $product->id)->first()->stock;
-            }
-
-            if ($exists) {
-                $productList[$key]['active'] = true;
-                $productList[$key]['stock'] = $stock;
-            } else {
+            $stock = ProductsClient::where('client_id', $client->id)->where('product_id', $product->id)->first()->stock ?? null;
+            if ($stock != null) {
+                if ($product->bottle_type_id !== null) {
+                    $stock = BottleClient::where('client_id', $client->id)->where('bottle_types_id', $product->bottle_type_id)->first()->stock ?? null;
+                    if ($stock != null) {
+                        $productList[$key]['active'] = true;
+                        $productList[$key]['stock'] = $stock;
+                    }else {
+                        $productList[$key]['active'] = false;
+                        $productList[$key]['stock'] = null;
+                    }
+                }else {
+                    $productList[$key]['active'] = true;
+                    $productList[$key]['stock'] = $stock;
+                }
+            }else {
                 $productList[$key]['active'] = false;
                 $productList[$key]['stock'] = null;
             }
@@ -305,8 +308,7 @@ class ClientController extends Controller
     {
         try {
             $products_quantity = json_decode($request->input('products_quantity'), true);
-            $client_id = $request->input('client_id'); // Obtener el cliente
-            $productsUpdated = [];
+            $client_id = $request->input('client_id');
             DB::beginTransaction();
                 foreach ($products_quantity as $product) {
                     $modelProd = Product::find($product["product_id"]);
