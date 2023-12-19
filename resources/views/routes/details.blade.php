@@ -612,14 +612,14 @@
                                                             <option value="Bajada">Bajada</option>
                                                         </select>
                                                     </div>
-                                                    {{-- <div class="form-group mb-2 px-3">
+                                                    <div class="form-group mb-2 px-3">
                                                         <select class="form-control" id="machineSelect">
                                                             <option value="">Por Maquina</option>
                                                             @foreach ($machines as $machine)
                                                                 <option value="{{ $machine->name }}">{{ $machine->name }} ${{ $machine->price }}</option>
                                                             @endforeach
                                                         </select>
-                                                    </div> --}}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1985,18 +1985,18 @@
             });
         });
 
-        // $("#machineSelect").on("change", function() {
-        //     let searchText = $(this).val().toLowerCase();
-        //     $(".timeline > li").each(function() {
-        //         let nameAndStateElement = $(this).find(".machine-element");
+        $("#machineSelect").on("change", function() {
+            let searchText = $(this).val().toLowerCase();
+            $(".timeline > li").each(function() {
+                let nameAndStateElement = $(this).find(".machine-element");
 
-        //         if (nameAndStateElement.text().toLowerCase().includes(searchText)) {
-        //             $(this).show();
-        //         } else {
-        //             $(this).hide();
-        //         }
-        //     });
-        // });
+                if (nameAndStateElement.text().toLowerCase().includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
 
         function applyFilters() {
             let productText = $("#productSelect").val().toLowerCase();
@@ -2005,7 +2005,7 @@
             $(".timeline > li").each(function() {
                 let productElement = $(this).find(".product-element");
                 let typeElement = $(this).find(".type-element");
-                //let machineElement = $(this).find(".machine-element");
+                let machineElement = $(this).find(".machine-element");
 
                 let productMatch = productText === "" || productElement.text().toLowerCase().includes(productText);
                 let typeMatch = typeText === "" || typeElement.text().toLowerCase().includes(typeText);
