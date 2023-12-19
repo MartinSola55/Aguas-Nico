@@ -226,15 +226,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {{-- @foreach ($machines as $machine)
-                                                <tr>
-                                                    <td>{{ $machine->name }} ${{ $machine->price }}</td>
-                                                    <td class="text-center">
-                                                        <input id="machine_{{ $machine->id }}" min="0" type="number" class="form-control machine-input" value="{{ $client->machine_id == $machine->id ? $client->machines : '0' }}" disabled>
-                                                        <label for="machine_{{ $machine->id }}" class="pl-3 mb-0"></label>
-                                                    </td>
-                                                </tr>
-                                            @endforeach --}}
                                         </tbody>
                                     </table>
                                 </div>

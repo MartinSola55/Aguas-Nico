@@ -192,6 +192,36 @@
             </div>
         </div>
     </div>
+<!-- Modal get stock history client -->
+    <div id="modalGetStockHistory" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGetStockHistory" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Historial de envases </h4>
+                    <button id="btnCloseModal" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive m-t-10">
+                        <table class="table table-hover table-bordered table-grey" id="stockHistory_table">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="col-3">Nombre</th>
+                                    <th scope="col" class="col-4">Tipo</th>
+                                    <th scope="col" class="col-2">Cant</th>
+                                    <th scope="col" class="col-3">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal route products -->
     @if (auth()->user()->rol_id == '1')
@@ -658,15 +688,18 @@
                                         <div class="timeline-heading">
                                             <div class="row">
                                                 @if ($cart->state === 1)
-                                                    <h4 class="timeline-title name-element col-9" style="color: #30d577">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                                    <h4 class="timeline-title name-element col-8" style="color: #30d577">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
                                                 @elseif ($cart->state === 2 || $cart->state === 3 || $cart->state === 4)
-                                                    <h4 class="timeline-title name-element col-9" style="color: #ffc107">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                                    <h4 class="timeline-title name-element col-8" style="color: #ffc107">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
                                                 @elseif ($cart->state === 0)
-                                                    <h4 class="timeline-title name-element col-9" style="color: #6c757d">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
+                                                    <h4 class="timeline-title name-element col-8" style="color: #6c757d">{{ $cart->Client->name }} - {{ $states[$cart->state] }}</h4>
                                                 @else
-                                                    <h4 class="timeline-title name-element col-9" style="color: #6c757d">{{ $cart->Client->name }}</h4>
+                                                    <h4 class="timeline-title name-element col-8" style="color: #6c757d">{{ $cart->Client->name }}</h4>
                                                 @endif
-                                                    <div class="col-3 d-flex align-items-center justify-content-end">
+                                                    <div class="col-2 d-flex align-items-center justify-content-end pr-0">
+                                                        <button class="btn btn-info rounded-circle" onclick="getStockHistory({{ $cart->Client->id }})"><strong class="p-1">E</strong></button>
+                                                    </div>
+                                                    <div class="col-2 d-flex align-items-center justify-content-end">
                                                         <button class="btn btn-info rounded-circle" onclick="getHistory({{ $cart->Client->id }},'{{ $cart->Client->name }}')"><i class="bi bi-clipboard"></i></button>
                                                     </div>
                                             </div>
@@ -2055,6 +2088,39 @@
                     successClientGetHistory(response);
                 },
             })
+        }
+    </script>
+
+    <script>
+        function getStockHistory(idClient) {
+            $.ajax({
+                url: '/client/getStockHistory',
+                method: 'GET',
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    client_id: idClient,
+                },
+                success: function (response) {
+                    // Limpiar la tabla antes de agregar nuevos datos
+                    $('#stockHistory_table tbody').empty();
+
+                    // Agregar los nuevos datos a la tabla
+                    response.data.forEach(client => {
+                        let row = `
+                            <tr>
+                                <td>${client.name}</td>
+                                <td>${client.action}</td>
+                                <td>${client.cant}</td>
+                                <td>${client.date} hs</td>
+                            </tr>`;
+                        $('#stockHistory_table tbody').append(row);
+                    });
+                },
+            });
+
+            $('#modalGetStockHistory').modal('show');
         }
     </script>
 
